@@ -23,18 +23,18 @@ namespace GameServers
 
             Receive<Tcp.Bound>(bind =>
             {
-                Console.Out.WriteLine("bind ok on watching::" + bind.LocalAddress); 
+                Console.Out.WriteLine("bind ok on watching::" + bind.LocalAddress);
                 Become(GenLink);
-                
             });
         }
 
-        public void GenLink()
+        private void GenLink()
         {
             Receive<Tcp.Connected>(connected =>
             {
-                Console.Out.WriteLine("A Client Connected::"+connected.RemoteAddress);
-                
+                Console.Out.WriteLine("A Client Connected::" + connected.RemoteAddress);
+                var actorRef = Context.ActorOf(Props.Create<LinkActor>(Sender));
+                Sender.Tell(new Tcp.Register(actorRef));
             });
         }
     }
