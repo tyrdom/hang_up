@@ -1,29 +1,26 @@
 ﻿using System;
 using System.Net;
 using Akka.Actor;
+using Akka.Event;
 using Akka.IO;
+using log4net;
 
 namespace GameServers
 {
     public class GenLinkActor : ReceiveActor
     {
-        private IPEndPoint _endPoint;
-        private IActorRef _tcpManager;
+        private IActorRef _manager = Context.System.Tcp();
 
+        private readonly ILoggingAdapter _log = Logging.GetLogger(Context);
 
-        protected override void PreStart()
+        public GenLinkActor(IPEndPoint endPoint)
         {
-            _tcpManager.Tell(new Tcp.Bind(Self, _endPoint));
-        }
+            _manager.Tell(new Tcp.Bind(Self, endPoint));
 
-        public GenLinkActor(IPEndPoint endPoint, IActorRef tcpManager)
-        {
-            _endPoint = endPoint;
-            _tcpManager = tcpManager;
 
             Receive<Tcp.Bound>(bind =>
             {
-                Console.Out.WriteLine("bind ok on watching::" + bind.LocalAddress);
+                _log.Info("bind ok on watching::" + bind.LocalAddress);
                 Become(GenLink);
             });
         }
@@ -32,8 +29,9 @@ namespace GameServers
         {
             Receive<Tcp.Connected>(connected =>
             {
-                Console.Out.WriteLine("A Client Connected::" + connected.RemoteAddress);
-                var actorRef = Context.ActorOf(Props.Create<LinkActor>(Sender));
+                var connectedRemoteAddress = connected.RemoteAddress;
+                _log.Info("A Client Connected::" + connectedRemoteAddress);
+                var actorRef = Context.ActorOf(Props.Create(() => new LinkActor(connectedRemoteAddress, Sender)));
                 Sender.Tell(new Tcp.Register(actorRef));
             });
         }

@@ -2,6 +2,7 @@
 using System.Net;
 using Akka.Actor;
 using Akka.IO;
+using GameProtos;
 
 namespace GameServers
 {
@@ -9,11 +10,16 @@ namespace GameServers
     {
         static void Main(string[] args)
         {
+            var port = 9999;
             var actorSystem = ActorSystem.Create("GameServers");
-            var tcp = actorSystem.Tcp();
-            var ipEndPoint = new IPEndPoint(IPAddress.Any, 8123);
-            
-            
+
+            actorSystem.ActorOf(Props.Create(() => new GenLinkActor(new IPEndPoint(IPAddress.Any, port))), "Genlinks");
+            Console.WriteLine("Welcome to Chatter service!\r\nType 'exit' to exit the service.");
+            var input = string.Empty;
+            while (string.IsNullOrEmpty(input) || !input.Equals("exit", StringComparison.CurrentCultureIgnoreCase))
+            {
+                input = Console.ReadLine();
+            }
         }
     }
 }
