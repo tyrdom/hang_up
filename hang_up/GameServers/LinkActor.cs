@@ -2,20 +2,20 @@
 using System.Net;
 using System.Text;
 using Akka.Actor;
+using Akka.Event;
 using Akka.IO;
-using log4net;
+
 
 namespace GameServers
 {
     public class LinkActor : ReceiveActor
     {
         private readonly IActorRef _sender;
-        private readonly ILog _log;
+        private readonly ILoggingAdapter _log = Logging.GetLogger(Context);
 
         public LinkActor(EndPoint remote, IActorRef sender)
         {
             _sender = sender;
-            _log = LogManager.GetLogger(StartLog.Repository.Name, typeof(LinkActor));
 
             Receive<Tcp.Received>(received =>
             {
