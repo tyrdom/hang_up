@@ -72,140 +72,23 @@ namespace GameProtos
         public bool ShouldSerializeloginResponse() => __pbn__body.Is(7);
         public void ResetloginResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 7);
 
-        [global::ProtoBuf.ProtoMember(9)]
-        public CreateRoomRequest createRoomRequest
-        {
-            get { return __pbn__body.Is(9) ? ((CreateRoomRequest)__pbn__body.Object) : default; }
-            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(9, value); }
-        }
-        public bool ShouldSerializecreateRoomRequest() => __pbn__body.Is(9);
-        public void ResetcreateRoomRequest() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 9);
-
-        [global::ProtoBuf.ProtoMember(10)]
-        public CreateRoomResponse createRoomResponse
-        {
-            get { return __pbn__body.Is(10) ? ((CreateRoomResponse)__pbn__body.Object) : default; }
-            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(10, value); }
-        }
-        public bool ShouldSerializecreateRoomResponse() => __pbn__body.Is(10);
-        public void ResetcreateRoomResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 10);
-
-        [global::ProtoBuf.ProtoMember(11)]
-        public JoinRoomRequest joinRoomRequest
-        {
-            get { return __pbn__body.Is(11) ? ((JoinRoomRequest)__pbn__body.Object) : default; }
-            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(11, value); }
-        }
-        public bool ShouldSerializejoinRoomRequest() => __pbn__body.Is(11);
-        public void ResetjoinRoomRequest() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 11);
-
-        [global::ProtoBuf.ProtoMember(12)]
-        public JoinRoomResponse joinRoomResponse
-        {
-            get { return __pbn__body.Is(12) ? ((JoinRoomResponse)__pbn__body.Object) : default; }
-            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(12, value); }
-        }
-        public bool ShouldSerializejoinRoomResponse() => __pbn__body.Is(12);
-        public void ResetjoinRoomResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 12);
-
-        [global::ProtoBuf.ProtoMember(13)]
-        public QuitRoomRequest quitRoomRequest
-        {
-            get { return __pbn__body.Is(13) ? ((QuitRoomRequest)__pbn__body.Object) : default; }
-            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(13, value); }
-        }
-        public bool ShouldSerializequitRoomRequest() => __pbn__body.Is(13);
-        public void ResetquitRoomRequest() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 13);
-
-        [global::ProtoBuf.ProtoMember(14)]
-        public QuitRoomResponse quitRoomResponse
-        {
-            get { return __pbn__body.Is(14) ? ((QuitRoomResponse)__pbn__body.Object) : default; }
-            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(14, value); }
-        }
-        public bool ShouldSerializequitRoomResponse() => __pbn__body.Is(14);
-        public void ResetquitRoomResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 14);
-
-        [global::ProtoBuf.ProtoMember(15)]
+        [global::ProtoBuf.ProtoMember(8)]
         public CreateAccountRequest createAccountRequest
         {
-            get { return __pbn__body.Is(15) ? ((CreateAccountRequest)__pbn__body.Object) : default; }
-            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(15, value); }
+            get { return __pbn__body.Is(8) ? ((CreateAccountRequest)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(8, value); }
         }
-        public bool ShouldSerializecreateAccountRequest() => __pbn__body.Is(15);
-        public void ResetcreateAccountRequest() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 15);
+        public bool ShouldSerializecreateAccountRequest() => __pbn__body.Is(8);
+        public void ResetcreateAccountRequest() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 8);
 
-        [global::ProtoBuf.ProtoMember(16)]
+        [global::ProtoBuf.ProtoMember(9)]
         public CreateAccountResponse createAccountResponse
         {
-            get { return __pbn__body.Is(16) ? ((CreateAccountResponse)__pbn__body.Object) : default; }
-            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(16, value); }
+            get { return __pbn__body.Is(9) ? ((CreateAccountResponse)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(9, value); }
         }
-        public bool ShouldSerializecreateAccountResponse() => __pbn__body.Is(16);
-        public void ResetcreateAccountResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 16);
-
-        [global::ProtoBuf.ProtoMember(17)]
-        public TestRequest testRequest
-        {
-            get { return __pbn__body.Is(17) ? ((TestRequest)__pbn__body.Object) : default; }
-            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(17, value); }
-        }
-        public bool ShouldSerializetestRequest() => __pbn__body.Is(17);
-        public void ResettestRequest() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 17);
-
-        [global::ProtoBuf.ProtoMember(18)]
-        public TestResponse testResponse
-        {
-            get { return __pbn__body.Is(18) ? ((TestResponse)__pbn__body.Object) : default; }
-            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(18, value); }
-        }
-        public bool ShouldSerializetestResponse() => __pbn__body.Is(18);
-        public void ResettestResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 18);
-
-        [global::ProtoBuf.ProtoMember(19)]
-        public RoomPlayerStatusBroadcast roomPlayerStatusBroadcast
-        {
-            get { return __pbn__body.Is(19) ? ((RoomPlayerStatusBroadcast)__pbn__body.Object) : default; }
-            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(19, value); }
-        }
-        public bool ShouldSerializeroomPlayerStatusBroadcast() => __pbn__body.Is(19);
-        public void ResetroomPlayerStatusBroadcast() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 19);
-
-        [global::ProtoBuf.ProtoMember(20)]
-        public HallPlayersStatusBroadcast hallPlayersStatusBroadcast
-        {
-            get { return __pbn__body.Is(20) ? ((HallPlayersStatusBroadcast)__pbn__body.Object) : default; }
-            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(20, value); }
-        }
-        public bool ShouldSerializehallPlayersStatusBroadcast() => __pbn__body.Is(20);
-        public void ResethallPlayersStatusBroadcast() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 20);
-
-        [global::ProtoBuf.ProtoMember(21)]
-        public GetReadyRequest getReadyRequest
-        {
-            get { return __pbn__body.Is(21) ? ((GetReadyRequest)__pbn__body.Object) : default; }
-            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(21, value); }
-        }
-        public bool ShouldSerializegetReadyRequest() => __pbn__body.Is(21);
-        public void ResetgetReadyRequest() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 21);
-
-        [global::ProtoBuf.ProtoMember(22)]
-        public GetReadyResponse getReadyResponse
-        {
-            get { return __pbn__body.Is(22) ? ((GetReadyResponse)__pbn__body.Object) : default; }
-            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(22, value); }
-        }
-        public bool ShouldSerializegetReadyResponse() => __pbn__body.Is(22);
-        public void ResetgetReadyResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 22);
-
-        [global::ProtoBuf.ProtoMember(23)]
-        public PlaygroundBroadcast playGroundBroadcast
-        {
-            get { return __pbn__body.Is(23) ? ((PlaygroundBroadcast)__pbn__body.Object) : default; }
-            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(23, value); }
-        }
-        public bool ShouldSerializeplayGroundBroadcast() => __pbn__body.Is(23);
-        public void ResetplayGroundBroadcast() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 23);
+        public bool ShouldSerializecreateAccountResponse() => __pbn__body.Is(9);
+        public void ResetcreateAccountResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 9);
 
         [global::ProtoBuf.ProtoContract()]
         public enum Head
@@ -218,217 +101,15 @@ namespace GameProtos
             UndefinedResponse = 2,
             [global::ProtoBuf.ProtoEnum(Name = @"Error_Response")]
             ErrorResponse = 3,
-            [global::ProtoBuf.ProtoEnum(Name = @"Test_Request")]
-            TestRequest = 5,
-            [global::ProtoBuf.ProtoEnum(Name = @"Test_Response")]
-            TestResponse = 6,
             [global::ProtoBuf.ProtoEnum(Name = @"Login_Request")]
             LoginRequest = 100001,
             [global::ProtoBuf.ProtoEnum(Name = @"Login_Response")]
             LoginResponse = 100002,
-            [global::ProtoBuf.ProtoEnum(Name = @"CreateRoom_Request")]
-            CreateRoomRequest = 100003,
-            [global::ProtoBuf.ProtoEnum(Name = @"CreateRoom_Response")]
-            CreateRoomResponse = 100004,
-            [global::ProtoBuf.ProtoEnum(Name = @"JoinRoom_Request")]
-            JoinRoomRequest = 100005,
-            [global::ProtoBuf.ProtoEnum(Name = @"JoinRoom_Response")]
-            JoinRoomResponse = 100006,
-            [global::ProtoBuf.ProtoEnum(Name = @"QuitRoom_Request")]
-            QuitRoomRequest = 100007,
-            [global::ProtoBuf.ProtoEnum(Name = @"QuitRoom_Response")]
-            QuitRoomResponse = 100008,
             [global::ProtoBuf.ProtoEnum(Name = @"CreateAccount_Request")]
-            CreateAccountRequest = 100009,
+            CreateAccountRequest = 100003,
             [global::ProtoBuf.ProtoEnum(Name = @"CreateAccount_Response")]
-            CreateAccountResponse = 100010,
-            [global::ProtoBuf.ProtoEnum(Name = @"ChangeNickname_Request")]
-            ChangeNicknameRequest = 100011,
-            [global::ProtoBuf.ProtoEnum(Name = @"ChangeNickname_Response")]
-            ChangeNicknameResponse = 100012,
-            [global::ProtoBuf.ProtoEnum(Name = @"RoomPlayerStatus_Broadcast")]
-            RoomPlayerStatusBroadcast = 100013,
-            [global::ProtoBuf.ProtoEnum(Name = @"HallPlayerStatus_Broadcast")]
-            HallPlayerStatusBroadcast = 100014,
-            [global::ProtoBuf.ProtoEnum(Name = @"GetReady_Request")]
-            GetReadyRequest = 100015,
-            [global::ProtoBuf.ProtoEnum(Name = @"GetReady_Response")]
-            GetReadyResponse = 100016,
-            [global::ProtoBuf.ProtoEnum(Name = @"Playground_Broadcast")]
-            PlaygroundBroadcast = 100017,
+            CreateAccountResponse = 100014,
         }
-
-    }
-
-    [global::ProtoBuf.ProtoContract()]
-    public partial class PlaygroundBroadcast : global::ProtoBuf.IExtensible
-    {
-        private global::ProtoBuf.IExtension __pbn__extensionData;
-        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-        [global::ProtoBuf.ProtoMember(1, Name = @"playersInPlay")]
-        public global::System.Collections.Generic.List<OnePlayerInPlayground> playersInPlays { get; } = new global::System.Collections.Generic.List<OnePlayerInPlayground>();
-
-    }
-
-    [global::ProtoBuf.ProtoContract()]
-    public partial class OnePlayerInPlayground : global::ProtoBuf.IExtensible
-    {
-        private global::ProtoBuf.IExtension __pbn__extensionData;
-        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-        [global::ProtoBuf.ProtoMember(1)]
-        public int tempId { get; set; }
-
-        [global::ProtoBuf.ProtoMember(2)]
-        public int cardNum { get; set; }
-
-        [global::ProtoBuf.ProtoMember(3)]
-        public int lifePoint { get; set; }
-
-        [global::ProtoBuf.ProtoMember(4, Name = @"characters")]
-        public global::System.Collections.Generic.List<Character> Characters { get; } = new global::System.Collections.Generic.List<Character>();
-
-    }
-
-    [global::ProtoBuf.ProtoContract()]
-    public partial class Character : global::ProtoBuf.IExtensible
-    {
-        private global::ProtoBuf.IExtension __pbn__extensionData;
-        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-        [global::ProtoBuf.ProtoMember(1)]
-        public int characterId { get; set; }
-
-        [global::ProtoBuf.ProtoMember(2, Name = @"level")]
-        public int Level { get; set; }
-
-        [global::ProtoBuf.ProtoMember(3, Name = @"exp")]
-        public int Exp { get; set; }
-
-    }
-
-    [global::ProtoBuf.ProtoContract()]
-    public partial class HallPlayersStatusBroadcast : global::ProtoBuf.IExtensible
-    {
-        private global::ProtoBuf.IExtension __pbn__extensionData;
-        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-        [global::ProtoBuf.ProtoMember(1, Name = @"onePlayer")]
-        public global::System.Collections.Generic.List<OnePlayerInHall> onePlayers { get; } = new global::System.Collections.Generic.List<OnePlayerInHall>();
-
-        [global::ProtoBuf.ProtoContract()]
-        public partial class OnePlayerInHall : global::ProtoBuf.IExtensible
-        {
-            private global::ProtoBuf.IExtension __pbn__extensionData;
-            global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-                => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-            [global::ProtoBuf.ProtoMember(1)]
-            [global::System.ComponentModel.DefaultValue("")]
-            public string nickName { get; set; } = "";
-
-            [global::ProtoBuf.ProtoMember(2)]
-            public Status status { get; set; }
-
-            [global::ProtoBuf.ProtoContract()]
-            public enum Status
-            {
-                [global::ProtoBuf.ProtoEnum(Name = @"STANDBY")]
-                Standby = 0,
-                [global::ProtoBuf.ProtoEnum(Name = @"DO_NOT_CALL")]
-                DoNotCall = 1,
-            }
-
-        }
-
-    }
-
-    [global::ProtoBuf.ProtoContract()]
-    public partial class RoomPlayerStatusBroadcast : global::ProtoBuf.IExtensible
-    {
-        private global::ProtoBuf.IExtension __pbn__extensionData;
-        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-        [global::ProtoBuf.ProtoMember(1, Name = @"playerStatusList")]
-        public global::System.Collections.Generic.List<OnePlayerInRoom> playerStatusLists { get; } = new global::System.Collections.Generic.List<OnePlayerInRoom>();
-
-        [global::ProtoBuf.ProtoMember(3)]
-        public int yourTempId { get; set; }
-
-        [global::ProtoBuf.ProtoContract()]
-        public partial class OnePlayerInRoom : global::ProtoBuf.IExtensible
-        {
-            private global::ProtoBuf.IExtension __pbn__extensionData;
-            global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-                => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-            [global::ProtoBuf.ProtoMember(1)]
-            public int tempId { get; set; }
-
-            [global::ProtoBuf.ProtoMember(2)]
-            [global::System.ComponentModel.DefaultValue("")]
-            public string nickName { get; set; } = "";
-
-            [global::ProtoBuf.ProtoMember(3, Name = @"status")]
-            public StatusInRoom Status { get; set; }
-
-        }
-
-    }
-
-    [global::ProtoBuf.ProtoContract()]
-    public partial class GetReadyResponse : global::ProtoBuf.IExtensible
-    {
-        private global::ProtoBuf.IExtension __pbn__extensionData;
-        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-        [global::ProtoBuf.ProtoMember(1)]
-        public StatusInRoom yourStatus { get; set; }
-
-    }
-
-    [global::ProtoBuf.ProtoContract()]
-    public partial class GetReadyRequest : global::ProtoBuf.IExtensible
-    {
-        private global::ProtoBuf.IExtension __pbn__extensionData;
-        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-        [global::ProtoBuf.ProtoMember(1)]
-        public bool isReady { get; set; }
-
-    }
-
-    [global::ProtoBuf.ProtoContract()]
-    public partial class TestRequest : global::ProtoBuf.IExtensible
-    {
-        private global::ProtoBuf.IExtension __pbn__extensionData;
-        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-        [global::ProtoBuf.ProtoMember(1)]
-        [global::System.ComponentModel.DefaultValue("")]
-        public string testText { get; set; } = "";
-
-    }
-
-    [global::ProtoBuf.ProtoContract()]
-    public partial class TestResponse : global::ProtoBuf.IExtensible
-    {
-        private global::ProtoBuf.IExtension __pbn__extensionData;
-        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-        [global::ProtoBuf.ProtoMember(1)]
-        [global::System.ComponentModel.DefaultValue("")]
-        public string testText { get; set; } = "";
 
     }
 
@@ -446,13 +127,6 @@ namespace GameProtos
         [global::ProtoBuf.ProtoMember(2, Name = @"password")]
         [global::System.ComponentModel.DefaultValue("")]
         public string Password { get; set; } = "";
-
-        [global::ProtoBuf.ProtoMember(3)]
-        [global::System.ComponentModel.DefaultValue("")]
-        public string weChat { get; set; } = "";
-
-        [global::ProtoBuf.ProtoMember(4, Name = @"phone")]
-        public int Phone { get; set; }
 
     }
 
@@ -553,72 +227,6 @@ namespace GameProtos
     }
 
     [global::ProtoBuf.ProtoContract()]
-    public partial class CreateRoomRequest : global::ProtoBuf.IExtensible
-    {
-        private global::ProtoBuf.IExtension __pbn__extensionData;
-        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-    }
-
-    [global::ProtoBuf.ProtoContract()]
-    public partial class CreateRoomResponse : global::ProtoBuf.IExtensible
-    {
-        private global::ProtoBuf.IExtension __pbn__extensionData;
-        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-        [global::ProtoBuf.ProtoMember(1)]
-        public int roomId { get; set; }
-
-    }
-
-    [global::ProtoBuf.ProtoContract()]
-    public partial class JoinRoomRequest : global::ProtoBuf.IExtensible
-    {
-        private global::ProtoBuf.IExtension __pbn__extensionData;
-        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-        [global::ProtoBuf.ProtoMember(1)]
-        public bool certainRoom { get; set; }
-
-        [global::ProtoBuf.ProtoMember(2)]
-        public int roomId { get; set; }
-
-    }
-
-    [global::ProtoBuf.ProtoContract()]
-    public partial class JoinRoomResponse : global::ProtoBuf.IExtensible
-    {
-        private global::ProtoBuf.IExtension __pbn__extensionData;
-        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-        [global::ProtoBuf.ProtoMember(1)]
-        public int roomId { get; set; }
-
-    }
-
-    [global::ProtoBuf.ProtoContract()]
-    public partial class QuitRoomRequest : global::ProtoBuf.IExtensible
-    {
-        private global::ProtoBuf.IExtension __pbn__extensionData;
-        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-    }
-
-    [global::ProtoBuf.ProtoContract()]
-    public partial class QuitRoomResponse : global::ProtoBuf.IExtensible
-    {
-        private global::ProtoBuf.IExtension __pbn__extensionData;
-        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-    }
-
-    [global::ProtoBuf.ProtoContract()]
     public partial class ErrorResponse : global::ProtoBuf.IExtensible
     {
         private global::ProtoBuf.IExtension __pbn__extensionData;
@@ -637,27 +245,10 @@ namespace GameProtos
         {
             [global::ProtoBuf.ProtoEnum(Name = @"UNKNOWN")]
             Unknown = 0,
-            [global::ProtoBuf.ProtoEnum(Name = @"NO_ROOM_TO_JOIN")]
-            NoRoomToJoin = 1,
             [global::ProtoBuf.ProtoEnum(Name = @"OTHER_LOGIN")]
-            OtherLogin = 2,
+            OtherLogin = 1,
         }
 
-    }
-
-    [global::ProtoBuf.ProtoContract()]
-    public enum StatusInRoom
-    {
-        [global::ProtoBuf.ProtoEnum(Name = @"STANDBY")]
-        Standby = 0,
-        [global::ProtoBuf.ProtoEnum(Name = @"OFFLINE")]
-        Offline = 1,
-        [global::ProtoBuf.ProtoEnum(Name = @"GAMING")]
-        Gaming = 2,
-        [global::ProtoBuf.ProtoEnum(Name = @"READY")]
-        Ready = 3,
-        [global::ProtoBuf.ProtoEnum(Name = @"ERROR")]
-        Error = 4,
     }
 
 }

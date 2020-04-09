@@ -13,7 +13,12 @@ namespace GameServers
             const int port = 9999;
             var actorSystem = ActorSystem.Create("GameServers");
 
-            actorSystem.ActorOf(Props.Create(() => new GenLinkActor(new IPEndPoint(IPAddress.Loopback, port))), "GenLinks");
+            actorSystem.ActorOf(Props.Create(() => new GenLinkActor(new IPEndPoint(IPAddress.Loopback, port))),
+                "GenLinks");
+            var mongodbAccountBaseActor = actorSystem.ActorOf(Props.Create(() => new MongodbBaseActor()));
+            var hallActor = actorSystem.ActorOf(Props.Create(() => new HallActor()));
+            FamousActors.MongodbAccountBaseActor = mongodbAccountBaseActor;
+            FamousActors.HallActor = hallActor;
             Console.WriteLine("Welcome to service!\r\nType 'exit' to exit the service.");
             var input = string.Empty;
             while (string.IsNullOrEmpty(input) || !input.Equals("exit", StringComparison.CurrentCultureIgnoreCase))
