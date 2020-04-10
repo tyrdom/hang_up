@@ -2,42 +2,131 @@ syntax = "proto3";
 option java_package = "msgScheme";
 option csharp_namespace = "GameProtos";
 package msgScheme;
+
 message AMsg {
+    enum Type {
+        RequestMsg = 0;
+        ResponseMsg = 1;
+    }
+    Type type = 1;
+    oneof msg {
+        RequestMsg requestMsg = 2;
+        ResponseMsg responseMsg = 3;
+
+    }
+
+}
+message RequestMsg {
     enum Head {
-        Undefined_Msg = 0;
-        Undefined_Request = 1;
-        Undefined_Response = 2;
 
-        Error_Response = 3;
-        
-        Login_Request = 100001;
-        Login_Response = 100002;
-        
-        CreateAccount_Request = 100003;
-        CreateAccount_Response = 100014;
 
+        LoginRequest = 0;
+
+
+        FixAccountPasswordRequest = 1;
+
+        LogoutRequest = 2;
+
+        BankBaseRequest = 3;
+
+        BankItemAllRequest = 4;
+        BankItemCustomRequest = 5;
 
     }
     Head head = 1;
 
     oneof body {
-        ErrorResponse errorResponse = 2;
-        UndefinedMsg undefinedMsg = 3;
-        UndefinedRequest undefinedRequest = 4;
-        UndefinedResponse undefinedResponse = 5;
 
 
-        LoginRequest loginRequest = 6;
-        LoginResponse loginResponse = 7;
+        LoginRequest loginRequest = 2;
 
 
-        CreateAccountRequest createAccountRequest = 8;
-        CreateAccountResponse createAccountResponse = 9;
+        FixAccountPasswordRequest fixAccountPasswordRequest = 3;
 
+        LogoutRequest logoutRequest = 4;
+
+        BankBaseRequest bankBaseRequest = 5;
+
+        BankAllItemRequest bankItemRequest = 6;
+        BankCustomItemRequest bankCustomItemRequest = 7;
 
     }
 
 }
+message ResponseMsg {
+    enum Head {
+        ErrorResponse = 0;
+
+
+        LoginResponse = 100002;
+
+
+        FixAccountPasswordResponse = 100004;
+
+
+        LogoutResponse = 100006;
+
+
+        BankBaseResponse = 100008;
+
+
+        BankItemResponse = 100011;
+    }
+    Head head = 1;
+
+    oneof body {
+        ErrorResponse errorResponse = 2;
+
+
+        LoginResponse loginResponse = 7;
+
+
+        FixAccountPasswordResponse fixAccountPasswordResponse = 9;
+
+        LogoutResponse logoutResponse = 11;
+
+        BankBaseResponse bankBaseResponse = 13;
+
+        BankItemResponse bankItemResponse = 16;
+
+    }
+
+}
+message BankCustomItemRequest {
+    repeated int32 itemId = 1;
+}
+
+message BankAllItemRequest {
+}
+
+message BankBaseRequest {
+
+}
+
+message BankBaseResponse {
+    int64 Gold = 1;
+    int64 Soul = 2;
+    int64 Crystal = 3;
+    int64 RunePoint = 4;
+}
+
+message BankItemResponse {
+    repeated Item Items = 1;
+
+    message Item {
+        int32 itemId = 1;
+        int32 num = 2;
+    }
+}
+
+
+message LogoutResponse {
+
+}
+message LogoutRequest {
+
+}
+
 
 service Login {
     rpc login (LoginRequest) returns (LoginResponse) {
@@ -45,32 +134,25 @@ service Login {
 }
 
 
-message CreateAccountRequest {
+message FixAccountPasswordRequest {
     string accountId = 1;
-    string password = 2;
+    string oldPassword = 2;
+    string newPassword = 3;
 }
-message CreateAccountResponse {
+message FixAccountPasswordResponse {
 
     enum Reason {
         OK = 0;
-        ALREADY_EXIST = 1;
+        NO_GOOD_ACCOUNT_ID = 1;
         NO_GOOD_PASSWORD = 2;
-        OTHER = 4;
+
+        ACCOUNT_NOT_EXIST = 3;
+        WRONG_PASSWORD = 4;
+        OTHER = 5;
     }
     Reason reason = 1;
 }
 
-message UndefinedMsg {
-
-}
-
-message UndefinedRequest {
-
-}
-
-message UndefinedResponse {
-
-}
 
 message LoginRequest {
     string accountId = 1;
@@ -82,8 +164,11 @@ message LoginResponse {
 
     enum Reason {
         OK = 0;
-        WRONG_PASSWORD = 1;
-        OTHER = 2;
+        NO_GOOD_ACCOUNT = 1;
+        NO_GOOD_PASSWORD = 2;
+        WRONG_PASSWORD = 3;
+        NOT_EXIST_SO_CREATE = 4;
+        OTHER = 5;
     }
     Reason reason = 1;
     string nickname = 2;
@@ -95,7 +180,7 @@ message ErrorResponse {
     string reason = 2;
     enum ErrorType {
         UNKNOWN = 0;
-        
         OTHER_LOGIN = 1;
+
     }
 }

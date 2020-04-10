@@ -4,14 +4,28 @@ using GameProtos;
 
 namespace GameServers
 {
-    public class LoginOk
+    public class OutHall
     {
-        public string AccountId;
+        public readonly string AccountId;
 
-        public LoginOk(string accountId)
+        public OutHall(string accountId)
         {
             AccountId = accountId;
         }
+    }
+
+    public class LoginHall
+    {
+        public readonly string AccountId;
+
+        public LoginHall(string accountId)
+        {
+            AccountId = accountId;
+        }
+    }
+
+    public class InHallOk
+    {
     }
 
     public class HallActor : ReceiveActor
@@ -22,7 +36,7 @@ namespace GameServers
         {
             OnlineAccountLink = new Dictionary<string, IActorRef>();
 
-            Receive<LoginOk>(ok =>
+            Receive<LoginHall>(ok =>
             {
                 var objAccountId = ok.AccountId;
                 if (OnlineAccountLink.TryGetValue(objAccountId, out var actorRef))
@@ -32,7 +46,11 @@ namespace GameServers
                 }
 
                 OnlineAccountLink[objAccountId] = Sender;
+
+                Sender.Tell(new InHallOk());
             });
+
+            Receive<OutHall>(outHall => { OnlineAccountLink.Remove(outHall.AccountId); });
         }
     }
 }
