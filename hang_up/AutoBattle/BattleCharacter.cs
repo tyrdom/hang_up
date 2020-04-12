@@ -1,14 +1,31 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AutoBattle
 {
     public class BattleCharacter
     {
-        private CharacterBattleBaseAttribute _characterBattleAttribute;
-        private ActiveSkill ActiveSkill;
+        public CharacterBattleBaseAttribute _characterBattleAttribute;
+        public ActiveSkill ActiveSkill;
+        public List<BattleBuff> BattleBuffs;
+
+        public int GetMinTime()
+        {
+            return BattleBuffs.Select(buff => buff.RestTimeMs).Min();
+        }
+
+        public void TakeTime(int ms)
+        {
+            ActiveSkill.TakeTime(ms);
+            if (ActiveSkill.RestTimeMs==0)
+            {
+                
+            }
+        }
     }
 
-    internal class CharacterBattleBaseAttribute
+    public class CharacterBattleBaseAttribute
     {
         private int MaxHp;
         private int NowHp;
