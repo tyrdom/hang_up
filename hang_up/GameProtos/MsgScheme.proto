@@ -103,11 +103,14 @@ message ResponseMsg {
 message CharactersGetResponse{
   repeated Character characters = 1;
   message Character{
-    uint32 Level = 1;
-    uint32 Star = 2;
-    bool InBattle = 3;
-    uint32 RuneType = 4;
-    uint32 RuneLevel = 5;
+    uint32 Id = 1;
+    CharacterStatus characterStatus = 2;
+    message CharacterStatus{
+      uint32 Level = 1;
+      uint32 Star = 2;
+      bool InBattle = 3;
+      uint32 RuneType = 4;
+      uint32 RuneLevel = 5;}
   }
 }
 message BankCustomItemRequest {
@@ -169,6 +172,7 @@ message FixAccountPasswordResponse {
     OTHER = 5;
   }
   Reason reason = 1;
+
 }
 
 
@@ -190,6 +194,9 @@ message LoginResponse {
   }
   Reason reason = 1;
   string nickname = 2;
+
+  CharactersGetResponse charactersGetResponse = 3;
+  BankBaseResponse bankBaseResponse = 4;
 }
 
 

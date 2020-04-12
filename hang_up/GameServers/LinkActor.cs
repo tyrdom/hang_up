@@ -28,6 +28,12 @@ namespace GameServers
         private PlayerBank _myWallet;
         private PlayerCharacters _myCharacters;
 
+
+        public static Tcp.Write GenTcpWrite(AMsg aMsg)
+        {
+            return Tcp.Write.Create(ByteString.FromBytes(ProtoTool.Serialize(aMsg)));
+        }
+
         public LinkActor(EndPoint remote, IActorRef tcpActorRef)
         {
             _tcpActorRef = tcpActorRef;
@@ -71,14 +77,25 @@ namespace GameServers
                             {
                                 var loginResponse = new LoginResponse()
                                     {reason = LoginResponse.Reason.NoGoodAccount, Nickname = ""};
-
-                                Sender.Tell(ProtoTool.Serialize(loginResponse));
+                                var msg = new AMsg()
+                                {
+                                    type = AMsg.Type.ResponseMsg,
+                                    responseMsg = new ResponseMsg()
+                                        {head = ResponseMsg.Head.LoginResponse, loginResponse = loginResponse}
+                                };
+                                Sender.Tell(GenTcpWrite(msg));
                             }
                             else if (!Tools.CheckPasswordOk(password))
                             {
                                 var loginResponse = new LoginResponse()
                                     {reason = LoginResponse.Reason.NoGoodPassword, Nickname = ""};
-                                Sender.Tell(ProtoTool.Serialize(loginResponse));
+                                var msg = new AMsg()
+                                {
+                                    type = AMsg.Type.ResponseMsg,
+                                    responseMsg = new ResponseMsg()
+                                        {head = ResponseMsg.Head.LoginResponse, loginResponse = loginResponse}
+                                };
+                                Sender.Tell(GenTcpWrite(msg));
                             }
                             else
                             {
@@ -86,21 +103,41 @@ namespace GameServers
                                 FamousActors.MongodbAccountActor.Tell(aMsgLoginRequest);
                             }
 
+                            Become(LoginDoing);
                             break;
                         case RequestMsg.Head.FixAccountPasswordRequest:
                             var aMsgFixAccountPasswordRequest = aMsgRequestMsg.fixAccountPasswordRequest;
 
                             if (!Tools.CheckAccountIdOk(aMsgFixAccountPasswordRequest.accountId))
                             {
-                                var loginResponse = new FixAccountPasswordResponse {reason = FixAccountPasswordResponse.Reason.NoGoodAccountId};
-
-                                Sender.Tell(ProtoTool.Serialize(loginResponse));
+                                var loginResponse = new FixAccountPasswordResponse
+                                    {reason = FixAccountPasswordResponse.Reason.NoGoodAccountId};
+                                var msg = new AMsg()
+                                {
+                                    type = AMsg.Type.ResponseMsg,
+                                    responseMsg = new ResponseMsg()
+                                    {
+                                        head = ResponseMsg.Head.FixAccountPasswordResponse,
+                                        fixAccountPasswordResponse = loginResponse
+                                    }
+                                };
+                                Sender.Tell(GenTcpWrite(msg));
                             }
                             else if (!Tools.CheckPasswordOk(aMsgFixAccountPasswordRequest.newPassword) ||
                                      !Tools.CheckPasswordOk(aMsgFixAccountPasswordRequest.oldPassword))
                             {
-                                var loginResponse = new FixAccountPasswordResponse {reason = FixAccountPasswordResponse.Reason.NoGoodPassword};
-                                Sender.Tell(ProtoTool.Serialize(loginResponse));
+                                var loginResponse = new FixAccountPasswordResponse
+                                    {reason = FixAccountPasswordResponse.Reason.NoGoodPassword};
+                                var msg = new AMsg()
+                                {
+                                    type = AMsg.Type.ResponseMsg,
+                                    responseMsg = new ResponseMsg()
+                                    {
+                                        head = ResponseMsg.Head.FixAccountPasswordResponse,
+                                        fixAccountPasswordResponse = loginResponse
+                                    }
+                                };
+                                Sender.Tell(GenTcpWrite(msg));
                             }
                             else
                             {
@@ -116,30 +153,10 @@ namespace GameServers
                 }
             });
 
-            Receive<LoginResponse>(response =>
-            {
-                var b = response.reason == LoginResponse.Reason.Ok;
-                var b1 = response.reason == LoginResponse.Reason.NotExistSoCreate;
-                if (b || b1)
-                {
-                    _temp = response;
-                    FamousActors.HallActor.Tell(new LoginHall(_accountId));
-                }
-                else
-                {
-                    _tcpActorRef.Tell(ProtoTool.Serialize(new AMsg
-                    {
-                        type = AMsg.Type.ResponseMsg, responseMsg = new ResponseMsg
-                        {
-                            head = ResponseMsg.Head.LoginResponse, loginResponse = response
-                        }
-                    }));
-                }
-            });
 
             Receive<FixAccountPasswordResponse>(response =>
             {
-                var serialize = ProtoTool.Serialize(new AMsg()
+                var genTcpWrite = GenTcpWrite(new AMsg()
                     {
                         type = AMsg.Type.ResponseMsg, responseMsg =
                             new ResponseMsg
@@ -149,18 +166,16 @@ namespace GameServers
                             }
                     }
                 );
-                _tcpActorRef.Tell(serialize);
+                _tcpActorRef.Tell(genTcpWrite);
             });
 
-            Receive<InHallOk>(ok =>
-            {
-                _gameState = GameState.Online;
+            NormalAccident();
+        }
 
-                Become(OnLine);
-            });
-
+        void NormalAccident()
+        {
             Receive<ErrorResponse>(response =>
-                _tcpActorRef.Tell(ProtoTool.Serialize(
+                _tcpActorRef.Tell(GenTcpWrite(
                     new AMsg
                     {
                         type = AMsg.Type.ResponseMsg,
@@ -183,51 +198,78 @@ namespace GameServers
             });
         }
 
+        private void LoginDoing()
+        {
+            Receive<InHallOk>(ok =>
+            {
+                _gameState = GameState.Online;
+                Become(OnLine);
+            });
+            Receive<LoginResponse>(response =>
+            {
+                var b = response.reason == LoginResponse.Reason.Ok;
+                var b1 = response.reason == LoginResponse.Reason.NotExistSoCreate;
+                if (b || b1)
+                {
+                    _temp = response;
+                    FamousActors.HallActor.Tell(new LoginHall(_accountId));
+                }
+                else
+                {
+                    _tcpActorRef.Tell(GenTcpWrite(new AMsg
+                    {
+                        type = AMsg.Type.ResponseMsg, responseMsg = new ResponseMsg
+                        {
+                            head = ResponseMsg.Head.LoginResponse, loginResponse = response
+                        }
+                    }));
+                }
+            });
+            NormalAccident();
+        }
+
         private void OnLine()
         {
             FamousActors.MongodbBankActor.Tell(new GetBank(_accountId));
             FamousActors.MongodbCharacterActor.Tell(new GetCharacters(_accountId));
+
             // ICancelable scheduleTellRepeatedlyCancelable = Context.System.Scheduler.ScheduleTellRepeatedlyCancelable(
             //     TimeSpan.FromMinutes(10),
             //     TimeSpan.FromMinutes(10),
             //     Self, SavePlayerDB.Instance
             //     , ActorRefs.Nobody);
+            void ReallyLoginOk()
+            {
+                _temp.bankBaseResponse = Tools.GenBankBaseResponseByPlayBank(_myWallet);
+                _temp.charactersGetResponse = Tools.GenCharactersGetResponseByPlayerCharacters(_myCharacters);
+                var aMsg = new AMsg
+                {
+                    type = AMsg.Type.ResponseMsg,
+                    responseMsg = {head = ResponseMsg.Head.LoginResponse, loginResponse = _temp}
+                };
+                _tcpActorRef.Tell(GenTcpWrite(aMsg));
+            }
 
             Receive<PlayerBank>(bank =>
             {
                 _myWallet = bank;
-                if (_myCharacters != null)
-                {
-                    var aMsg = new AMsg
-                    {
-                        type = AMsg.Type.ResponseMsg,
-                        responseMsg = {head = ResponseMsg.Head.LoginResponse, loginResponse = _temp}
-                    };
-
-                    _tcpActorRef.Tell(ProtoTool.Serialize(aMsg));
-                }
+                if (_myCharacters == null) return;
+                ReallyLoginOk();
             });
 
             Receive<PlayerCharacters>(characters =>
                 {
                     _myCharacters = characters;
-                    if (_myWallet != null)
-                    {
-                        var aMsg = new AMsg
-                        {
-                            type = AMsg.Type.ResponseMsg,
-                            responseMsg = {head = ResponseMsg.Head.LoginResponse, loginResponse = _temp}
-                        };
-
-                        _tcpActorRef.Tell(ProtoTool.Serialize(aMsg));
-                    }
+                    if (_myWallet == null) return;
+                    ReallyLoginOk();
                 }
             );
 
             // Receive<SavePlayerDB>(_ => { });
 
+
             Receive<ErrorResponse>(response =>
-                _tcpActorRef.Tell(ProtoTool.Serialize(
+                _tcpActorRef.Tell(GenTcpWrite(
                     new AMsg
                     {
                         type = AMsg.Type.ResponseMsg,
@@ -235,7 +277,6 @@ namespace GameServers
                     }
                 ))
             );
-
             Receive<Tcp.ConnectionClosed>(closed =>
             {
                 OffLineSave(OutReason.Drop);
@@ -252,7 +293,7 @@ namespace GameServers
 
             Receive<LogoutResponse>(response =>
             {
-                _tcpActorRef.Tell(ProtoTool.Serialize(new AMsg
+                _tcpActorRef.Tell(GenTcpWrite(new AMsg
                 {
                     type = AMsg.Type.ResponseMsg,
                     responseMsg = {head = ResponseMsg.Head.LogoutResponse, logoutResponse = response}
@@ -271,7 +312,7 @@ namespace GameServers
                         case RequestMsg.Head.BankBaseRequest:
 
                             var genBankBaseResponseByPlayBank = Tools.GenBankBaseResponseByPlayBank(_myWallet);
-                            Sender.Tell(ProtoTool.Serialize(new AMsg()
+                            Sender.Tell(GenTcpWrite(new AMsg()
                             {
                                 type = AMsg.Type.ResponseMsg,
                                 responseMsg = new ResponseMsg()
@@ -285,7 +326,7 @@ namespace GameServers
                         case RequestMsg.Head.BankItemAllRequest:
 
                             var genBankItemAllResponseByPlayBank = Tools.GenBankItemResponseByPlayBank(_myWallet);
-                            Sender.Tell(ProtoTool.Serialize(new AMsg()
+                            Sender.Tell(GenTcpWrite(new AMsg()
                             {
                                 type = AMsg.Type.ResponseMsg,
                                 responseMsg = new ResponseMsg()
@@ -300,7 +341,7 @@ namespace GameServers
                             var genBankItemResponseByPlayBank =
                                 Tools.GenBankItemResponseByPlayBank(_myWallet,
                                     aMsgRequestMsg.bankCustomItemRequest.itemIds);
-                            Sender.Tell(ProtoTool.Serialize(new AMsg()
+                            Sender.Tell(GenTcpWrite(new AMsg()
                             {
                                 type = AMsg.Type.ResponseMsg,
                                 responseMsg = new ResponseMsg()

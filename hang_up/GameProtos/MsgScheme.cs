@@ -111,6 +111,15 @@ namespace GameProtos
         public bool ShouldSerializebankCustomItemRequest() => __pbn__body.Is(7);
         public void ResetbankCustomItemRequest() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 7);
 
+        [global::ProtoBuf.ProtoMember(8)]
+        public CharactersGetRequest charactersGetRequest
+        {
+            get { return __pbn__body.Is(8) ? ((CharactersGetRequest)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(8, value); }
+        }
+        public bool ShouldSerializecharactersGetRequest() => __pbn__body.Is(8);
+        public void ResetcharactersGetRequest() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 8);
+
         [global::ProtoBuf.ProtoContract()]
         public enum Head
         {
@@ -120,7 +129,17 @@ namespace GameProtos
             BankBaseRequest = 3,
             BankItemAllRequest = 4,
             BankItemCustomRequest = 5,
+            CharactersGetRequest = 6,
         }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class CharactersGetRequest : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
     }
 
@@ -145,60 +164,121 @@ namespace GameProtos
 
         private global::ProtoBuf.DiscriminatedUnionObject __pbn__body;
 
-        [global::ProtoBuf.ProtoMember(7)]
+        [global::ProtoBuf.ProtoMember(3)]
         public LoginResponse loginResponse
         {
-            get { return __pbn__body.Is(7) ? ((LoginResponse)__pbn__body.Object) : default; }
-            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(7, value); }
+            get { return __pbn__body.Is(3) ? ((LoginResponse)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(3, value); }
         }
-        public bool ShouldSerializeloginResponse() => __pbn__body.Is(7);
-        public void ResetloginResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 7);
+        public bool ShouldSerializeloginResponse() => __pbn__body.Is(3);
+        public void ResetloginResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 3);
 
-        [global::ProtoBuf.ProtoMember(9)]
+        [global::ProtoBuf.ProtoMember(4)]
         public FixAccountPasswordResponse fixAccountPasswordResponse
         {
-            get { return __pbn__body.Is(9) ? ((FixAccountPasswordResponse)__pbn__body.Object) : default; }
-            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(9, value); }
+            get { return __pbn__body.Is(4) ? ((FixAccountPasswordResponse)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(4, value); }
         }
-        public bool ShouldSerializefixAccountPasswordResponse() => __pbn__body.Is(9);
-        public void ResetfixAccountPasswordResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 9);
+        public bool ShouldSerializefixAccountPasswordResponse() => __pbn__body.Is(4);
+        public void ResetfixAccountPasswordResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 4);
 
-        [global::ProtoBuf.ProtoMember(11)]
+        [global::ProtoBuf.ProtoMember(5)]
         public LogoutResponse logoutResponse
         {
-            get { return __pbn__body.Is(11) ? ((LogoutResponse)__pbn__body.Object) : default; }
-            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(11, value); }
+            get { return __pbn__body.Is(5) ? ((LogoutResponse)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(5, value); }
         }
-        public bool ShouldSerializelogoutResponse() => __pbn__body.Is(11);
-        public void ResetlogoutResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 11);
+        public bool ShouldSerializelogoutResponse() => __pbn__body.Is(5);
+        public void ResetlogoutResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 5);
 
-        [global::ProtoBuf.ProtoMember(13)]
+        [global::ProtoBuf.ProtoMember(6)]
         public BankBaseResponse bankBaseResponse
         {
-            get { return __pbn__body.Is(13) ? ((BankBaseResponse)__pbn__body.Object) : default; }
-            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(13, value); }
+            get { return __pbn__body.Is(6) ? ((BankBaseResponse)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(6, value); }
         }
-        public bool ShouldSerializebankBaseResponse() => __pbn__body.Is(13);
-        public void ResetbankBaseResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 13);
+        public bool ShouldSerializebankBaseResponse() => __pbn__body.Is(6);
+        public void ResetbankBaseResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 6);
 
-        [global::ProtoBuf.ProtoMember(16)]
+        [global::ProtoBuf.ProtoMember(7)]
         public BankItemResponse bankItemResponse
         {
-            get { return __pbn__body.Is(16) ? ((BankItemResponse)__pbn__body.Object) : default; }
-            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(16, value); }
+            get { return __pbn__body.Is(7) ? ((BankItemResponse)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(7, value); }
         }
-        public bool ShouldSerializebankItemResponse() => __pbn__body.Is(16);
-        public void ResetbankItemResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 16);
+        public bool ShouldSerializebankItemResponse() => __pbn__body.Is(7);
+        public void ResetbankItemResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 7);
+
+        [global::ProtoBuf.ProtoMember(8)]
+        public CharactersGetResponse charactersGetResponse
+        {
+            get { return __pbn__body.Is(8) ? ((CharactersGetResponse)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(8, value); }
+        }
+        public bool ShouldSerializecharactersGetResponse() => __pbn__body.Is(8);
+        public void ResetcharactersGetResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 8);
 
         [global::ProtoBuf.ProtoContract()]
         public enum Head
         {
             ErrorResponse = 0,
-            LoginResponse = 100002,
-            FixAccountPasswordResponse = 100004,
-            LogoutResponse = 100006,
-            BankBaseResponse = 100008,
-            BankItemResponse = 100011,
+            LoginResponse = 1,
+            FixAccountPasswordResponse = 2,
+            LogoutResponse = 3,
+            BankBaseResponse = 4,
+            BankItemResponse = 5,
+            CharactersGetResponse = 6,
+        }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class CharactersGetResponse : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1, Name = @"characters")]
+        public global::System.Collections.Generic.List<Character> Characters { get; set; } = new global::System.Collections.Generic.List<Character>();
+
+        [global::ProtoBuf.ProtoContract()]
+        public partial class Character : global::ProtoBuf.IExtensible
+        {
+            private global::ProtoBuf.IExtension __pbn__extensionData;
+            global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+                => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+            [global::ProtoBuf.ProtoMember(1)]
+            public uint Id { get; set; }
+
+            [global::ProtoBuf.ProtoMember(2)]
+            public CharacterStatus characterStatus { get; set; }
+
+            [global::ProtoBuf.ProtoContract()]
+            public partial class CharacterStatus : global::ProtoBuf.IExtensible
+            {
+                private global::ProtoBuf.IExtension __pbn__extensionData;
+                global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+                    => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+                [global::ProtoBuf.ProtoMember(1)]
+                public uint Level { get; set; }
+
+                [global::ProtoBuf.ProtoMember(2)]
+                public uint Star { get; set; }
+
+                [global::ProtoBuf.ProtoMember(3)]
+                public bool InBattle { get; set; }
+
+                [global::ProtoBuf.ProtoMember(4)]
+                public uint RuneType { get; set; }
+
+                [global::ProtoBuf.ProtoMember(5)]
+                public uint RuneLevel { get; set; }
+
+            }
+
         }
 
     }
@@ -379,6 +459,12 @@ namespace GameProtos
         [global::ProtoBuf.ProtoMember(2, Name = @"nickname")]
         [global::System.ComponentModel.DefaultValue("")]
         public string Nickname { get; set; } = "";
+
+        [global::ProtoBuf.ProtoMember(3)]
+        public CharactersGetResponse charactersGetResponse { get; set; }
+
+        [global::ProtoBuf.ProtoMember(4)]
+        public BankBaseResponse bankBaseResponse { get; set; }
 
         [global::ProtoBuf.ProtoContract()]
         public enum Reason

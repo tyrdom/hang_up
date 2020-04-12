@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameProtos", "GameProtos\Ga
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{3EA2687A-F11D-410E-B372-9D4C9200609D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoBattle", "AutoBattle\AutoBattle.csproj", "{96DC580B-8527-4C50-A468-04ACB60BE09B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{3EA2687A-F11D-410E-B372-9D4C9200609D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3EA2687A-F11D-410E-B372-9D4C9200609D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3EA2687A-F11D-410E-B372-9D4C9200609D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96DC580B-8527-4C50-A468-04ACB60BE09B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96DC580B-8527-4C50-A468-04ACB60BE09B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96DC580B-8527-4C50-A468-04ACB60BE09B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96DC580B-8527-4C50-A468-04ACB60BE09B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

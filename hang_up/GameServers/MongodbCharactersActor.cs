@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Akka.Actor;
 using Akka.Event;
+using GameProtos;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 
@@ -9,17 +10,10 @@ namespace GameServers
     public class PlayerCharacters
     {
         [BsonId] public string AccountId { get; set; }
-        public Dictionary<uint, CharacterStatus> CharactersIdToStatus { get; set; }
+        public Dictionary<uint, CharactersGetResponse.Character.CharacterStatus> CharactersIdToStatus { get; set; }
     }
 
-    public class CharacterStatus
-    {
-        public uint Level { get; set; }
-        public uint Star { get; set; }
-        public bool InBattle { get; set; }
-        public uint RuneType { get; set; }
-        public uint RuneLevel { get; set; }
-    }
+    
 
 
     public class MongodbCharactersActor : ReceiveActor

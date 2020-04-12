@@ -63,9 +63,10 @@ namespace GameServers
 
         public static PlayerCharacters PlayerCharactersNew(string accountId)
         {
-            var characterStatus = new CharacterStatus()
+            var characterStatus = new CharactersGetResponse.Character.CharacterStatus()
                 {InBattle = true, Level = 1, RuneLevel = 0, RuneType = 0, Star = 1};
-            var charactersIdToStatus = new Dictionary<uint, CharacterStatus> {[1] = characterStatus};
+            var charactersIdToStatus = new Dictionary<uint, CharactersGetResponse.Character.CharacterStatus>
+                {[1] = characterStatus};
             return new PlayerCharacters()
                 {AccountId = accountId, CharactersIdToStatus = charactersIdToStatus};
         }
@@ -96,6 +97,17 @@ namespace GameServers
             ).Select(x => new BankItemResponse.Item {itemId = x.Key, Num = x.Value}).ToList();
             var bank = new BankItemResponse {Items = items};
             return bank;
+        }
+
+        public static CharactersGetResponse GenCharactersGetResponseByPlayerCharacters(
+            PlayerCharacters playerCharacters)
+        {
+            var characters = playerCharacters.CharactersIdToStatus.Select(pair => new CharactersGetResponse.Character
+            {
+                Id = pair.Key, characterStatus = pair.Value
+            });
+
+            return new CharactersGetResponse() {Characters = characters.ToList()};
         }
     }
 }
