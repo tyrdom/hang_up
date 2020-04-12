@@ -56,14 +56,23 @@ namespace GameServers
         {
             return new PlayerBank
             {
-                AccountId = accountId, Gold = 0, Crystal = 0, Soul = 0, Items = new List<BankItem>(),
+                AccountId = accountId, Gold = 0, Crystal = 0, Soul = 0, ItemsIdToNum = new Dictionary<uint, uint>(),
                 RunePoint = 0
             };
         }
 
+        public static PlayerCharacters PlayerCharactersNew(string accountId)
+        {
+            var characterStatus = new CharacterStatus()
+                {InBattle = true, Level = 1, RuneLevel = 0, RuneType = 0, Star = 1};
+            var charactersIdToStatus = new Dictionary<uint, CharacterStatus> {[1] = characterStatus};
+            return new PlayerCharacters()
+                {AccountId = accountId, CharactersIdToStatus = charactersIdToStatus};
+        }
+
         public static BankBaseResponse GenBankBaseResponseByPlayBank(PlayerBank playerBank)
         {
-            return new BankBaseResponse()
+            return new BankBaseResponse
             {
                 Gold = playerBank.Gold, Crystal = playerBank.Crystal, Soul = playerBank.Soul,
                 RunePoint = playerBank.RunePoint
@@ -72,22 +81,20 @@ namespace GameServers
 
         public static BankItemResponse GenBankItemResponseByPlayBank(PlayerBank playerBank)
         {
-            var items = playerBank.Items
-                .Select(x => new BankItemResponse.Item() {itemId = x.ItemId, Num = x.Num}).ToList();
+            var items = playerBank.ItemsIdToNum
+                .Select(x => new BankItemResponse.Item() {itemId = x.Key, Num = x.Value}).ToList();
 
-            var bank = new BankItemResponse() {Items = items};
+            var bank = new BankItemResponse {Items = items};
 
             return bank;
         }
 
-        public static BankItemResponse GenBankItemResponseByPlayBank(PlayerBank playerBank, IEnumerable<int> itemId)
+        public static BankItemResponse GenBankItemResponseByPlayBank(PlayerBank playerBank, IEnumerable<uint> itemId)
         {
-            var items = playerBank.Items.Where(a =>
-                itemId.Contains(a.ItemId)
-            ).Select(x => new BankItemResponse.Item() {itemId = x.ItemId, Num = x.Num}).ToList();
-
-            var bank = new BankItemResponse() {Items = items};
-
+            var items = playerBank.ItemsIdToNum.Where(a =>
+                itemId.Contains(a.Key)
+            ).Select(x => new BankItemResponse.Item {itemId = x.Key, Num = x.Value}).ToList();
+            var bank = new BankItemResponse {Items = items};
             return bank;
         }
     }

@@ -9,5 +9,7 @@ namespace GameServers
         public static IActorRef HallActor { get; set; }
 
         public static IActorRef MongodbBankActor { get; set; }
+        
+        public static IActorRef MongodbCharacterActor { get; set; }
     }
 }

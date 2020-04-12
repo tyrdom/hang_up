@@ -2,7 +2,7 @@
 // Consider using 'partial classes' to extend these types
 // Input: MsgScheme.proto
 
-#pragma warning disable CS0612, CS1591, CS3021, IDE1006, RCS1036, RCS1057, RCS1085, RCS1192
+#pragma warning disable CS1591, CS0612, CS3021, IDE1006
 namespace GameProtos
 {
 
@@ -211,7 +211,7 @@ namespace GameProtos
             => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
         [global::ProtoBuf.ProtoMember(1, Name = @"itemId", IsPacked = true)]
-        public int[] itemIds { get; set; }
+        public uint[] itemIds { get; set; }
 
     }
 
@@ -241,16 +241,16 @@ namespace GameProtos
             => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
         [global::ProtoBuf.ProtoMember(1)]
-        public long Gold { get; set; }
+        public ulong Gold { get; set; }
 
         [global::ProtoBuf.ProtoMember(2)]
-        public long Soul { get; set; }
+        public ulong Soul { get; set; }
 
         [global::ProtoBuf.ProtoMember(3)]
-        public long Crystal { get; set; }
+        public ulong Crystal { get; set; }
 
         [global::ProtoBuf.ProtoMember(4)]
-        public long RunePoint { get; set; }
+        public ulong RunePoint { get; set; }
 
     }
 
@@ -272,10 +272,10 @@ namespace GameProtos
                 => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
             [global::ProtoBuf.ProtoMember(1)]
-            public int itemId { get; set; }
+            public uint itemId { get; set; }
 
             [global::ProtoBuf.ProtoMember(2, Name = @"num")]
-            public int Num { get; set; }
+            public uint Num { get; set; }
 
         }
 
@@ -426,4 +426,4 @@ namespace GameProtos
 
 }
 
-#pragma warning restore CS0612, CS1591, CS3021, IDE1006, RCS1036, RCS1057, RCS1085, RCS1192
+#pragma warning restore CS1591, CS0612, CS3021, IDE1006

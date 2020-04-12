@@ -20,17 +20,41 @@ namespace GameServers
         private readonly IActorRef _tcpActorRef;
         private readonly ILoggingAdapter _log = Logging.GetLogger(Context);
         private string _accountId;
-        private EndPoint _remote;
+        private readonly EndPoint _remote;
         private LoginResponse _temp;
         private GameState _gameState = GameState.OffLine;
+
+
+        private PlayerBank _myWallet;
+        private PlayerCharacters _myCharacters;
 
         public LinkActor(EndPoint remote, IActorRef tcpActorRef)
         {
             _tcpActorRef = tcpActorRef;
             _remote = remote;
             Context.Watch(_tcpActorRef);
+            Become(OffLine);
+        }
+
+        private void OffLineSave(OutReason reason)
+        {
+            FamousActors.HallActor.Tell(new OutHall(_accountId));
+            FamousActors.MongodbAccountActor.Tell(new Logout
+                (_accountId, reason));
+            FamousActors.MongodbBankActor.Tell(new SaveBank(_myWallet));
+            FamousActors.MongodbCharacterActor.Tell(new SaveCharacters(_myCharacters));
+        }
+
+        private void OffLine()
+        {
             Receive<Tcp.Received>(received =>
             {
+                if (!Sender.Equals(_tcpActorRef))
+                {
+                    _log.Error($"link error close link!");
+                    Sender.Tell(Tcp.Close.Instance);
+                }
+
                 var aMsg = ProtoTool.DeSerialize<AMsg>(received.Data.ToArray());
                 var aMsgType = aMsg.type;
                 if (aMsgType == AMsg.Type.RequestMsg)
@@ -68,16 +92,14 @@ namespace GameServers
 
                             if (!Tools.CheckAccountIdOk(aMsgFixAccountPasswordRequest.accountId))
                             {
-                                var loginResponse = new FixAccountPasswordResponse()
-                                    {reason = FixAccountPasswordResponse.Reason.NoGoodAccountId};
+                                var loginResponse = new FixAccountPasswordResponse {reason = FixAccountPasswordResponse.Reason.NoGoodAccountId};
 
                                 Sender.Tell(ProtoTool.Serialize(loginResponse));
                             }
                             else if (!Tools.CheckPasswordOk(aMsgFixAccountPasswordRequest.newPassword) ||
                                      !Tools.CheckPasswordOk(aMsgFixAccountPasswordRequest.oldPassword))
                             {
-                                var loginResponse = new FixAccountPasswordResponse()
-                                    {reason = FixAccountPasswordResponse.Reason.NoGoodPassword};
+                                var loginResponse = new FixAccountPasswordResponse {reason = FixAccountPasswordResponse.Reason.NoGoodPassword};
                                 Sender.Tell(ProtoTool.Serialize(loginResponse));
                             }
                             else
@@ -88,6 +110,7 @@ namespace GameServers
                             break;
 
                         default:
+                            _tcpActorRef.Tell(Tcp.Close.Instance);
                             throw new ArgumentOutOfRangeException();
                     }
                 }
@@ -132,13 +155,7 @@ namespace GameServers
             Receive<InHallOk>(ok =>
             {
                 _gameState = GameState.Online;
-                var aMsg = new AMsg
-                {
-                    type = AMsg.Type.ResponseMsg,
-                    responseMsg = {head = ResponseMsg.Head.LoginResponse, loginResponse = _temp}
-                };
 
-                _tcpActorRef.Tell(ProtoTool.Serialize(aMsg));
                 Become(OnLine);
             });
 
@@ -155,12 +172,12 @@ namespace GameServers
 
             Receive<Tcp.ConnectionClosed>(closed =>
             {
-                _log.Info($"Stopped, remote connection [{remote}] closed");
+                _log.Info($"Stopped, remote connection [{_remote}] closed");
                 Context.Stop(Self);
             });
             Receive<Terminated>(terminated =>
             {
-                _log.Info($"Stopped, remote connection [{remote}] died");
+                _log.Info($"Stopped, remote connection [{_remote}] died");
 
                 Context.Stop(Self);
             });
@@ -168,6 +185,47 @@ namespace GameServers
 
         private void OnLine()
         {
+            FamousActors.MongodbBankActor.Tell(new GetBank(_accountId));
+            FamousActors.MongodbCharacterActor.Tell(new GetCharacters(_accountId));
+            // ICancelable scheduleTellRepeatedlyCancelable = Context.System.Scheduler.ScheduleTellRepeatedlyCancelable(
+            //     TimeSpan.FromMinutes(10),
+            //     TimeSpan.FromMinutes(10),
+            //     Self, SavePlayerDB.Instance
+            //     , ActorRefs.Nobody);
+
+            Receive<PlayerBank>(bank =>
+            {
+                _myWallet = bank;
+                if (_myCharacters != null)
+                {
+                    var aMsg = new AMsg
+                    {
+                        type = AMsg.Type.ResponseMsg,
+                        responseMsg = {head = ResponseMsg.Head.LoginResponse, loginResponse = _temp}
+                    };
+
+                    _tcpActorRef.Tell(ProtoTool.Serialize(aMsg));
+                }
+            });
+
+            Receive<PlayerCharacters>(characters =>
+                {
+                    _myCharacters = characters;
+                    if (_myWallet != null)
+                    {
+                        var aMsg = new AMsg
+                        {
+                            type = AMsg.Type.ResponseMsg,
+                            responseMsg = {head = ResponseMsg.Head.LoginResponse, loginResponse = _temp}
+                        };
+
+                        _tcpActorRef.Tell(ProtoTool.Serialize(aMsg));
+                    }
+                }
+            );
+
+            // Receive<SavePlayerDB>(_ => { });
+
             Receive<ErrorResponse>(response =>
                 _tcpActorRef.Tell(ProtoTool.Serialize(
                     new AMsg
@@ -180,17 +238,13 @@ namespace GameServers
 
             Receive<Tcp.ConnectionClosed>(closed =>
             {
-                FamousActors.HallActor.Tell(new OutHall(_accountId));
-                FamousActors.MongodbAccountActor.Tell(new Logout
-                    (_accountId, OutReason.Drop));
+                OffLineSave(OutReason.Drop);
                 _log.Info($"Stopped, remote connection [{_remote}] closed");
                 Context.Stop(Self);
             });
             Receive<Terminated>(terminated =>
             {
-                FamousActors.HallActor.Tell(new OutHall(_accountId));
-                FamousActors.MongodbAccountActor.Tell(new Logout
-                    (_accountId, OutReason.Drop));
+                OffLineSave(OutReason.Drop);
                 _log.Info($"Stopped, remote connection [{_remote}] died");
 
                 Context.Stop(Self);
@@ -216,26 +270,51 @@ namespace GameServers
                     {
                         case RequestMsg.Head.BankBaseRequest:
 
-                            FamousActors.MongodbBankActor.Tell(new GetBank(_accountId, GetBankType.Base,
-                                null));
+                            var genBankBaseResponseByPlayBank = Tools.GenBankBaseResponseByPlayBank(_myWallet);
+                            Sender.Tell(ProtoTool.Serialize(new AMsg()
+                            {
+                                type = AMsg.Type.ResponseMsg,
+                                responseMsg = new ResponseMsg()
+                                {
+                                    head = ResponseMsg.Head.BankBaseResponse,
+                                    bankBaseResponse = genBankBaseResponseByPlayBank
+                                }
+                            }));
                             break;
 
                         case RequestMsg.Head.BankItemAllRequest:
-                            FamousActors.MongodbBankActor.Tell(new GetBank(_accountId, GetBankType.Item,
-                                null));
+
+                            var genBankItemAllResponseByPlayBank = Tools.GenBankItemResponseByPlayBank(_myWallet);
+                            Sender.Tell(ProtoTool.Serialize(new AMsg()
+                            {
+                                type = AMsg.Type.ResponseMsg,
+                                responseMsg = new ResponseMsg()
+                                {
+                                    head = ResponseMsg.Head.BankItemResponse,
+                                    bankItemResponse = genBankItemAllResponseByPlayBank
+                                }
+                            }));
                             break;
 
                         case RequestMsg.Head.BankItemCustomRequest:
-                            FamousActors.MongodbBankActor.Tell(new GetBank(_accountId,
-                                GetBankType.CustomItem,
-                                aMsgRequestMsg.bankCustomItemRequest.itemIds));
-
+                            var genBankItemResponseByPlayBank =
+                                Tools.GenBankItemResponseByPlayBank(_myWallet,
+                                    aMsgRequestMsg.bankCustomItemRequest.itemIds);
+                            Sender.Tell(ProtoTool.Serialize(new AMsg()
+                            {
+                                type = AMsg.Type.ResponseMsg,
+                                responseMsg = new ResponseMsg()
+                                {
+                                    head = ResponseMsg.Head.BankItemResponse,
+                                    bankItemResponse = genBankItemResponseByPlayBank
+                                }
+                            }));
                             break;
                         case RequestMsg.Head.LogoutRequest:
-                            FamousActors.MongodbAccountActor.Tell(new Logout
-                                (_accountId, OutReason.LogOut));
-                            FamousActors.HallActor.Tell(new OutHall(_accountId));
+
+                            OffLineSave(OutReason.LogOut);
                             _gameState = GameState.OffLine;
+                            Become(OffLine);
                             break;
                         default:
                             _tcpActorRef.Tell(Tcp.Close.Instance);
@@ -244,6 +323,7 @@ namespace GameServers
                 }
                 else
                 {
+                    _tcpActorRef.Tell(Tcp.Close.Instance);
                     throw new ArgumentOutOfRangeException();
                 }
             });

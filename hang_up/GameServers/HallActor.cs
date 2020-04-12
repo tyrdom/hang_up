@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Akka.Actor;
 using GameProtos;
+using MongoDB.Bson;
 
 namespace GameServers
 {
@@ -26,6 +27,7 @@ namespace GameServers
 
     public class InHallOk
     {
+        public static readonly InHallOk Instance = new InHallOk();
     }
 
     public class HallActor : ReceiveActor
@@ -47,7 +49,7 @@ namespace GameServers
 
                 OnlineAccountLink[objAccountId] = Sender;
 
-                Sender.Tell(new InHallOk());
+                Sender.Tell(InHallOk.Instance);
             });
 
             Receive<OutHall>(outHall => { OnlineAccountLink.Remove(outHall.AccountId); });

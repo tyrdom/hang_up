@@ -13,21 +13,83 @@ using MongoDB.Driver;
 
 namespace GameServers
 {
+    public static class PlayerBankOp
+    {
+        static PlayerBank? Use(PlayerBank playerBank, ulong gold, ulong soul, ulong crystal, ulong runePoint,
+            Dictionary<uint, uint> items)
+        {
+            if (playerBank.Gold < gold || playerBank.Soul < soul || playerBank.Crystal < crystal ||
+                playerBank.RunePoint < runePoint)
+            {
+                return null;
+            }
+
+
+            playerBank.Gold -= gold;
+            playerBank.Soul -= soul;
+            playerBank.Crystal -= crystal;
+            playerBank.RunePoint -= runePoint;
+
+            foreach (var (key, value) in items)
+            {
+                if (playerBank.ItemsIdToNum.TryGetValue(key, out var num))
+                {
+                    if (num < value)
+                    {
+                        return null;
+                    }
+
+                    playerBank.ItemsIdToNum[key] = value - num;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            return playerBank;
+        }
+
+        public static PlayerBank Gain(PlayerBank playerBank, ulong gold, ulong soul, ulong crystal, ulong runePoint,
+            Dictionary<uint, uint> items)
+        {
+            static ulong AddMoney(ulong a, ulong b)
+            {
+                return Math.Min(OtherConfig.MaxCoinNum, a + b);
+            }
+
+            playerBank.Gold = AddMoney(playerBank.Gold, gold);
+            playerBank.Soul = AddMoney(playerBank.Soul, soul);
+            playerBank.Crystal = AddMoney(playerBank.Crystal, crystal);
+            playerBank.RunePoint = AddMoney(playerBank.RunePoint, runePoint);
+            foreach (var (key, value) in items)
+            {
+                if (playerBank.ItemsIdToNum.TryGetValue(key, out var num))
+                {
+                    playerBank.ItemsIdToNum[key] =
+                        Math.Min(OtherConfig.MaxItemNum, value + num);
+                }
+                else
+                {
+                    playerBank.ItemsIdToNum.Add(key, value);
+                }
+            }
+
+            return playerBank;
+        }
+    }
+
+
     public class PlayerBank
     {
         [BsonId] public string AccountId { get; set; }
-        public long Gold { get; set; }
-        public long Soul { get; set; }
-        public long Crystal { get; set; }
-        public long RunePoint { get; set; }
-        public List<BankItem> Items { get; set; }
+        public ulong Gold { get; set; }
+        public ulong Soul { get; set; }
+        public ulong Crystal { get; set; }
+        public ulong RunePoint { get; set; }
+        public Dictionary<uint, uint> ItemsIdToNum { get; set; }
     }
 
-    public class BankItem
-    {
-        public int ItemId { get; set; }
-        public int Num { get; set; }
-    }
 
     public class MongodbBankActor : ReceiveActor
     {
@@ -45,26 +107,19 @@ namespace GameServers
             var bankTable = mongoDatabase.GetCollection<PlayerBank>(tableName);
 
 
-            Receive<CreateBank>(bank =>
+            Receive<CreateBank>(cBank =>
             {
-                var filter = Builders<PlayerBank>.Filter.Eq(x => x.AccountId, bank.AccountId);
+                var filter = Builders<PlayerBank>.Filter.Eq(x => x.AccountId, cBank.AccountId);
                 var firstOrDefault = bankTable.Find(filter).FirstOrDefault();
-                var playerBank = Tools.PlayerNewBank(bank.AccountId);
+                var playerBank = Tools.PlayerNewBank(cBank.AccountId);
                 if (firstOrDefault == null)
                 {
                     bankTable.InsertOne(playerBank);
                 }
-
-                var bankBaseResponse = new BankBaseResponse
-                {
-                    Gold = playerBank.Gold, Soul = playerBank.Soul, Crystal = playerBank.Crystal,
-                    RunePoint = playerBank.RunePoint
-                };
-                Sender.Tell(bankBaseResponse);//TODO sthbug
             });
 
             Receive<GetBank>(bank =>
-            {   
+            {
                 var accountIdFilter = Builders<PlayerBank>.Filter.Eq(x => x.AccountId, bank.AccountId);
                 var firstOrDefault = bankTable.Find(accountIdFilter).FirstOrDefault();
                 if (firstOrDefault == null)
@@ -72,25 +127,21 @@ namespace GameServers
                     _log.Error($"accountId{bank.AccountId} have no bank, create one~~~~");
                     var playerNewBank = Tools.PlayerNewBank(bank.AccountId);
                     bankTable.InsertOne(playerNewBank);
-                    Sender.Tell(Tools.GenBankBaseResponseByPlayBank(playerNewBank));
+                    Sender.Tell(playerNewBank);
                 }
                 else
                 {
-                    switch (bank.GetBankType)
-                    {
-                        case GetBankType.Base:
-                            Sender.Tell(Tools.GenBankBaseResponseByPlayBank(firstOrDefault));
-                            break;
-                        case GetBankType.Item:
-                            Sender.Tell(Tools.GenBankItemResponseByPlayBank(firstOrDefault));
-                            break;
-                        case GetBankType.CustomItem:
-                            Sender.Tell(Tools.GenBankItemResponseByPlayBank(firstOrDefault, bank.ItemIds));
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
+                    Sender.Tell(firstOrDefault);
                 }
+            });
+
+            Receive<SaveBank>(saveBank =>
+            {
+                var bankPlayerBank = saveBank.PlayerBank;
+                var filter = Builders<PlayerBank>.Filter.Eq(x => x.AccountId, bankPlayerBank.AccountId);
+                var firstOrDefault = bankTable.Find(filter).FirstOrDefault();
+                if (firstOrDefault == null) return;
+                bankTable.UpdateOne(filter, new ObjectUpdateDefinition<PlayerBank>(bankPlayerBank));
             });
         }
     }
@@ -108,22 +159,21 @@ namespace GameServers
     public class GetBank
     {
         public readonly string AccountId;
-        public readonly GetBankType GetBankType;
-        public readonly int[]? ItemIds;
 
 
-        public GetBank(string accountId, GetBankType bankType, int[]? itemIds)
+        public GetBank(string accountId)
         {
             AccountId = accountId;
-            GetBankType = bankType;
-            ItemIds = itemIds;
         }
     }
 
-    public enum GetBankType
+    public class SaveBank
     {
-        Base,
-        Item,
-        CustomItem
+        public PlayerBank PlayerBank;
+
+        public SaveBank(PlayerBank playerBank)
+        {
+            PlayerBank = playerBank;
+        }
     }
 }
