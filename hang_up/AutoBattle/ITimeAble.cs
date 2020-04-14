@@ -1,10 +1,12 @@
 ﻿namespace AutoBattle
 {
-    internal interface ITimeAble
+    public interface ITimeAble
     {
-       int RestTimeMs { get; set; }
+        int RestTimeMs { get; set; }
 
-       void TakeTime(int ms);
-       
+        void TakeTime(int ms)
+        {
+            RestTimeMs -= ms;
+        }
     }
 }

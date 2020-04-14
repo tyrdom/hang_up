@@ -12,8 +12,8 @@ namespace AutoBattle
 
         void GetNextTimeEvent()
         {
-            var min = TeamA.Select(character => character.GetMinTime()).Min();
-            var minB = TeamB.Select(character => character.GetMinTime()).Min();
+            var min = TeamA.Select(character => character.GetEventTime()).Min();
+            var minB = TeamB.Select(character => character.GetEventTime()).Min();
             var i = Math.Min( min,minB);
             
             foreach (var battleCharacter in TeamA)
