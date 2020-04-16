@@ -7,7 +7,7 @@ namespace AutoBattle
 {
     public class BattleCharacter
     {
-        private KeyStatus _status;
+        public KeyStatus Status;
 
         public CharacterBattleBaseAttribute _characterBattleAttribute;
 
@@ -18,7 +18,7 @@ namespace AutoBattle
 
         private (int, int)[] _tempHasteBuffData;
 
-        
+
         public int GetEventTime()
         {
             var baseHaste = _characterBattleAttribute.Haste;
@@ -59,7 +59,7 @@ namespace AutoBattle
             return buffLast + rest.Min();
         }
 
-        public IBullet[] TakeTime(int ms)
+        public IEnumerable<IBullet> TakeTime(int ms)
         {
             var restToGo = ms;
             var costMs = 0;
@@ -84,11 +84,11 @@ namespace AutoBattle
                 skill.Reset();
                 return true;
             });
-            return enumerable.Select(skill => skill.GenIBullet(this)).ToArray();
+            return enumerable.SelectMany(skill => skill.GenIBullets(this)).ToArray();
         }
     }
 
-    internal enum KeyStatus
+    public enum KeyStatus
     {
         Alive,
         Dead
