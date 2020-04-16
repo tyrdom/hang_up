@@ -4,26 +4,23 @@ namespace AutoBattle
 {
     public interface IBattleBuff : ITimeAble
     {
-       
+        public int Stack { get; set; }
 
-        public int Stack{ get; set; }
+        public IBuffEffect BuffEffect { get; set; }
 
-        public IBuffEffect BuffEffect{ get; set; }
 
-    
-
-        public void TakeTime(int ms)
+        (int, float) GetDamageAndPercent(BattleCharacter battleCharacter)
         {
-            RestTimeMs -= ms;
+            return (0, 0);
+        }
+
+        int GetMissPreMil(BattleCharacter battleCharacter)
+        {
+            return 0;
         }
     }
 
     public interface IBuffEffect
     {
-    }
-
-    enum BuffEffectType
-    {
-        HasteChange,
     }
 }

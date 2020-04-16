@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AutoBattle
@@ -36,5 +37,25 @@ namespace AutoBattle
         public int RestTimeMs { get; set; }
         public IActiveEffect[] ActiveEffect { get; set; }
         public int ResetTime { get; }
+    }
+
+    public class NormalAttack : IActiveEffect
+    {
+        public float TargetMulti { get; }
+
+        public NormalAttack(float targetMulti)
+        {
+            TargetMulti = targetMulti;
+            TargetType = TargetType.FirstOpponent;
+        }
+
+        public TargetType TargetType { get; }
+
+        public IBullet GenBullet(BattleCharacter battleCharacter)
+        {
+            var harm = (int) MathF.Ceiling(battleCharacter.GetDamage() * TargetMulti);
+            var standardBullet = new StandardHarmBullet(battleCharacter, TargetType, harm);
+            return standardBullet;
+        }
     }
 }

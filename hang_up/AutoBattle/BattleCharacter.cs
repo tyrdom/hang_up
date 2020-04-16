@@ -86,6 +86,36 @@ namespace AutoBattle
             });
             return enumerable.SelectMany(skill => skill.GenIBullets(this)).ToArray();
         }
+
+        public int GetDamage()
+        {
+            int damage;
+            float damagePercent;
+            (damage, damagePercent) = (_characterBattleAttribute.Damage, _characterBattleAttribute.DamagePercent);
+            static (int, float) Func((int, float) x, (int, float) y) => (x.Item1 + y.Item1, x.Item2 + y.Item2);
+            var (item1, item2) = PassiveSkills.Select(x => x.GetDamageAndPercent(this))
+                .Aggregate((0, 0f), Func);
+            var (i, f) = BattleBuffs.Select(x => x.GetDamageAndPercent(this))
+                .Aggregate((0, 0f), Func);
+            var iItem1 = damage + item1 + i;
+            var iItem2 = damagePercent + item2 + f;
+            var getDamage = (int) MathF.Ceiling(iItem1 * (1 + iItem2));
+
+            return getDamage;
+        }
+
+        int GetMissPreMil()
+        {
+            var missPreMil = _characterBattleAttribute.MissPreMil;
+            var sum = PassiveSkills.Select(x => x.GetMissPreMil(this)).Sum();
+            var i = BattleBuffs.Select(x => x.GetMissPreMil(this)).Sum();
+            return missPreMil + sum + i;
+        }
+
+        public void TakeHarm(IHarmBullet standardHarmBullet)
+        {
+            var next = BattleGround.Random.Next(999);
+        }
     }
 
     public enum KeyStatus
@@ -109,26 +139,40 @@ namespace AutoBattle
 
     public interface IPassiveSkill
     {
-    }
-
-
-    public class CharacterBattleBaseAttribute
-    {
-        public readonly int MaxHp;
-        public int NowHp;
-        public readonly int Damage;
-        public readonly int DefencePreMil;
-        public readonly int Haste;
-        public readonly int MissPreMil;
-
-        public CharacterBattleBaseAttribute(int maxHp, int damage, int defencePreMil, int haste, int missPreMil)
+        (int, float) GetDamageAndPercent(BattleCharacter battleCharacter)
         {
-            MaxHp = maxHp;
-            NowHp = maxHp;
-            Damage = damage;
-            DefencePreMil = defencePreMil;
-            Haste = haste;
-            MissPreMil = missPreMil;
+            return (0, 0);
         }
+
+        int GetMissPreMil(BattleCharacter battleCharacter)
+        {
+            return 0;
+        }
+    }
+}
+
+
+public class CharacterBattleBaseAttribute
+{
+    public readonly int MaxHp;
+    public int NowHp;
+    public readonly int Damage;
+
+    public readonly int DamagePercent;
+
+    public readonly int DefencePreMil;
+    public readonly int Haste;
+    public readonly int MissPreMil;
+
+    public CharacterBattleBaseAttribute(int maxHp, int damage, int defencePreMil, int haste, int missPreMil,
+        int damagePercent)
+    {
+        MaxHp = maxHp;
+        NowHp = maxHp;
+        Damage = damage;
+        DefencePreMil = defencePreMil;
+        Haste = haste;
+        MissPreMil = missPreMil;
+        DamagePercent = damagePercent;
     }
 }

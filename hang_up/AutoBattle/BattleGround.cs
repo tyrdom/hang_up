@@ -9,6 +9,7 @@ namespace AutoBattle
         private BattleCharacter[] _teamA;
         private BattleCharacter[] _teamB;
 
+        public static Random Random = new Random();
         public BattleGround(BattleCharacter[] teamA, BattleCharacter[] teamB)
         {
             _teamA = teamA;
