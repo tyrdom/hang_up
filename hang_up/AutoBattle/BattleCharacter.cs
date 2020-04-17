@@ -13,7 +13,7 @@ namespace AutoBattle
 
         public IActiveSkill ActiveSkill1;
         public IActiveSkill ActiveSkill2;
-        public List<IPassiveSkill> PassiveSkills;
+        public IPassiveSkill[] PassiveSkills;
         public List<IBattleBuff> BattleBuffs;
 
         private (int, int)[] _tempHasteBuffData;
@@ -23,9 +23,9 @@ namespace AutoBattle
         {
             var baseHaste = _characterBattleAttribute.Haste;
 
-            var passiveSkills = PassiveSkills.OfType<IHasteEffect>().Sum(x => x.GetHasteValueAndLastMs().Item1);
+            var passiveSkills = PassiveSkills.OfType<IHastePassiveEffect>().Sum(x => x.GetHasteValueAndLastMs());
             var haste = baseHaste + passiveSkills;
-            var valueTuples = BattleBuffs.OfType<IHasteEffect>().Select(x => x.GetHasteValueAndLastMs())
+            var valueTuples = BattleBuffs.OfType<IHasteBuff>().Select(x => x.GetHasteValueAndLastMs())
                 .OrderBy(x => x.Item2).ToArray();
             for (var i = 0; i < valueTuples.Length; i++)
             {
@@ -75,6 +75,8 @@ namespace AutoBattle
                 costMs += valueTupleItem1 * valueTupleItem2;
             }
 
+            BattleBuffs.ForEach(x => x.TakeTime(costMs));
+            BattleBuffs = BattleBuffs.Where(x => x.RestTimeMs > 0).ToList();
             ActiveSkill1.TakeTime(costMs);
             ActiveSkill2.TakeTime(costMs);
             var activeSkills = new[] {ActiveSkill1, ActiveSkill2};
@@ -95,7 +97,7 @@ namespace AutoBattle
             static (int, float) Func((int, float) x, (int, float) y) => (x.Item1 + y.Item1, x.Item2 + y.Item2);
             var (item1, item2) = PassiveSkills.Select(x => x.GetDamageAndPercent(this))
                 .Aggregate((0, 0f), Func);
-            var (i, f) = BattleBuffs.Select(x => x.GetDamageAndPercent(this))
+            var (i, f) = BattleBuffs.Select(x => IBattleBuff.GetDamageAndPercent(this))
                 .Aggregate((0, 0f), Func);
             var iItem1 = damage + item1 + i;
             var iItem2 = damagePercent + item2 + f;
@@ -104,17 +106,43 @@ namespace AutoBattle
             return getDamage;
         }
 
-        int GetMissPreMil()
+        int GetDefencePreMil()
+        {
+            var defencePreMil = _characterBattleAttribute.DefencePreMil;
+            var sum = PassiveSkills.Select(x => x.GetDefencePreMil(this)).Sum();
+            var i = BattleBuffs.Select(x => IBattleBuff.GetDefencePreMil(this)).Sum();
+            return CommonSettings.FilterDefencePerMilValue(defencePreMil + sum + i);
+        }
+
+
+        private int GetMissPreMil()
         {
             var missPreMil = _characterBattleAttribute.MissPreMil;
             var sum = PassiveSkills.Select(x => x.GetMissPreMil(this)).Sum();
-            var i = BattleBuffs.Select(x => x.GetMissPreMil(this)).Sum();
-            return missPreMil + sum + i;
+            var i = BattleBuffs.Select(x => IBattleBuff.GetMissPreMil(this)).Sum();
+            return CommonSettings.FilterMissPerMilValue(missPreMil + sum + i);
         }
 
-        public void TakeHarm(IHarmBullet standardHarmBullet)
+        public IShow TakeHarm(IHarmBullet standardHarmBullet)
         {
-            var next = BattleGround.Random.Next(999);
+            var next = BattleGround.Random.Next(1000);
+            if (next >= GetMissPreMil())
+            {
+                var harm = standardHarmBullet.Harm * (1000 - GetDefencePreMil()) / 1000;
+                _characterBattleAttribute.NowHp -= harm;
+                return new TakeHarmShow(harm, this);
+            }
+
+            var enumerable = PassiveSkills.Where(x => x is IPassiveAboutMiss);
+            
+            return new MissShow(this);
+        }
+
+        public IShow TakeHeal(IHealBullet healSelfBullet)
+        {
+            _characterBattleAttribute.NowHp = Math.Min(_characterBattleAttribute.NowHp + healSelfBullet.Heal,
+                _characterBattleAttribute.MaxHp);
+            return new HealShow(healSelfBullet.Heal, this);
         }
     }
 
@@ -124,55 +152,42 @@ namespace AutoBattle
         Dead
     }
 
-    public class Haste : IHasteEffect, IPassiveSkill
+    public class HastePassive : IHastePassiveEffect, IPassiveSkill
     {
-        public (int, int) GetHasteValueAndLastMs()
-        {
-            return (1, 1);
-        }
-    }
-
-    public interface IHasteEffect
-    {
-        (int, int) GetHasteValueAndLastMs();
-    }
-
-    public interface IPassiveSkill
-    {
-        (int, float) GetDamageAndPercent(BattleCharacter battleCharacter)
-        {
-            return (0, 0);
-        }
-
-        int GetMissPreMil(BattleCharacter battleCharacter)
+        public int GetHasteValueAndLastMs()
         {
             return 0;
         }
     }
-}
 
-
-public class CharacterBattleBaseAttribute
-{
-    public readonly int MaxHp;
-    public int NowHp;
-    public readonly int Damage;
-
-    public readonly int DamagePercent;
-
-    public readonly int DefencePreMil;
-    public readonly int Haste;
-    public readonly int MissPreMil;
-
-    public CharacterBattleBaseAttribute(int maxHp, int damage, int defencePreMil, int haste, int missPreMil,
-        int damagePercent)
+    public interface IHastePassiveEffect
     {
-        MaxHp = maxHp;
-        NowHp = maxHp;
-        Damage = damage;
-        DefencePreMil = defencePreMil;
-        Haste = haste;
-        MissPreMil = missPreMil;
-        DamagePercent = damagePercent;
+        int GetHasteValueAndLastMs();
+    }
+
+
+    public struct CharacterBattleBaseAttribute
+    {
+        public readonly int MaxHp;
+        public int NowHp;
+        public readonly int Damage;
+
+        public readonly int DamagePercent;
+
+        public readonly int DefencePreMil;
+        public readonly int Haste;
+        public readonly int MissPreMil;
+
+        public CharacterBattleBaseAttribute(int maxHp, int damage, int defencePreMil, int haste, int missPreMil,
+            int damagePercent)
+        {
+            MaxHp = maxHp;
+            NowHp = maxHp;
+            Damage = damage;
+            DefencePreMil = defencePreMil;
+            Haste = haste;
+            MissPreMil = missPreMil;
+            DamagePercent = damagePercent;
+        }
     }
 }

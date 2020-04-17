@@ -6,10 +6,11 @@ namespace AutoBattle
 {
     public class BattleGround
     {
-        private BattleCharacter[] _teamA;
-        private BattleCharacter[] _teamB;
+        private readonly BattleCharacter[] _teamA;
+        private readonly BattleCharacter[] _teamB;
 
-        public static Random Random = new Random();
+        public static readonly Random Random = new Random();
+
         public BattleGround(BattleCharacter[] teamA, BattleCharacter[] teamB)
         {
             _teamA = teamA;
@@ -17,7 +18,7 @@ namespace AutoBattle
         }
 
 
-        IShowEffect[] GoNextTimeEvent()
+        private IShow[] GoNextTimeEvent()
         {
             var aliveTeamA = _teamA.Where(x => x.Status == KeyStatus.Alive).ToArray();
 
@@ -30,8 +31,24 @@ namespace AutoBattle
 
             var teamBBullets = aliveTeamB.SelectMany(x => x.TakeTime(i));
 
-            var showEffects = teamABullets.SelectMany(x => x.HitTeam(aliveTeamA));
-            var enumerable = teamBBullets.SelectMany(x => x.HitTeam(aliveTeamB));
+            var showEffects = teamABullets.SelectMany(x =>
+            {
+                return x switch
+                {
+                    IOpponentBullet opponentBullet => opponentBullet.HitTeam(aliveTeamB),
+                    ISelfBullet selfBullet => selfBullet.HitTeam(aliveTeamA),
+                    _ => throw new ArgumentOutOfRangeException(nameof(x))
+                };
+            });
+            var enumerable = teamBBullets.SelectMany(x =>
+            {
+                return x switch
+                {
+                    IOpponentBullet opponentBullet => opponentBullet.HitTeam(aliveTeamA),
+                    ISelfBullet selfBullet => selfBullet.HitTeam(aliveTeamB),
+                    _ => throw new ArgumentOutOfRangeException(nameof(x))
+                };
+            });
             var effects = showEffects.Union(enumerable);
             return effects.ToArray();
         }

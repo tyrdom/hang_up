@@ -9,12 +9,18 @@ namespace AutoBattle
         public IBuffEffect BuffEffect { get; set; }
 
 
-        (int, float) GetDamageAndPercent(BattleCharacter battleCharacter)
+        static (int, float) GetDamageAndPercent(BattleCharacter battleCharacter)
         {
             return (0, 0);
         }
 
-        int GetMissPreMil(BattleCharacter battleCharacter)
+        static int GetMissPreMil(BattleCharacter battleCharacter)
+        {
+            return 0;
+        }
+
+
+        static int GetDefencePreMil(BattleCharacter battleCharacter)
         {
             return 0;
         }
@@ -22,5 +28,10 @@ namespace AutoBattle
 
     public interface IBuffEffect
     {
+    }
+
+    public interface IHasteBuff
+    {
+        (int, int) GetHasteValueAndLastMs();
     }
 }
