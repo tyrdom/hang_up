@@ -123,18 +123,32 @@ namespace AutoBattle
             return CommonSettings.FilterMissPerMilValue(missPreMil + sum + i);
         }
 
-        public IShow TakeHarm(IHarmBullet standardHarmBullet)
+        public IShow TakeHarm(IHarmBullet standardHarmBullet, out bool isHit)
         {
             var next = BattleGround.Random.Next(1000);
             if (next >= GetMissPreMil())
             {
                 var harm = standardHarmBullet.Harm * (1000 - GetDefencePreMil()) / 1000;
                 _characterBattleAttribute.NowHp -= harm;
+                IEnumerable<IPassiveAboutHit> passiveSkills1 =
+                    (IEnumerable<IPassiveAboutHit>) PassiveSkills.Where(x => x is IPassiveAboutHit);
+                var passiveAboutMisses1 = passiveSkills1 as IPassiveAboutHit[] ?? passiveSkills1.ToArray();
+                var battleBuffsToAtk1 = passiveAboutMisses1.SelectMany(x => x.GetBuffsToAttacker());
+                var battleBuffsToDef1 = passiveAboutMisses1.SelectMany(x => x.GetBuffsToSelf());
+                BattleBuffs.AddRange(battleBuffsToDef1);
+                standardHarmBullet.FromWho.BattleBuffs.AddRange(battleBuffsToAtk1);
+                isHit = true;
                 return new TakeHarmShow(harm, this);
             }
 
-            var enumerable = PassiveSkills.Where(x => x is IPassiveAboutMiss);
-            
+            IEnumerable<IPassiveAboutMiss> passiveSkills =
+                (IEnumerable<IPassiveAboutMiss>) PassiveSkills.Where(x => x is IPassiveAboutMiss);
+            var passiveAboutMisses = passiveSkills as IPassiveAboutMiss[] ?? passiveSkills.ToArray();
+            var battleBuffsToAtk = passiveAboutMisses.SelectMany(x => x.GetBuffsToAttacker());
+            var battleBuffsToDef = passiveAboutMisses.SelectMany(x => x.GetBuffsToSelf());
+            BattleBuffs.AddRange(battleBuffsToDef);
+            standardHarmBullet.FromWho.BattleBuffs.AddRange(battleBuffsToAtk);
+            isHit = false;
             return new MissShow(this);
         }
 

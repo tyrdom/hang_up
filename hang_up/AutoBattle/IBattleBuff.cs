@@ -25,7 +25,7 @@ namespace AutoBattle
             return 0;
         }
     }
-
+    
     public interface IBuffEffect
     {
     }
@@ -34,4 +34,6 @@ namespace AutoBattle
     {
         (int, int) GetHasteValueAndLastMs();
     }
+
+    
 }

@@ -19,9 +19,6 @@ namespace AutoBattle
         }
     }
 
-
-   
-
     public class StandardActiveSkill : IActiveSkill
     {
         public StandardActiveSkill(int restTimeMs, IActiveEffect[] activeEffect, int resetTime)
@@ -32,10 +29,7 @@ namespace AutoBattle
         }
 
         public int RestTimeMs { get; set; }
-        public IActiveEffect[] ActiveEffect { get; set; }
+        public IActiveEffect[] ActiveEffect { get; }
         public int ResetTime { get; }
     }
-
-
-    
 }

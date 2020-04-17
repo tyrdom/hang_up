@@ -3,32 +3,56 @@ using System.Collections.Generic;
 
 namespace AutoBattle
 {
+    internal interface IWithBuffEffectToOpponent
+    {
+        public OpponentTargetType BuffTargetType { get; }
+        public IBattleBuff[] BattleBuffs { get; }
+    }
+
+    internal interface IWithBuffEffectToSelf
+    {
+        public SelfTargetType BuffTargetType { get; }
+        public IBattleBuff[] BattleBuffs { get; }
+    }
+
+    internal interface IWithBuffEffectWhenHarmToOpponent
+    {
+        public OpponentTargetType BuffTargetType { get; }
+        public IBattleBuff[] BattleBuffs { get; }
+    }
+
+    internal interface IWithBuffEffectWhenHarmToSelf
+    {
+        public SelfTargetType BuffTargetType { get; }
+        public IBattleBuff[] BattleBuffs { get; }
+    }
+
     internal interface IExecuteEffect
     {
         public float DamageAddMultiBlackHpPercent { get; }
     }
 
-    public interface ISplashRandomOneEffect
+    internal interface ISplashRandomOneEffect
     {
         public float SplashMulti { get; }
     }
 
-    public interface IHarmEffect
+    internal interface IHarmEffect
     {
         public float HarmMulti { get; }
     }
 
-    public interface IHealEffect
+    internal interface IHealEffect
     {
         public float HealMulti { get; }
     }
 
-    public interface IToOpponentEffect : IActiveEffect
+    internal interface IToOpponentEffect : IActiveEffect
     {
         OpponentTargetType OpponentTargetType { get; }
     }
 
-    public interface ISelfEffect : IActiveEffect
+    internal interface ISelfEffect : IActiveEffect
     {
         SelfTargetType SelfTargetType { get; }
     }
@@ -36,6 +60,30 @@ namespace AutoBattle
     public interface IActiveEffect
     {
         IEnumerable<IBullet> GenBullet(BattleCharacter battleCharacter);
+    }
+
+
+    public class SelfBuffAttack : IToOpponentEffect, IHarmEffect, IWithBuffEffectToSelf
+    {
+        public SelfBuffAttack(float harmMulti, SelfTargetType buffTargetType, IBattleBuff[] battleBuffs)
+        {
+            HarmMulti = harmMulti;
+            BuffTargetType = buffTargetType;
+            BattleBuffs = battleBuffs;
+            OpponentTargetType = OpponentTargetType.FirstOpponent;
+        }
+
+        public IEnumerable<IBullet> GenBullet(BattleCharacter battleCharacter)
+        {
+            var ceiling = (int) Math.Ceiling(battleCharacter.GetDamage() * HarmMulti);
+            var standardHarmBullet = new StandardHarmBullet(battleCharacter, OpponentTargetType, ceiling);
+            return new[] {standardHarmBullet};
+        }
+
+        public OpponentTargetType OpponentTargetType { get; }
+        public float HarmMulti { get; }
+        public SelfTargetType BuffTargetType { get; }
+        public IBattleBuff[] BattleBuffs { get; }
     }
 
     public class ExecuteAttack : IToOpponentEffect, IHarmEffect, IExecuteEffect

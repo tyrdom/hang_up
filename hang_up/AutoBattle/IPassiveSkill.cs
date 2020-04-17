@@ -21,6 +21,11 @@ namespace AutoBattle
     public interface IPassiveAboutMiss : IPassiveSkill
     {
        public IBattleBuff[] GetBuffsToAttacker();
-       public IBattleBuff[] GetBuffsToTarget();
+       public IBattleBuff[] GetBuffsToSelf();
+    }
+    public interface IPassiveAboutHit : IPassiveSkill
+    {
+        public IBattleBuff[] GetBuffsToAttacker();
+        public IBattleBuff[] GetBuffsToSelf();
     }
 }
