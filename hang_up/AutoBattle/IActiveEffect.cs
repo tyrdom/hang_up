@@ -9,6 +9,12 @@ namespace AutoBattle
         public IBattleBuff[] BattleBuffs { get; }
     }
 
+
+    interface IEffectTrickOnHit
+    {
+        public bool NeedHitOrMiss { get; }
+    }
+
     internal interface IWithBuffEffectToSelf
     {
         public SelfTargetType BuffTargetType { get; }
@@ -62,28 +68,52 @@ namespace AutoBattle
         IEnumerable<IBullet> GenBullet(BattleCharacter battleCharacter);
     }
 
-
-    public class SelfBuffAttack : IToOpponentEffect, IHarmEffect, IWithBuffEffectToSelf
+    internal interface IJustKill
     {
-        public SelfBuffAttack(float harmMulti, SelfTargetType buffTargetType, IBattleBuff[] battleBuffs)
+        float rate { get; }
+    }
+
+    public class JustKill : IToOpponentEffect, IHarmEffect, IJustKill
+    {
+        public IEnumerable<IBullet> GenBullet(BattleCharacter battleCharacter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public OpponentTargetType OpponentTargetType { get; }
+        public float HarmMulti { get; }
+        public float rate { get; }
+        
+    }
+
+    public class AttackHitOrMissAndAddBuffToSelf : IToOpponentEffect, IHarmEffect, IWithBuffEffectToSelf,
+        IEffectTrickOnHit
+    {
+        public AttackHitOrMissAndAddBuffToSelf(float harmMulti, IBattleBuff[] battleBuffs,
+            SelfTargetType buffTargetType, bool needHitOrMiss)
         {
             HarmMulti = harmMulti;
-            BuffTargetType = buffTargetType;
+
             BattleBuffs = battleBuffs;
+            BuffTargetType = buffTargetType;
+            NeedHitOrMiss = needHitOrMiss;
             OpponentTargetType = OpponentTargetType.FirstOpponent;
         }
 
         public IEnumerable<IBullet> GenBullet(BattleCharacter battleCharacter)
         {
             var ceiling = (int) Math.Ceiling(battleCharacter.GetDamage() * HarmMulti);
-            var standardHarmBullet = new StandardHarmBullet(battleCharacter, OpponentTargetType, ceiling);
+            var standardHarmBullet = new AttackBulletWithBuffToSelfWhenHitOrMiss(OpponentTargetType, BuffTargetType,
+                BattleBuffs, battleCharacter, ceiling, NeedHitOrMiss);
             return new[] {standardHarmBullet};
         }
 
         public OpponentTargetType OpponentTargetType { get; }
         public float HarmMulti { get; }
+
         public SelfTargetType BuffTargetType { get; }
         public IBattleBuff[] BattleBuffs { get; }
+        public bool NeedHitOrMiss { get; }
     }
 
     public class ExecuteAttack : IToOpponentEffect, IHarmEffect, IExecuteEffect

@@ -7,7 +7,7 @@ namespace AutoBattle
 {
     public class BattleCharacter
     {
-        public KeyStatus Status;
+        public KeyStatus KeyStatus;
 
         public CharacterBattleBaseAttribute _characterBattleAttribute;
 
@@ -157,6 +157,13 @@ namespace AutoBattle
             _characterBattleAttribute.NowHp = Math.Min(_characterBattleAttribute.NowHp + healSelfBullet.Heal,
                 _characterBattleAttribute.MaxHp);
             return new HealShow(healSelfBullet.Heal, this);
+        }
+
+        public IShow[] AddBuff(IBattleBuff[] battleBuffs, BattleCharacter toWho)
+        {
+            BattleBuffs.AddRange(battleBuffs);
+            var addBuff = new AddBuff(toWho, battleBuffs);
+            return new IShow[] {addBuff};
         }
     }
 

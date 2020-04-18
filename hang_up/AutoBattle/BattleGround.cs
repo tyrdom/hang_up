@@ -20,9 +20,9 @@ namespace AutoBattle
 
         private IShow[] GoNextTimeEvent()
         {
-            var aliveTeamA = _teamA.Where(x => x.Status == KeyStatus.Alive).ToArray();
+            var aliveTeamA = _teamA.Where(x => x.KeyStatus == KeyStatus.Alive).ToArray();
 
-            var aliveTeamB = _teamB.Where(x => x.Status == KeyStatus.Alive).ToArray();
+            var aliveTeamB = _teamB.Where(x => x.KeyStatus == KeyStatus.Alive).ToArray();
             var min = aliveTeamA.Select(character => character.GetEventTime()).Min();
             var minB = aliveTeamB.Select(character => character.GetEventTime()).Min();
             var i = Math.Min(min, minB);
@@ -35,8 +35,8 @@ namespace AutoBattle
             {
                 return x switch
                 {
-                    IOpponentBullet opponentBullet => opponentBullet.HitTeam(aliveTeamB),
-                    ISelfBullet selfBullet => selfBullet.HitTeam(aliveTeamA),
+                    IOpponentBullet opponentBullet => opponentBullet.HitTeam(aliveTeamB, aliveTeamA),
+                    ISelfBullet selfBullet => selfBullet.HitTeam(aliveTeamA, aliveTeamB),
                     _ => throw new ArgumentOutOfRangeException(nameof(x))
                 };
             });
@@ -44,8 +44,8 @@ namespace AutoBattle
             {
                 return x switch
                 {
-                    IOpponentBullet opponentBullet => opponentBullet.HitTeam(aliveTeamA),
-                    ISelfBullet selfBullet => selfBullet.HitTeam(aliveTeamB),
+                    IOpponentBullet opponentBullet => opponentBullet.HitTeam(aliveTeamA, aliveTeamB),
+                    ISelfBullet selfBullet => selfBullet.HitTeam(aliveTeamB, aliveTeamA),
                     _ => throw new ArgumentOutOfRangeException(nameof(x))
                 };
             });
@@ -53,10 +53,29 @@ namespace AutoBattle
             return effects.ToArray();
         }
 
-        WhoWin CheckEnd()
+        private void CheckDead()
         {
-            var aAlive = _teamA.Select(x => x.Status == KeyStatus.Alive).Aggregate(false, (x, y) => x || y);
-            var bAlive = _teamB.Select(x => x.Status == KeyStatus.Alive).Aggregate(false, (x, y) => x || y);
+            foreach (var battleCharacter in _teamA)
+            {
+                if (battleCharacter._characterBattleAttribute.NowHp <= 0)
+                {
+                    battleCharacter.KeyStatus = KeyStatus.Dead;
+                }
+            }
+
+            foreach (var battleCharacter in _teamB)
+            {
+                if (battleCharacter._characterBattleAttribute.NowHp <= 0)
+                {
+                    battleCharacter.KeyStatus = KeyStatus.Dead;
+                }
+            }
+        }
+
+        private WhoWin CheckEnd()
+        {
+            var aAlive = _teamA.Select(x => x.KeyStatus == KeyStatus.Alive).Aggregate(false, (x, y) => x || y);
+            var bAlive = _teamB.Select(x => x.KeyStatus == KeyStatus.Alive).Aggregate(false, (x, y) => x || y);
             if (aAlive && bAlive)
             {
                 return WhoWin.NotEnd;

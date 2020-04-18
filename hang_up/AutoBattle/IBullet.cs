@@ -8,10 +8,16 @@ namespace AutoBattle
 {
     public interface IBullet
     {
-        public IEnumerable<IShow> HitTeam(IEnumerable<BattleCharacter> team);
+        public IEnumerable<IShow> HitTeam(IEnumerable<BattleCharacter> targetTeam,
+            IEnumerable<BattleCharacter> anotherTeam);
     }
 
-    public partial interface IExecuteBullet
+    interface IBulletTrickBuffHitOrMiss
+    {
+        bool HitOrMiss { get; }
+    }
+
+    internal partial interface IExecuteBullet
     {
     }
 
@@ -20,7 +26,7 @@ namespace AutoBattle
         int Heal { get; }
     }
 
-    public interface ISplashBullet
+    internal interface ISplashBullet
     {
         int SplashHarm { get; }
     }
@@ -66,19 +72,63 @@ namespace AutoBattle
         int Harm { get; }
     }
 
-    partial interface IExecuteBullet
+    internal partial interface IExecuteBullet
     {
         public float DamageAddMultiBlackHpPercent { get; }
+    }
+
+
+    public class AttackBulletWithBuffToSelfWhenHitOrMiss : IOpponentBullet, IBulletWithBuffToSelfWhenHit, IHarmBullet,
+        IBulletTrickBuffHitOrMiss
+    {
+        public IEnumerable<IShow> HitTeam(IEnumerable<BattleCharacter> targetTeam,
+            IEnumerable<BattleCharacter> anotherTeam)
+        {
+            var battleCharacters = targetTeam as BattleCharacter[] ?? targetTeam.ToArray();
+            var (battleCharacter, _) = AutoBattleTools.GetFirstAndOtherTargetByOpponentType(battleCharacters, Type);
+            if (battleCharacter == null)
+            {
+                return new IShow[] { };
+            }
+
+            IShow takeHarm = battleCharacter.TakeHarm(this, out var isHit);
+            var hitTeam = new[] {takeHarm};
+            if (isHit ^ HitOrMiss) return hitTeam;
+            var targetsBySelfTargetType =
+                AutoBattleTools.GetTargetsBySelfTargetType(anotherTeam.ToArray(), SelfTargetType, FromWho);
+            var selectMany = targetsBySelfTargetType.SelectMany(x => x.AddBuff(BattleBuffs, x));
+            var enumerable = hitTeam.Union(selectMany);
+            return enumerable.ToArray();
+        }
+
+        public AttackBulletWithBuffToSelfWhenHitOrMiss(OpponentTargetType type, SelfTargetType selfTargetType,
+            IBattleBuff[] battleBuffs, BattleCharacter fromWho, int harm, bool hitOrMiss)
+        {
+            Type = type;
+            SelfTargetType = selfTargetType;
+            BattleBuffs = battleBuffs;
+            FromWho = fromWho;
+            Harm = harm;
+            HitOrMiss = hitOrMiss;
+        }
+
+        public OpponentTargetType Type { get; }
+        public SelfTargetType SelfTargetType { get; }
+        public IBattleBuff[] BattleBuffs { get; }
+        public BattleCharacter FromWho { get; }
+        public int Harm { get; }
+        public bool HitOrMiss { get; }
     }
 
     public class ExecuteBullet : IOpponentBullet, IHarmBullet, IExecuteBullet
     {
         public BattleCharacter FromWho { get; }
 
-        public IEnumerable<IShow> HitTeam(IEnumerable<BattleCharacter> team)
+        public IEnumerable<IShow> HitTeam(IEnumerable<BattleCharacter> targetTeam,
+            IEnumerable<BattleCharacter> anotherTeam)
         {
-            var battleCharacters = team as BattleCharacter[] ?? team.ToArray();
-            var (battleCharacter, _) = AutoBattleTools.GetFirstAndOtherTarget(battleCharacters, Type);
+            var battleCharacters = targetTeam as BattleCharacter[] ?? targetTeam.ToArray();
+            var (battleCharacter, _) = AutoBattleTools.GetFirstAndOtherTargetByOpponentType(battleCharacters, Type);
             if (battleCharacter == null)
             {
                 return new IShow[] { };
@@ -109,9 +159,10 @@ namespace AutoBattle
     {
         public BattleCharacter FromWho { get; }
 
-        public IEnumerable<IShow> HitTeam(IEnumerable<BattleCharacter> team)
+        public IEnumerable<IShow> HitTeam(IEnumerable<BattleCharacter> targetTeam,
+            IEnumerable<BattleCharacter> anotherTeam)
         {
-            return team.Where(x => x == FromWho).Select(x => x.TakeHeal(this)).ToArray();
+            return targetTeam.Where(x => x == FromWho).Select(x => x.TakeHeal(this)).ToArray();
         }
 
         public SelfTargetType TargetType { get; }
@@ -131,9 +182,11 @@ namespace AutoBattle
         public int Harm { get; private set; }
         public BattleCharacter FromWho { get; }
 
-        public IEnumerable<IShow> HitTeam(IEnumerable<BattleCharacter> team)
+        public IEnumerable<IShow> HitTeam(IEnumerable<BattleCharacter> targetTeam,
+            IEnumerable<BattleCharacter> anotherTeam)
         {
-            var (battleCharacter, battleCharacters) = AutoBattleTools.GetFirstAndOtherTarget(team.ToArray(), Type);
+            var (battleCharacter, battleCharacters) =
+                AutoBattleTools.GetFirstAndOtherTargetByOpponentType(targetTeam.ToArray(), Type);
             if (battleCharacter == null)
             {
                 return new IShow[] { };
@@ -161,7 +214,6 @@ namespace AutoBattle
     }
 
 
-    
     public class StandardHarmBullet : IHarmBullet, IOpponentBullet
     {
         public BattleCharacter FromWho { get; }
@@ -176,10 +228,11 @@ namespace AutoBattle
             Harm = harm;
         }
 
-        public IEnumerable<IShow> HitTeam(IEnumerable<BattleCharacter> team)
+        public IEnumerable<IShow> HitTeam(IEnumerable<BattleCharacter> targetTeam,
+            IEnumerable<BattleCharacter> anotherTeam)
         {
-            var battleCharacters = team as BattleCharacter[] ?? team.ToArray();
-            var (battleCharacter, _) = AutoBattleTools.GetFirstAndOtherTarget(battleCharacters, Type);
+            var battleCharacters = targetTeam as BattleCharacter[] ?? targetTeam.ToArray();
+            var (battleCharacter, _) = AutoBattleTools.GetFirstAndOtherTargetByOpponentType(battleCharacters, Type);
             if (battleCharacter == null)
             {
                 return new IShow[] { };

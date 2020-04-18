@@ -29,6 +29,17 @@ namespace AutoBattle
         }
     }
 
+    public class AddBuff : IShow
+    {
+        public BattleCharacter Who { get; }
+        public IBattleBuff[] BattleBuffs { get; }
+
+        public AddBuff(BattleCharacter who, IBattleBuff[] battleBuffs)
+        {
+            Who = who;
+            BattleBuffs = battleBuffs;
+        }
+    }
     public class MissShow : IShow
     {
         public BattleCharacter Who { get; }

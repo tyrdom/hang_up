@@ -6,9 +6,6 @@ namespace AutoBattle
     {
         public int Stack { get; set; }
 
-        public IBuffEffect BuffEffect { get; set; }
-
-
         static (int, float) GetDamageAndPercent(BattleCharacter battleCharacter)
         {
             return (0, 0);
@@ -19,21 +16,14 @@ namespace AutoBattle
             return 0;
         }
 
-
         static int GetDefencePreMil(BattleCharacter battleCharacter)
         {
             return 0;
         }
     }
-    
-    public interface IBuffEffect
-    {
-    }
 
-    public interface IHasteBuff
+    public interface IHasteBuff : IBattleBuff
     {
         (int, int) GetHasteValueAndLastMs();
     }
-
-    
 }
