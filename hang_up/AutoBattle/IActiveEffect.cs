@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace AutoBattle
 {
@@ -9,25 +10,17 @@ namespace AutoBattle
         public IBattleBuff[] BattleBuffs { get; }
     }
 
+    internal interface IExtraCriticalByOpponentHpEffect
+    {
+        public float BlackHpPercentMulti { get; }
+    }
 
-    interface IEffectTrickOnHit
+    internal interface IEffectTrickOnHit
     {
         public bool NeedHitOrMiss { get; }
     }
 
     internal interface IWithBuffEffectToSelf
-    {
-        public SelfTargetType BuffTargetType { get; }
-        public IBattleBuff[] BattleBuffs { get; }
-    }
-
-    internal interface IWithBuffEffectWhenHarmToOpponent
-    {
-        public OpponentTargetType BuffTargetType { get; }
-        public IBattleBuff[] BattleBuffs { get; }
-    }
-
-    internal interface IWithBuffEffectWhenHarmToSelf
     {
         public SelfTargetType BuffTargetType { get; }
         public IBattleBuff[] BattleBuffs { get; }
@@ -68,22 +61,68 @@ namespace AutoBattle
         IEnumerable<IBullet> GenBullet(BattleCharacter battleCharacter);
     }
 
-    internal interface IJustKill
+
+    internal interface INoMissAttack
     {
-        float rate { get; }
+        float NoMissMulti { get; }
     }
 
-    public class JustKill : IToOpponentEffect, IHarmEffect, IJustKill
+    internal interface IJustKillEffect
+    {
+        float KillRate { get; }
+    }
+
+
+    public class MissAndDamageMoreEffect : IToOpponentEffect, IHarmEffect, INoMissAttack, IEffectTrickOnHit
     {
         public IEnumerable<IBullet> GenBullet(BattleCharacter battleCharacter)
         {
-            throw new NotImplementedException();
+            var ceiling = (int) Math.Ceiling(battleCharacter.GetDamage() * HarmMulti);
+            var ceiling2 = (int) Math.Ceiling(battleCharacter.GetDamage() * NoMissMulti);
+            var missAndDamageMoreBullet =
+                new MissAndDamageMoreBullet(OpponentTargetType, NeedHitOrMiss, battleCharacter, ceiling, -ceiling2);
+
+            return new[] {missAndDamageMoreBullet};
+        }
+
+        public MissAndDamageMoreEffect(float harmMulti, float noMissMulti, bool needHitOrMiss, int criticalPerMil)
+        {
+            OpponentTargetType = OpponentTargetType.FirstOpponent;
+            HarmMulti = harmMulti;
+            NoMissMulti = noMissMulti;
+            NeedHitOrMiss = needHitOrMiss;
         }
 
         public OpponentTargetType OpponentTargetType { get; }
         public float HarmMulti { get; }
-        public float rate { get; }
-        
+        public float NoMissMulti { get; }
+        public bool NeedHitOrMiss { get; }
+    }
+
+    public class JustKillEffect : IToOpponentEffect, IHarmEffect, IJustKillEffect
+    {
+        public IEnumerable<IBullet> GenBullet(BattleCharacter battleCharacter)
+        {
+            if (!(KillRate * 1000 > BattleGround.Random.Next(1000)))
+                return new[]
+                {
+                    new StandardHarmBullet(battleCharacter, OpponentTargetType,
+                        (int) Math.Ceiling(battleCharacter.GetDamage() * HarmMulti))
+                };
+            var justKillBullet = new JustKillBullet(OpponentTargetType, battleCharacter);
+            return new[] {justKillBullet};
+        }
+
+        public OpponentTargetType OpponentTargetType { get; }
+        public float HarmMulti { get; }
+        public float KillRate { get; }
+
+        public JustKillEffect(OpponentTargetType opponentTargetType, float harmMulti, float rate)
+        {
+            OpponentTargetType = opponentTargetType;
+            HarmMulti = harmMulti;
+            KillRate = rate;
+        }
     }
 
     public class AttackHitOrMissAndAddBuffToSelf : IToOpponentEffect, IHarmEffect, IWithBuffEffectToSelf,
@@ -103,7 +142,7 @@ namespace AutoBattle
         public IEnumerable<IBullet> GenBullet(BattleCharacter battleCharacter)
         {
             var ceiling = (int) Math.Ceiling(battleCharacter.GetDamage() * HarmMulti);
-            var standardHarmBullet = new AttackBulletWithBuffToSelfWhenHitOrMiss(OpponentTargetType, BuffTargetType,
+            var standardHarmBullet = new AttackBulletWithBuffToSelfOrMiss(OpponentTargetType, BuffTargetType,
                 BattleBuffs, battleCharacter, ceiling, NeedHitOrMiss);
             return new[] {standardHarmBullet};
         }
@@ -115,6 +154,7 @@ namespace AutoBattle
         public IBattleBuff[] BattleBuffs { get; }
         public bool NeedHitOrMiss { get; }
     }
+
 
     public class ExecuteAttack : IToOpponentEffect, IHarmEffect, IExecuteEffect
     {
@@ -136,6 +176,34 @@ namespace AutoBattle
         public OpponentTargetType OpponentTargetType { get; }
         public float HarmMulti { get; }
         public float DamageAddMultiBlackHpPercent { get; }
+    }
+
+    public class AttackHitOrMissWithBuffToOpponent : IToOpponentEffect, IEffectTrickOnHit, IWithBuffEffectToOpponent,
+        IHarmEffect
+    {
+        public IEnumerable<IBullet> GenBullet(BattleCharacter battleCharacter)
+        {
+            var ceiling = (int) Math.Ceiling(battleCharacter.GetDamage() * HarmMulti);
+            var standardHarmBullet = new AttackBulletWithBuffToOpponentWhenHitOrMiss(OpponentTargetType,
+                OpponentTargetType, BattleBuffs, battleCharacter, ceiling, NeedHitOrMiss);
+            return new[] {standardHarmBullet, standardHarmBullet};
+        }
+
+        public AttackHitOrMissWithBuffToOpponent(OpponentTargetType opponentTargetType, bool needHitOrMiss,
+            OpponentTargetType buffTargetType, IBattleBuff[] battleBuffs, float harmMulti)
+        {
+            OpponentTargetType = opponentTargetType;
+            NeedHitOrMiss = needHitOrMiss;
+            BuffTargetType = buffTargetType;
+            BattleBuffs = battleBuffs;
+            HarmMulti = harmMulti;
+        }
+
+        public OpponentTargetType OpponentTargetType { get; }
+        public bool NeedHitOrMiss { get; }
+        public OpponentTargetType BuffTargetType { get; }
+        public IBattleBuff[] BattleBuffs { get; }
+        public float HarmMulti { get; }
     }
 
     public class DoubleAttack : IToOpponentEffect, IHarmEffect
@@ -198,11 +266,12 @@ namespace AutoBattle
         public float HarmMulti { get; }
         public float HealMulti { get; }
 
-        public AttackAndHealSelf(float harmMulti, float healMulti)
+        public AttackAndHealSelf(float harmMulti, float healMulti, SelfTargetType selfTargetType)
         {
             HarmMulti = harmMulti;
             HealMulti = healMulti;
-            SelfTargetType = SelfTargetType.Self;
+            SelfTargetType = selfTargetType;
+
             OpponentTargetType = OpponentTargetType.FirstOpponent;
         }
     }

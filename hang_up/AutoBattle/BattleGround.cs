@@ -57,7 +57,7 @@ namespace AutoBattle
         {
             foreach (var battleCharacter in _teamA)
             {
-                if (battleCharacter._characterBattleAttribute.NowHp <= 0)
+                if (battleCharacter.CharacterBattleAttribute.NowHp <= 0)
                 {
                     battleCharacter.KeyStatus = KeyStatus.Dead;
                 }
@@ -65,7 +65,7 @@ namespace AutoBattle
 
             foreach (var battleCharacter in _teamB)
             {
-                if (battleCharacter._characterBattleAttribute.NowHp <= 0)
+                if (battleCharacter.CharacterBattleAttribute.NowHp <= 0)
                 {
                     battleCharacter.KeyStatus = KeyStatus.Dead;
                 }

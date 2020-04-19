@@ -7,6 +7,11 @@ namespace AutoBattle
             return (0, 0);
         }
 
+        int GetCritical(BattleCharacter battleCharacter)
+        {
+            return 0;
+        }
+
         int GetMissPreMil(BattleCharacter battleCharacter)
         {
             return 0;
@@ -20,9 +25,10 @@ namespace AutoBattle
 
     public interface IPassiveAboutMiss : IPassiveSkill
     {
-       public IBattleBuff[] GetBuffsToAttacker();
-       public IBattleBuff[] GetBuffsToSelf();
+        public IBattleBuff[] GetBuffsToAttacker();
+        public IBattleBuff[] GetBuffsToSelf();
     }
+
     public interface IPassiveAboutHit : IPassiveSkill
     {
         public IBattleBuff[] GetBuffsToAttacker();

@@ -12,7 +12,7 @@ namespace AutoBattle
             BattleCharacter battleCharacter = opponentTargetType switch
             {
                 OpponentTargetType.FirstOpponent => team[0],
-                OpponentTargetType.WeakestOpponent => team.OrderBy(x => x._characterBattleAttribute.NowHp).ToArray()
+                OpponentTargetType.WeakestOpponent => team.OrderBy(x => x.CharacterBattleAttribute.NowHp).ToArray()
                     [0],
                 _ => throw new ArgumentOutOfRangeException(nameof(opponentTargetType), opponentTargetType, null)
             };
@@ -30,6 +30,9 @@ namespace AutoBattle
             {
                 SelfTargetType.Self => team.Where(x => x == fromWho).ToArray(),
                 SelfTargetType.SelfTeam => team,
+                SelfTargetType.SelfWeak => team
+                    .OrderBy(x => x.CharacterBattleAttribute.NowHp / x.CharacterBattleAttribute.MaxHp).Take(1)
+                    .ToArray(),
                 SelfTargetType.SelfTeamOthers => team.Where(x => x != fromWho).ToArray(),
                 _ => throw new ArgumentOutOfRangeException(nameof(selfTargetType), selfTargetType, null)
             };

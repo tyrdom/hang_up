@@ -20,6 +20,11 @@ namespace AutoBattle
         {
             return 0;
         }
+
+        static int GetCritical(BattleCharacter battleCharacter)
+        {
+            return 0;
+        }
     }
 
     public interface IHasteBuff : IBattleBuff
