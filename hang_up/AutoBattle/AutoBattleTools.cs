@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AutoBattle
@@ -36,6 +37,29 @@ namespace AutoBattle
                 SelfTargetType.SelfTeamOthers => team.Where(x => x != fromWho).ToArray(),
                 _ => throw new ArgumentOutOfRangeException(nameof(selfTargetType), selfTargetType, null)
             };
+        }
+
+        public static List<IBattleBuff> AddBuffs(List<IBattleBuff> raw, IEnumerable<IBattleBuff> add)
+        {
+            var noStack = new List<IBattleBuff>();
+            foreach (var battleBuff in add)
+            {
+                Type type = battleBuff.GetType();
+                foreach (var buff in raw)
+                {
+                    if (buff.GetType() == type)
+                    {
+                        buff.AddStack(1, battleBuff.RestTimeMs);
+                    }
+                    else
+                    {
+                        noStack.Add(battleBuff);
+                    }
+                }
+            }
+
+            raw.AddRange(noStack);
+            return raw;
         }
     }
 }

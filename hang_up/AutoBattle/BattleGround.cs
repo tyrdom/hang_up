@@ -11,10 +11,14 @@ namespace AutoBattle
 
         public static readonly Random Random = new Random();
 
+
+        public readonly BattleGlobals BattleGlobals;
+
         public BattleGround(BattleCharacter[] teamA, BattleCharacter[] teamB)
         {
             _teamA = teamA;
             _teamB = teamB;
+            BattleGlobals = BattleGlobals.Instance;
         }
 
 
@@ -50,26 +54,24 @@ namespace AutoBattle
                 };
             });
             var effects = showEffects.Union(enumerable);
+
+            //CheckDead
+            foreach (var battleCharacter in aliveTeamA)
+            {
+                if (battleCharacter.CharacterBattleAttribute.NowHp > 0) continue;
+                battleCharacter.KeyStatus = KeyStatus.Dead;
+                BattleGlobals.TeamADeadTime++;
+            }
+
+
+            foreach (var battleCharacter in aliveTeamB)
+            {
+                if (battleCharacter.CharacterBattleAttribute.NowHp > 0) continue;
+                battleCharacter.KeyStatus = KeyStatus.Dead;
+                BattleGlobals.TeamBDeadTime++;
+            }
+
             return effects.ToArray();
-        }
-
-        private void CheckDead()
-        {
-            foreach (var battleCharacter in _teamA)
-            {
-                if (battleCharacter.CharacterBattleAttribute.NowHp <= 0)
-                {
-                    battleCharacter.KeyStatus = KeyStatus.Dead;
-                }
-            }
-
-            foreach (var battleCharacter in _teamB)
-            {
-                if (battleCharacter.CharacterBattleAttribute.NowHp <= 0)
-                {
-                    battleCharacter.KeyStatus = KeyStatus.Dead;
-                }
-            }
         }
 
         private WhoWin CheckEnd()
@@ -92,6 +94,21 @@ namespace AutoBattle
             }
 
             return WhoWin.DrawGame;
+        }
+    }
+
+    public class BattleGlobals
+    {
+        public int TeamADeadTime;
+        public int TeamBDeadTime;
+
+        public static BattleGlobals Instance
+            = new BattleGlobals();
+
+        public BattleGlobals()
+        {
+            TeamADeadTime = 0;
+            TeamBDeadTime = 0;
         }
     }
 

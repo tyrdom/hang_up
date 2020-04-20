@@ -22,9 +22,7 @@ namespace AutoBattle
         bool HitOrMiss { get; }
     }
 
-    internal partial interface IExecuteBullet
-    {
-    }
+   
 
     public interface IHealBullet
     {
@@ -80,7 +78,7 @@ namespace AutoBattle
         int Harm { get; }
     }
 
-    internal partial interface IExecuteBullet
+    internal  interface IExecuteBullet
     {
         public float DamageAddMultiBlackHpPercent { get; }
     }
@@ -244,7 +242,7 @@ namespace AutoBattle
 
     
     
-    public class ExecuteBullet : IOpponentBullet, IHarmBullet, IExecuteBullet
+    public class ExecuteBullet : IOpponentBullet, IHarmBullet, IExecuteEffect
     {
         public BattleCharacter FromWho { get; }
 
@@ -277,6 +275,7 @@ namespace AutoBattle
         public OpponentTargetType Type { get; }
         public int Harm { get; private set; }
         public float DamageAddMultiBlackHpPercent { get; }
+        
     }
 
 
