@@ -18,10 +18,10 @@ namespace GameServers
             var mongodbAccountBaseActor = actorSystem.ActorOf(Props.Create(() => new MongodbAccountActor()));
             var hallActor = actorSystem.ActorOf(Props.Create(() => new HallActor()));
             var mongodbAccountBankActor = actorSystem.ActorOf(Props.Create(() => new MongodbBankActor()));
-            var mongodbCharacterActor = actorSystem.ActorOf(Props.Create(() => new MongodbCharactersActor()))
-                ;
-            FamousActors.MongodbAccountActor = mongodbAccountBaseActor;
+            var mongodbCharacterActor = actorSystem.ActorOf(Props.Create(() => new MongodbCharactersActor()));
             FamousActors.HallActor = hallActor;
+            FamousActors.MongodbAccountActor = mongodbAccountBaseActor;
+
             FamousActors.MongodbBankActor = mongodbAccountBankActor;
             FamousActors.MongodbCharacterActor = mongodbCharacterActor;
             Console.WriteLine("Welcome to service!\r\nType 'exit' to exit the service.");

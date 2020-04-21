@@ -98,11 +98,11 @@ namespace GameServers
 
         public MongodbBankActor()
         {
-            var dbClient = new MongoClient("mongodb://localhost");
+            var mongoClient = FamousActors.DbClient;
 
 
             const string dbName = "testDb";
-            var mongoDatabase = dbClient.GetDatabase(dbName);
+            var mongoDatabase = mongoClient.GetDatabase(dbName);
             const string tableName = "player_bank";
             var bankTable = mongoDatabase.GetCollection<PlayerBank>(tableName);
 

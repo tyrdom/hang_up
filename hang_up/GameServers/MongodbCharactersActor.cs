@@ -13,8 +13,6 @@ namespace GameServers
         public Dictionary<uint, CharactersGetResponse.Character.CharacterStatus> CharactersIdToStatus { get; set; }
     }
 
-    
-
 
     public class MongodbCharactersActor : ReceiveActor
     {
@@ -22,11 +20,9 @@ namespace GameServers
 
         public MongodbCharactersActor()
         {
-            var dbClient = new MongoClient("mongodb://localhost");
-
-
+            var client = FamousActors.DbClient;
             const string dbName = "testDb";
-            var mongoDatabase = dbClient.GetDatabase(dbName);
+            var mongoDatabase = client.GetDatabase(dbName);
             const string tableName = "player_character";
             var characterTable = mongoDatabase.GetCollection<PlayerCharacters>(tableName);
 
@@ -37,7 +33,7 @@ namespace GameServers
                 var firstOrDefault = characterTable.Find(accountIdFilter).FirstOrDefault();
                 if (firstOrDefault == null)
                 {
-                    _log.Info($"accountId{characters.AccountId} have no bank, create one~~~~");
+                    _log.Info($"accountId{characters.AccountId} have no characters, create one~~~~");
                     var playerCharactersNew
                         = Tools.PlayerCharactersNew(characters.AccountId);
                     characterTable.InsertOne(playerCharactersNew);
@@ -49,14 +45,16 @@ namespace GameServers
                 }
             });
 
-            Receive<SaveCharacters>(characters =>  {
+            Receive<SaveCharacters>(characters =>
+            {
                 var charactersPlayerCharacters = characters.PlayerCharacters;
-                var filter = Builders<PlayerCharacters>.Filter.Eq(x => x.AccountId, charactersPlayerCharacters.AccountId);
+                var filter =
+                    Builders<PlayerCharacters>.Filter.Eq(x => x.AccountId, charactersPlayerCharacters.AccountId);
                 var firstOrDefault = characterTable.Find(filter).FirstOrDefault();
                 if (firstOrDefault == null) return;
-                characterTable.UpdateOne(filter, new ObjectUpdateDefinition<PlayerCharacters>(charactersPlayerCharacters));
+                characterTable.UpdateOne(filter,
+                    new ObjectUpdateDefinition<PlayerCharacters>(charactersPlayerCharacters));
             });
-            
         }
     }
 

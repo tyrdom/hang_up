@@ -24,7 +24,7 @@ namespace GameServers
 
         public MongodbAccountActor()
         {
-            var dbClient = new MongoClient("mongodb://localhost");
+            MongoClient dbClient = FamousActors.DbClient;
             var dbList = dbClient.ListDatabases().ToList();
             foreach (var item in dbList)
             {
@@ -33,6 +33,7 @@ namespace GameServers
 
             var dbName = "testDb";
             var mongoDatabase = dbClient.GetDatabase(dbName);
+            mongoDatabase.ListCollectionNames().ToList().ForEach(x => _log.Info(x));
             var playerBase = "player_base";
             var accountBaseTable = mongoDatabase.GetCollection<PlayerBase>(playerBase);
 
@@ -72,28 +73,29 @@ namespace GameServers
                 var firstOrDefault = accountBaseTable.Find(filter).FirstOrDefault();
                 if (firstOrDefault == null)
                 {
-                    var @base = new PlayerBase()
+                    var @base = new PlayerBase
                     {
                         AccountId = requestAccountId, Password = Tools.GetMd5Hash(requestPassword),
                         NickName = requestAccountId, LastInTime = DateTime.Now,
                         LastOutTime = DateTime.MinValue
                     };
                     accountBaseTable.InsertOne(@base);
-                    FamousActors.MongodbBankActor.Tell(new CreateBank (requestAccountId));
-                    var loginResponse = new LoginResponse()
-                        {reason = LoginResponse.Reason.NotExistSoCreate, Nickname = requestAccountId};
+                    FamousActors.MongodbBankActor.Tell(new CreateBank(requestAccountId));
+                    var loginResponse = new LoginResponse {reason = LoginResponse.Reason.NotExistSoCreate, Nickname = requestAccountId};
                     Sender.Tell(loginResponse);
                 }
                 else
                 {
                     if (Tools.VerifyMd5Hash(requestPassword, firstOrDefault.Password))
                     {
-                        var loginResponse = new LoginResponse {reason = LoginResponse.Reason.Ok, Nickname = firstOrDefault.NickName};
+                        var loginResponse = new LoginResponse
+                            {reason = LoginResponse.Reason.Ok, Nickname = firstOrDefault.NickName};
                         Sender.Tell(loginResponse);
                     }
                     else
                     {
-                        var loginResponse = new LoginResponse {reason = LoginResponse.Reason.WrongPassword, Nickname = ""};
+                        var loginResponse = new LoginResponse
+                            {reason = LoginResponse.Reason.WrongPassword, Nickname = ""};
                         Sender.Tell(loginResponse);
                     }
                 }
