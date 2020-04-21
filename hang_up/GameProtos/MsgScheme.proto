@@ -4,117 +4,118 @@ option csharp_namespace = "GameProtos";
 package msgScheme;
 
 message AMsg {
-  enum Type {
-    RequestMsg = 0;
-    ResponseMsg = 1;
-  }
-  Type type = 1;
-  oneof msg {
-    RequestMsg requestMsg = 2;
-    ResponseMsg responseMsg = 3;
+    enum Type {
+        RequestMsg = 0;
+        ResponseMsg = 1;
+    }
+    Type type = 1;
+    oneof msg {
+        RequestMsg requestMsg = 2;
+        ResponseMsg responseMsg = 3;
 
-  }
+    }
 
 }
 message RequestMsg {
-  enum Head {
+    enum Head {
 
 
-    LoginRequest = 0;
+        LoginRequest = 0;
 
 
-    FixAccountPasswordRequest = 1;
+        FixAccountPasswordRequest = 1;
 
-    LogoutRequest = 2;
+        LogoutRequest = 2;
 
-    BankBaseRequest = 3;
+        BankBaseRequest = 3;
 
-    BankItemAllRequest = 4;
-    BankItemCustomRequest = 5;
+        BankItemAllRequest = 4;
+        BankItemCustomRequest = 5;
 
-    CharactersGetRequest = 6;
-  }
-  Head head = 1;
+        CharactersGetRequest = 6;
+    }
+    Head head = 1;
 
-  oneof body {
-
-
-    LoginRequest loginRequest = 2;
+    oneof body {
 
 
-    FixAccountPasswordRequest fixAccountPasswordRequest = 3;
+        LoginRequest loginRequest = 2;
 
-    LogoutRequest logoutRequest = 4;
 
-    BankBaseRequest bankBaseRequest = 5;
+        FixAccountPasswordRequest fixAccountPasswordRequest = 3;
 
-    BankAllItemRequest bankItemRequest = 6;
-    BankCustomItemRequest bankCustomItemRequest = 7;
+        LogoutRequest logoutRequest = 4;
 
-    CharactersGetRequest charactersGetRequest = 8;
-  }
+        BankBaseRequest bankBaseRequest = 5;
+
+        BankAllItemRequest bankItemRequest = 6;
+        BankCustomItemRequest bankCustomItemRequest = 7;
+
+        CharactersGetRequest charactersGetRequest = 8;
+    }
 
 }
 message CharactersGetRequest {
 
 }
 message ResponseMsg {
-  enum Head {
-    ErrorResponse = 0;
+    enum Head {
+        ErrorResponse = 0;
 
 
-    LoginResponse = 1;
+        LoginResponse = 1;
 
 
-    FixAccountPasswordResponse = 2;
+        FixAccountPasswordResponse = 2;
 
 
-    LogoutResponse = 3;
+        LogoutResponse = 3;
 
 
-    BankBaseResponse = 4;
+        BankBaseResponse = 4;
 
 
-    BankItemResponse = 5;
+        BankItemResponse = 5;
 
-    CharactersGetResponse = 6;
-  }
-  Head head = 1;
+        CharactersGetResponse = 6;
+    }
+    Head head = 1;
 
-  oneof body {
-    ErrorResponse errorResponse = 2;
-
-
-    LoginResponse loginResponse = 3;
+    oneof body {
+        ErrorResponse errorResponse = 2;
 
 
-    FixAccountPasswordResponse fixAccountPasswordResponse = 4;
+        LoginResponse loginResponse = 3;
 
-    LogoutResponse logoutResponse = 5;
 
-    BankBaseResponse bankBaseResponse = 6;
+        FixAccountPasswordResponse fixAccountPasswordResponse = 4;
 
-    BankItemResponse bankItemResponse = 7;
-    CharactersGetResponse charactersGetResponse = 8;
-  }
+        LogoutResponse logoutResponse = 5;
+
+        BankBaseResponse bankBaseResponse = 6;
+
+        BankItemResponse bankItemResponse = 7;
+        CharactersGetResponse charactersGetResponse = 8;
+    }
 }
 
 
-message CharactersGetResponse{
-  repeated Character characters = 1;
-  message Character{
-    uint32 Id = 1;
-    CharacterStatus characterStatus = 2;
-    message CharacterStatus{
-      uint32 Level = 1;
-      uint32 Star = 2;
-      bool InBattle = 3;
-      uint32 RuneType = 4;
-      uint32 RuneLevel = 5;}
-  }
+message CharactersGetResponse {
+    repeated Character characters = 1;
+    message Character {
+        uint32 Id = 1;
+        CharacterStatus characterStatus = 2;
+        message CharacterStatus {
+            uint32 Level = 1;
+            uint32 Star = 2;
+            bool InBattle = 3;
+            uint32 RuneType = 4;
+            uint32 RuneLevel = 5;
+        }
+    }
 }
 message BankCustomItemRequest {
-  repeated uint32 itemId = 1;
+    repeated uint32 itemId = 1;
 }
 
 message BankAllItemRequest {
@@ -125,19 +126,19 @@ message BankBaseRequest {
 }
 
 message BankBaseResponse {
-  uint64 Gold = 1;
-  uint64 Soul = 2;
-  uint64 Crystal = 3;
-  uint64 RunePoint = 4;
+    uint64 Gold = 1;
+    uint64 Soul = 2;
+    uint64 Crystal = 3;
+    uint64 RunePoint = 4;
 }
 
 message BankItemResponse {
-  repeated Item Items = 1;
+    repeated Item Items = 1;
 
-  message Item {
-    uint32 itemId = 1;
-    uint32 num = 2;
-  }
+    message Item {
+        uint32 itemId = 1;
+        uint32 num = 2;
+    }
 }
 
 
@@ -150,62 +151,62 @@ message LogoutRequest {
 
 
 service Login {
-  rpc login (LoginRequest) returns (LoginResponse) {
-  }
+    rpc login (LoginRequest) returns (LoginResponse) {
+    }
 }
 
 
 message FixAccountPasswordRequest {
-  string accountId = 1;
-  string oldPassword = 2;
-  string newPassword = 3;
+    string accountId = 1;
+    string oldPassword = 2;
+    string newPassword = 3;
 }
 message FixAccountPasswordResponse {
 
-  enum Reason {
-    OK = 0;
-    NO_GOOD_ACCOUNT_ID = 1;
-    NO_GOOD_PASSWORD = 2;
+    enum Reason {
+        OK = 0;
+        NO_GOOD_ACCOUNT_ID = 1;
+        NO_GOOD_PASSWORD = 2;
 
-    ACCOUNT_NOT_EXIST = 3;
-    WRONG_PASSWORD = 4;
-    OTHER = 5;
-  }
-  Reason reason = 1;
+        ACCOUNT_NOT_EXIST = 3;
+        WRONG_PASSWORD = 4;
+        OTHER = 5;
+    }
+    Reason reason = 1;
 
 }
 
 
 message LoginRequest {
-  string accountId = 1;
-  string password = 2;
+    string accountId = 1;
+    string password = 2;
 
 }
 
 message LoginResponse {
 
-  enum Reason {
-    OK = 0;
-    NO_GOOD_ACCOUNT = 1;
-    NO_GOOD_PASSWORD = 2;
-    WRONG_PASSWORD = 3;
-    NOT_EXIST_SO_CREATE = 4;
-    OTHER = 5;
-  }
-  Reason reason = 1;
-  string nickname = 2;
+    enum Reason {
+        OK = 0;
+        NO_GOOD_ACCOUNT = 1;
+        NO_GOOD_PASSWORD = 2;
+        WRONG_PASSWORD = 3;
+        NOT_EXIST_SO_CREATE = 4;
+        OTHER = 5;
+    }
+    Reason reason = 1;
+    string nickname = 2;
 
-  CharactersGetResponse charactersGetResponse = 3;
-  BankBaseResponse bankBaseResponse = 4;
+    CharactersGetResponse charactersGetResponse = 3;
+    BankBaseResponse bankBaseResponse = 4;
 }
 
 
 message ErrorResponse {
-  ErrorType errorType = 1;
-  string reason = 2;
-  enum ErrorType {
-    UNKNOWN = 0;
-    OTHER_LOGIN = 1;
+    ErrorType errorType = 1;
+    string reason = 2;
+    enum ErrorType {
+        UNKNOWN = 0;
+        OTHER_LOGIN = 1;
 
-  }
+    }
 }

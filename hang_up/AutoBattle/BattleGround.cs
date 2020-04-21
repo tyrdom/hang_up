@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+
 
 namespace AutoBattle
 {
     public class BattleGround
     {
-        private readonly BattleCharacter[] _teamA;
-        private readonly BattleCharacter[] _teamB;
+        private BattleCharacter[] _teamA;
+        private BattleCharacter[] _teamB;
 
         public static readonly Random Random = new Random();
 
@@ -18,9 +18,35 @@ namespace AutoBattle
         {
             _teamA = teamA;
             _teamB = teamB;
-            BattleGlobals = BattleGlobals.Instance;
+            BattleGlobals = new BattleGlobals();
         }
 
+        
+        private void GetReady()
+        {
+            foreach (var battleCharacter in _teamA)
+            {
+                foreach (var getReadyActive in battleCharacter.PassiveSkills.OfType<IGetReadyActive>())
+                {
+                    getReadyActive.GetReadyDo(battleCharacter);
+                }
+            }
+
+            foreach (var battleCharacter in _teamB)
+            {
+                foreach (var getReadyActive in battleCharacter.PassiveSkills.OfType<IGetReadyActive>())
+                {
+                    getReadyActive.GetReadyDo(battleCharacter);
+                }
+            }
+
+            var battleCharacters =
+                _teamA.SelectMany(x => x.PassiveSkills.OfType<ICopyCharacter>().SelectMany(c => c.GenCopies(x)));
+            _teamA = _teamA.Concat(battleCharacters).ToArray();
+            var battleCharacters1 =
+                _teamB.SelectMany(x => x.PassiveSkills.OfType<ICopyCharacter>().SelectMany(c => c.GenCopies(x)));
+            _teamB = _teamB.Concat(battleCharacters1).ToArray();
+        }
 
         private IShow[] GoNextTimeEvent()
         {
@@ -59,7 +85,9 @@ namespace AutoBattle
             foreach (var battleCharacter in aliveTeamA)
             {
                 if (battleCharacter.CharacterBattleAttribute.NowHp > 0) continue;
-                battleCharacter.KeyStatus = KeyStatus.Dead;
+                battleCharacter.DoDead();
+
+
                 BattleGlobals.TeamADeadTime++;
             }
 
@@ -67,7 +95,7 @@ namespace AutoBattle
             foreach (var battleCharacter in aliveTeamB)
             {
                 if (battleCharacter.CharacterBattleAttribute.NowHp > 0) continue;
-                battleCharacter.KeyStatus = KeyStatus.Dead;
+                battleCharacter.DoDead();
                 BattleGlobals.TeamBDeadTime++;
             }
 
@@ -101,9 +129,6 @@ namespace AutoBattle
     {
         public int TeamADeadTime;
         public int TeamBDeadTime;
-
-        public static BattleGlobals Instance
-            = new BattleGlobals();
 
         public BattleGlobals()
         {

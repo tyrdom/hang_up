@@ -12,9 +12,8 @@ namespace AutoBattle
             if (!team.Any()) return (null, new BattleCharacter[] { });
             BattleCharacter battleCharacter = opponentTargetType switch
             {
-                OpponentTargetType.FirstOpponent => team[0],
-                OpponentTargetType.WeakestOpponent => team.OrderBy(x => x.CharacterBattleAttribute.NowHp).ToArray()
-                    [0],
+                OpponentTargetType.FirstOpponent => team.First(),
+                OpponentTargetType.WeakestOpponent => team.OrderBy(x => x.CharacterBattleAttribute.NowHp).First(),
                 _ => throw new ArgumentOutOfRangeException(nameof(opponentTargetType), opponentTargetType, null)
             };
 

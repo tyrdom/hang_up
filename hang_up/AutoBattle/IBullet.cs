@@ -22,7 +22,6 @@ namespace AutoBattle
         bool HitOrMiss { get; }
     }
 
-   
 
     public interface IHealBullet
     {
@@ -78,11 +77,44 @@ namespace AutoBattle
         int Harm { get; }
     }
 
-    internal  interface IExecuteBullet
+    internal interface IExecuteBullet
     {
         public float DamageAddMultiBlackHpPercent { get; }
     }
 
+    public class SplashAllBullet : IOpponentBullet, IHarmBullet, ISplashAllBullet
+    {
+        public IEnumerable<IShow> HitTeam(IEnumerable<BattleCharacter> targetTeam,
+            IEnumerable<BattleCharacter> anotherTeam)
+        {
+            var battleCharacters = targetTeam as BattleCharacter[] ?? targetTeam.ToArray();
+            var (battleCharacter, otherCharacter) =
+                AutoBattleTools.GetFirstAndOtherTargetByOpponentType(battleCharacters, Type);
+            if (battleCharacter == null)
+            {
+                return new IShow[] { };
+            }
+
+            var takeHarm = battleCharacter.TakeHarm(this, out _);
+            Harm = SplashHarm;
+            var enumerable = otherCharacter.Select(x => x.TakeHarm(this, out _));
+            var append = enumerable.Append(takeHarm);
+            return append;
+        }
+
+        public SplashAllBullet(OpponentTargetType type, BattleCharacter fromWho, int harm, int splashHarm)
+        {
+            Type = type;
+            FromWho = fromWho;
+            Harm = harm;
+            SplashHarm = splashHarm;
+        }
+
+        public OpponentTargetType Type { get; }
+        public BattleCharacter FromWho { get; }
+        public int Harm { get; private set; }
+        public int SplashHarm { get; }
+    }
 
     public class JustKillBullet : IOpponentBullet, IHarmBullet, IJustKillBullet
     {
@@ -240,9 +272,8 @@ namespace AutoBattle
         public bool HitOrMiss { get; }
     }
 
-    
-    
-    public class ExecuteBullet : IOpponentBullet, IHarmBullet, IExecuteEffect
+
+    public class ExecuteBullet : IOpponentBullet, IHarmBullet, IExecuteBullet
     {
         public BattleCharacter FromWho { get; }
 
@@ -275,7 +306,6 @@ namespace AutoBattle
         public OpponentTargetType Type { get; }
         public int Harm { get; private set; }
         public float DamageAddMultiBlackHpPercent { get; }
-        
     }
 
 

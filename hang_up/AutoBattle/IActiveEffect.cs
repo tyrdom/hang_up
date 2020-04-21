@@ -46,6 +46,11 @@ namespace AutoBattle
         public float HealMulti { get; }
     }
 
+    internal interface IAttackLossHp
+    {
+        public float LoseMulti { get; }
+    }
+
     internal interface IToOpponentEffect : IActiveEffect
     {
         OpponentTargetType OpponentTargetType { get; }
@@ -61,6 +66,10 @@ namespace AutoBattle
         IEnumerable<IBullet> GenBullet(BattleCharacter battleCharacter);
     }
 
+    public interface ISplashAllEffect
+    {
+        float SplashHarmMulti { get; }
+    }
 
     internal interface INoMissAttack
     {
@@ -72,6 +81,32 @@ namespace AutoBattle
         float KillRate { get; }
     }
 
+    public class AttackLossHp : IHarmEffect, IToOpponentEffect, ISelfEffect, IAttackLossHp
+    {
+        public AttackLossHp(float harmMulti, OpponentTargetType opponentTargetType, SelfTargetType selfTargetType,
+            float loseMulti)
+        {
+            HarmMulti = harmMulti;
+            OpponentTargetType = opponentTargetType;
+            SelfTargetType = selfTargetType;
+            LoseMulti = loseMulti;
+        }
+
+        public float HarmMulti { get; }
+
+        public IEnumerable<IBullet> GenBullet(BattleCharacter battleCharacter)
+        {
+            var loss = (int) (battleCharacter.CharacterBattleAttribute.NowHp * LoseMulti);
+            var ceiling = (int) Math.Ceiling(battleCharacter.GetDamage() * HarmMulti);
+            var standardHarmBullet = new StandardHarmBullet(battleCharacter, OpponentTargetType, ceiling);
+            var healSelfBullet = new HealSelfBullet(battleCharacter, SelfTargetType, -loss);
+            return new IBullet[] {standardHarmBullet, healSelfBullet};
+        }
+
+        public OpponentTargetType OpponentTargetType { get; }
+        public SelfTargetType SelfTargetType { get; }
+        public float LoseMulti { get; }
+    }
 
     public class MissAndDamageMoreEffect : IToOpponentEffect, IHarmEffect, INoMissAttack, IEffectTrickOnHit
     {
@@ -186,7 +221,7 @@ namespace AutoBattle
             var ceiling = (int) Math.Ceiling(battleCharacter.GetDamage() * HarmMulti);
             var standardHarmBullet = new AttackBulletWithBuffToOpponentWhenHitOrMiss(OpponentTargetType,
                 OpponentTargetType, BattleBuffs, battleCharacter, ceiling, NeedHitOrMiss);
-            return new[] {standardHarmBullet, standardHarmBullet};
+            return new[] {standardHarmBullet};
         }
 
         public AttackHitOrMissWithBuffToOpponent(OpponentTargetType opponentTargetType, bool needHitOrMiss,
@@ -223,6 +258,31 @@ namespace AutoBattle
 
         public OpponentTargetType OpponentTargetType { get; }
         public float HarmMulti { get; }
+    }
+
+
+    public class SplashAll : ISplashAllEffect, IToOpponentEffect, IHarmEffect
+    {
+        public IEnumerable<IBullet> GenBullet(BattleCharacter battleCharacter)
+        {
+            var ceiling = (int) Math.Ceiling(battleCharacter.GetDamage() * HarmMulti);
+            var ceiling2 = (int) Math.Ceiling(battleCharacter.GetDamage() * SplashHarmMulti);
+            var splashAllBullet = new SplashAllBullet(OpponentTargetType, battleCharacter, ceiling, ceiling2);
+            return new[] {splashAllBullet};
+        }
+
+        public OpponentTargetType OpponentTargetType { get; }
+        public float HarmMulti { get; }
+
+
+        public float SplashHarmMulti { get; }
+
+        public SplashAll(OpponentTargetType opponentTargetType, float harmMulti, float splashHarmMulti)
+        {
+            OpponentTargetType = opponentTargetType;
+            HarmMulti = harmMulti;
+            SplashHarmMulti = splashHarmMulti;
+        }
     }
 
 
@@ -278,10 +338,10 @@ namespace AutoBattle
 
     public class HealSelf : ISelfEffect, IHealEffect
     {
-        public HealSelf(float healMulti)
+        public HealSelf(float healMulti, SelfTargetType selfTargetType)
         {
-            SelfTargetType = SelfTargetType.Self;
             HealMulti = healMulti;
+            SelfTargetType = selfTargetType;
         }
 
         public SelfTargetType SelfTargetType { get; }
@@ -300,10 +360,10 @@ namespace AutoBattle
     {
         public float HarmMulti { get; }
 
-        public NormalAttack(float harmMulti)
+        public NormalAttack(float harmMulti, OpponentTargetType opponentTargetType)
         {
             HarmMulti = harmMulti;
-            OpponentTargetType = OpponentTargetType.FirstOpponent;
+            OpponentTargetType = opponentTargetType;
         }
 
         public OpponentTargetType OpponentTargetType { get; }

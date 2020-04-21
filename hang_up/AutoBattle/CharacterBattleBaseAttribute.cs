@@ -4,9 +4,9 @@ namespace AutoBattle
 {
     public struct CharacterBattleBaseAttribute
     {
-        public readonly int MaxHp;
+        public int MaxHp;
         public int NowHp;
-        public readonly int Damage;
+        public int Damage;
 
         public readonly int DamagePerMil;
         public readonly int CriticalPreMil;

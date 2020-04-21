@@ -22,7 +22,7 @@ namespace AutoBattle
 
         public BattleCharacter(KeyStatus keyStatus, CharacterBattleBaseAttribute characterBattleAttribute,
             IActiveSkill activeSkill1, IActiveSkill activeSkill2, IPassiveSkill[] passiveSkills,
-            List<IBattleBuff> battleBuffs, (int, int)[] tempHasteBuffData, BattleGround inWhichBattleGround)
+            List<IBattleBuff> battleBuffs, BattleGround inWhichBattleGround)
         {
             KeyStatus = keyStatus;
             CharacterBattleAttribute = characterBattleAttribute;
@@ -30,7 +30,7 @@ namespace AutoBattle
             ActiveSkill2 = activeSkill2;
             PassiveSkills = passiveSkills;
             BattleBuffs = battleBuffs;
-            _tempHasteBuffData = tempHasteBuffData;
+            _tempHasteBuffData = new (int, int)[] { };
             InWhichBattleGround = inWhichBattleGround;
         }
 
@@ -149,7 +149,7 @@ namespace AutoBattle
             return getDamage;
         }
 
-        int GetHealDecreasePerMil()
+        private int GetHealDecreasePerMil()
         {
             var sum = PassiveSkills.OfType<IHealDecreasePreMil>().Select(x => x.GetHealDecreasePerMil(this)).Sum() +
                       BattleBuffs.OfType<IHealDecreasePreMil>().Select(x => x.GetHealDecreasePerMil(this)).Sum();
@@ -176,20 +176,30 @@ namespace AutoBattle
             return CommonSettings.FilterMissPerMilValue(missPreMil + sum + i);
         }
 
-        public IShow TakeHarm(IHarmBullet standardHarmBullet, out bool isHit)
+        public IShow TakeHarm(IHarmBullet harmBullet, out bool isHit)
         {
             var next = BattleGround.Random.Next(1000);
             var next2 = BattleGround.Random.Next(1000);
-            var rawHarm = standardHarmBullet.Harm + standardHarmBullet.FromWho.OpponentExtraHarm(this);
-            if (next2 < standardHarmBullet.FromWho.GetCritical() +
-                standardHarmBullet.FromWho.OpponentExtraCritical(this))
+            var rawHarm = harmBullet.Harm + harmBullet.FromWho.OpponentExtraHarm(this);
+            if (next2 < harmBullet.FromWho.GetCritical() +
+                harmBullet.FromWho.OpponentExtraCritical(this))
             {
                 rawHarm *= 2;
             }
 
-
             if (next >= GetMissPreMil())
             {
+                isHit = true;
+                var damageToAnotherOnes = BattleBuffs.OfType<IDamageToAnotherOne>().ToArray();
+                var b = damageToAnotherOnes.Select(x => x.ToWho.KeyStatus == KeyStatus.Alive)
+                    .Aggregate(false, (x, y) => x || y);
+                if (b)
+                {
+                    IShow damageAnotherOne = damageToAnotherOnes.First(x => x.ToWho.KeyStatus == KeyStatus.Alive)
+                        .DamageAnotherOne(harmBullet);
+                    return damageAnotherOne;
+                }
+
                 var harm = (int) rawHarm * (1000 - GetDefencePreMil()) / 1000;
                 var min = Math.Min(PassiveSkills.OfType<INotAboveHarm>().Select(x => x.MaxHarm(this)).Min(),
                     BattleBuffs.OfType<INotAboveHarm>().Select(x => x.MaxHarm(this)).Min());
@@ -203,21 +213,23 @@ namespace AutoBattle
                 }
 
                 CharacterBattleAttribute.NowHp -= harm;
-
                 var sum = PassiveSkills.OfType<IHealWhenHit>().Select(x => x.GetHeal(this)).Sum();
                 CharacterBattleAttribute.GetHeal(sum, GetHealDecreasePerMil());
+
 
                 var passiveSkills1 =
                     PassiveSkills.OfType<IPassiveAddBuffAboutHit>().ToArray();
                 var battleBuffsToAtk1 = passiveSkills1.SelectMany(x => x.GetBuffsToAttacker());
                 var battleBuffsToDef1 = passiveSkills1.SelectMany(x => x.GetBuffsToSelf());
                 BattleBuffs = AutoBattleTools.AddBuffs(BattleBuffs, battleBuffsToDef1);
-                standardHarmBullet.FromWho.BattleBuffs =
-                    AutoBattleTools.AddBuffs(standardHarmBullet.FromWho.BattleBuffs, battleBuffsToAtk1);
-                isHit = true;
+                harmBullet.FromWho.BattleBuffs =
+                    AutoBattleTools.AddBuffs(harmBullet.FromWho.BattleBuffs, battleBuffsToAtk1);
+
+
                 return new TakeHarmShow(harm, this);
             }
 
+            isHit = false;
             IEnumerable<IPassiveAddBuffAboutMiss> passiveSkills =
                 PassiveSkills.OfType<IPassiveAddBuffAboutMiss>();
             var passiveAboutMisses = passiveSkills as IPassiveAddBuffAboutMiss[] ?? passiveSkills.ToArray();
@@ -225,10 +237,10 @@ namespace AutoBattle
             var battleBuffsToDef = passiveAboutMisses.SelectMany(x => x.GetBuffsToSelf).ToArray();
 
             BattleBuffs = AutoBattleTools.AddBuffs(BattleBuffs, battleBuffsToDef);
-            standardHarmBullet.FromWho.BattleBuffs =
-                AutoBattleTools.AddBuffs(standardHarmBullet.FromWho.BattleBuffs, battleBuffsToAtk);
+            harmBullet.FromWho.BattleBuffs =
+                AutoBattleTools.AddBuffs(harmBullet.FromWho.BattleBuffs, battleBuffsToAtk);
 
-            isHit = false;
+
             return new MissShow(this);
         }
 
@@ -244,6 +256,20 @@ namespace AutoBattle
 
             CharacterBattleAttribute.GetHeal(rawHeal, GetHealDecreasePerMil());
             return new HealShow(healSelfBullet.Heal, this);
+        }
+
+        public void DoDead()
+        {
+            var aggregate = PassiveSkills.OfType<IReborn>().Select(x => x.RebornAndOk())
+                .Aggregate(false, (x, y) => x || y);
+            if (aggregate)
+            {
+                CharacterBattleAttribute.NowHp = CharacterBattleAttribute.MaxHp;
+            }
+            else
+            {
+                KeyStatus = KeyStatus.Dead;
+            }
         }
 
         public IShow[] AddBuff(IBattleBuff[] battleBuffs, BattleCharacter toWho)
