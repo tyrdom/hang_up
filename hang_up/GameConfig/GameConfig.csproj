@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Resource\surprise_s.json" />
+      <None Remove="Resource\active_skill_s.json" />
+      <EmbeddedResource Include="Resource\active_skill_s.json" />
+      <None Remove="Resource\boss_s.json" />
+      <EmbeddedResource Include="Resource\boss_s.json" />
+      <None Remove="Resource\class_up_s.json" />
+      <EmbeddedResource Include="Resource\class_up_s.json" />
+      <None Remove="Resource\compose_s.json" />
+      <EmbeddedResource Include="Resource\compose_s.json" />
+      <None Remove="Resource\frame_s.json" />
+      <EmbeddedResource Include="Resource\frame_s.json" />
+      <None Remove="Resource\hero_s.json" />
+      <EmbeddedResource Include="Resource\hero_s.json" />
+      <None Remove="Resource\hero_tower_s.json" />
+      <EmbeddedResource Include="Resource\hero_tower_s.json" />
+      <None Remove="Resource\item_s.json" />
+      <EmbeddedResource Include="Resource\item_s.json" />
+      <None Remove="Resource\level_up_s.json" />
+      <EmbeddedResource Include="Resource\level_up_s.json" />
+      <None Remove="Resource\market_s.json" />
+      <EmbeddedResource Include="Resource\market_s.json" />
+      <None Remove="Resource\mission_s.json" />
+      <EmbeddedResource Include="Resource\mission_s.json" />
+      <None Remove="Resource\passive_skill_s.json" />
+      <EmbeddedResource Include="Resource\passive_skill_s.json" />
+      <None Remove="Resource\rune_s.json" />
+      <EmbeddedResource Include="Resource\rune_s.json" />
+      <None Remove="Resource\skill_s.json" />
+      <EmbeddedResource Include="Resource\skill_s.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    </ItemGroup>
+
+</Project>

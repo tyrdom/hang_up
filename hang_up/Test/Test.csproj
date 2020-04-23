@@ -7,7 +7,22 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\GameConfig\GameConfig.csproj" />
       <ProjectReference Include="..\GameProtos\GameProtos.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Resource\surprise_s.json" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Resource\surprise_s.json" />
+      <None Remove="Resource\skill_s.json" />
+      <EmbeddedResource Include="Resource\skill_s.json" />
     </ItemGroup>
 
 </Project>
