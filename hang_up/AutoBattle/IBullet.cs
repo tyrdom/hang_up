@@ -254,19 +254,20 @@ namespace AutoBattle
         }
 
         public AttackBulletWithBuffToSelfOrMiss(OpponentTargetType type, SelfTargetType selfTargetType,
-            IBattleBuff[] battleBuffs, BattleCharacter fromWho, int harm, bool hitOrMiss)
+            IBattleBuff[] battleBuffs, int harm, bool hitOrMiss, BattleCharacter fromWho)
         {
             Type = type;
             SelfTargetType = selfTargetType;
             BattleBuffs = battleBuffs;
-            FromWho = fromWho;
             Harm = harm;
             HitOrMiss = hitOrMiss;
+            FromWho = fromWho;
         }
 
         public OpponentTargetType Type { get; }
         public SelfTargetType SelfTargetType { get; }
         public IBattleBuff[] BattleBuffs { get; }
+
         public BattleCharacter FromWho { get; }
         public int Harm { get; }
         public bool HitOrMiss { get; }
@@ -288,7 +289,8 @@ namespace AutoBattle
             }
 
             var nowLossHpPercent = (1 - (float) battleCharacter.CharacterBattleAttribute.NowHp /
-                battleCharacter.CharacterBattleAttribute.MaxHp) * DamageAddMultiBlackHpPercent;
+                                       battleCharacter.CharacterBattleAttribute.MaxHp) *
+                                   DamageAddMultiBlackHpPercent;
             Harm = (int) MathF.Ceiling(Harm * (1 + nowLossHpPercent));
             IShow takeHarm = battleCharacter.TakeHarm(this, out _);
             return new[] {takeHarm};

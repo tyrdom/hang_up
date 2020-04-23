@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
 using System.Text;
-using System.Xml.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -34,8 +29,6 @@ namespace GameConfig
             var jToken = deserializeObject["content"];
             var genConfigDict = jToken?.ToObject<ImmutableDictionary<int, T>>();
             return genConfigDict;
-
-            throw new Exception("ErrorTypeOfConfig:" + typeof(T));
         }
     }
 

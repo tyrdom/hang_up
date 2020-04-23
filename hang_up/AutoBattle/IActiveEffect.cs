@@ -178,7 +178,7 @@ namespace AutoBattle
         {
             var ceiling = (int) Math.Ceiling(battleCharacter.GetDamage() * HarmMulti);
             var standardHarmBullet = new AttackBulletWithBuffToSelfOrMiss(OpponentTargetType, BuffTargetType,
-                BattleBuffs, battleCharacter, ceiling, NeedHitOrMiss);
+                BattleBuffs, ceiling, NeedHitOrMiss, battleCharacter);
             return new[] {standardHarmBullet};
         }
 
@@ -243,9 +243,9 @@ namespace AutoBattle
 
     public class DoubleAttack : IToOpponentEffect, IHarmEffect
     {
-        public DoubleAttack(float harmMulti)
+        public DoubleAttack(float harmMulti, OpponentTargetType opponentTargetType)
         {
-            OpponentTargetType = OpponentTargetType.FirstOpponent;
+            OpponentTargetType = opponentTargetType;
             HarmMulti = harmMulti;
         }
 

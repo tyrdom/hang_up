@@ -78,6 +78,51 @@ namespace AutoBattle
         }
     }
 
+    public class AddHaste : IHasteBuff, IBattleBuff
+    {
+        public int MaxStack { get; }
+        public int Stack { get; set; }
+        public int RestTimeMs { get; set; }
+
+        public (int, int) GetHasteValueAndLastMs()
+        {
+            return (Haste, RestTimeMs);
+        }
+
+        public AddHaste(int maxStack, int stack, int restTimeMs, int haste)
+        {
+            MaxStack = maxStack;
+            Stack = stack;
+            RestTimeMs = restTimeMs;
+            Haste = haste;
+        }
+
+        public int Haste { get; }
+    }
+
+    public class AddDamagePerMil : IBuffAddDamageSelf, IBattleBuff
+    {
+        public AddDamagePerMil(int maxStack, int stack, int restTimeMs, int damagePerMil)
+        {
+            MaxStack = maxStack;
+            Stack = stack;
+            RestTimeMs = restTimeMs;
+            Damage = 0;
+            DamagePerMil = damagePerMil;
+        }
+
+        public int MaxStack { get; }
+        public int Stack { get; set; }
+        public int RestTimeMs { get; set; }
+        public int Damage { get; }
+        public int DamagePerMil { get; }
+
+        public (int, int) GetDamageAndPerMil(BattleCharacter battleCharacter)
+        {
+            return (0, Stack * DamagePerMil);
+        }
+    }
+
     public class AddDamageAndHaste : IHasteBuff, IBuffAddDamageSelf, IBattleBuff
     {
         public int RestTimeMs { get; set; }
@@ -98,6 +143,7 @@ namespace AutoBattle
 
         public int Haste { get; }
 
+
         public AddDamageAndHaste(int restTimeMs, int maxStack, int stack, int haste, int damage, int damagePerMil)
         {
             RestTimeMs = restTimeMs;
@@ -106,51 +152,6 @@ namespace AutoBattle
             Haste = haste;
             Damage = damage;
             DamagePerMil = damagePerMil;
-        }
-
-        public class AddHaste : IHasteBuff, IBattleBuff
-        {
-            public int MaxStack { get; }
-            public int Stack { get; set; }
-            public int RestTimeMs { get; set; }
-
-            public (int, int) GetHasteValueAndLastMs()
-            {
-                return (Haste, RestTimeMs);
-            }
-
-            public AddHaste(int maxStack, int stack, int restTimeMs, int haste)
-            {
-                MaxStack = maxStack;
-                Stack = stack;
-                RestTimeMs = restTimeMs;
-                Haste = haste;
-            }
-
-            public int Haste { get; }
-        }
-
-        public class AddDamagePerMil : IBuffAddDamageSelf, IBattleBuff
-        {
-            public AddDamagePerMil(int maxStack, int stack, int restTimeMs, int damagePerMil)
-            {
-                MaxStack = maxStack;
-                Stack = stack;
-                RestTimeMs = restTimeMs;
-                Damage = 0;
-                DamagePerMil = damagePerMil;
-            }
-
-            public int MaxStack { get; }
-            public int Stack { get; set; }
-            public int RestTimeMs { get; set; }
-            public int Damage { get; }
-            public int DamagePerMil { get; }
-
-            public (int, int) GetDamageAndPerMil(BattleCharacter battleCharacter)
-            {
-                return (0, Stack * DamagePerMil);
-            }
         }
 
 
