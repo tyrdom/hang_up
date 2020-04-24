@@ -97,9 +97,9 @@ namespace AutoBattle
 
             var takeHarm = battleCharacter.TakeHarm(this, out _);
             Harm = SplashHarm;
-            var enumerable = otherCharacter.Select(x => x.TakeHarm(this, out _));
-            var append = enumerable.Append(takeHarm);
-            return append;
+            var enumerable = otherCharacter.SelectMany(x => x.TakeHarm(this, out _));
+            var union = takeHarm.Union(enumerable);
+            return union.ToArray();
         }
 
         public SplashAllBullet(OpponentTargetType type, BattleCharacter fromWho, int harm, int splashHarm)
@@ -128,9 +128,9 @@ namespace AutoBattle
                 return new IShow[] { };
             }
 
-            Harm = battleCharacter.CharacterBattleAttribute.MaxHp * 100;
-            IShow takeHarm = battleCharacter.TakeHarm(this, out _);
-            return new[] {takeHarm};
+            Harm = battleCharacter.CharacterBattleAttribute.MaxHp * 999;
+            var takeHarm = battleCharacter.TakeHarm(this, out _);
+            return takeHarm;
         }
 
         public OpponentTargetType Type { get; }
@@ -159,10 +159,10 @@ namespace AutoBattle
             }
 
             var takeHarm = battleCharacter.TakeHarm(this, out var isHit);
-            var hitTeam = new[] {takeHarm};
-            if (!isHit ^ HitOrMiss) return hitTeam;
+
+            if (!isHit ^ HitOrMiss) return takeHarm;
             var takeHeal = battleCharacter.TakeHeal(this);
-            return new[] {takeHeal};
+            return takeHeal;
         }
 
         public MissAndDamageMoreBullet(OpponentTargetType type, bool hitOrMiss, BattleCharacter fromWho, int harm,
@@ -196,18 +196,18 @@ namespace AutoBattle
             }
 
             var takeHarm = battleCharacter.TakeHarm(this, out var isHit);
-            var hitTeam = new[] {takeHarm};
-            if (isHit ^ HitOrMiss) return hitTeam;
+
+            if (isHit ^ HitOrMiss) return takeHarm;
             var (item1, item2) =
                 AutoBattleTools.GetFirstAndOtherTargetByOpponentType(anotherTeam.ToArray(), BuffTargetType);
             if (item1 != null)
             {
                 var addBuff = item1.AddBuff(BattleBuffs, item1);
-                hitTeam = hitTeam.Union(addBuff).ToArray();
+                takeHarm = takeHarm.Union(addBuff).ToArray();
             }
 
             var selectMany = item2.SelectMany(x => x.AddBuff(BattleBuffs, x));
-            var enumerable = hitTeam.Union(selectMany);
+            var enumerable = takeHarm.Union(selectMany);
             return enumerable.ToArray();
         }
 
@@ -243,13 +243,19 @@ namespace AutoBattle
                 return new IShow[] { };
             }
 
-            IShow takeHarm = battleCharacter.TakeHarm(this, out var isHit);
-            var hitTeam = new[] {takeHarm};
-            if (isHit ^ HitOrMiss) return hitTeam;
+            var takeHarm = battleCharacter.TakeHarm(this, out var isHit);
+
+            if (isHit ^ HitOrMiss) return takeHarm;
+            var battleBuffs = BattleBuffs.Select(x =>
+            {
+                if (!(x is IBindToCast bindToCast)) return x;
+                bindToCast.BindCharacter(FromWho);
+                return bindToCast;
+            });
             var targetsBySelfTargetType =
                 AutoBattleTools.GetTargetsBySelfTargetType(anotherTeam.ToArray(), SelfTargetType, FromWho);
-            var selectMany = targetsBySelfTargetType.SelectMany(x => x.AddBuff(BattleBuffs, x));
-            var enumerable = hitTeam.Union(selectMany);
+            var selectMany = targetsBySelfTargetType.SelectMany(x => x.AddBuff(battleBuffs.ToArray(), x));
+            var enumerable = takeHarm.Union(selectMany);
             return enumerable.ToArray();
         }
 
@@ -292,8 +298,7 @@ namespace AutoBattle
                                        battleCharacter.CharacterBattleAttribute.MaxHp) *
                                    DamageAddMultiBlackHpPercent;
             Harm = (int) MathF.Ceiling(Harm * (1 + nowLossHpPercent));
-            IShow takeHarm = battleCharacter.TakeHarm(this, out _);
-            return new[] {takeHarm};
+            return battleCharacter.TakeHarm(this, out _);
         }
 
         public ExecuteBullet(BattleCharacter fromWho, OpponentTargetType type, int harm,
@@ -320,7 +325,7 @@ namespace AutoBattle
         {
             var targetsBySelfTargetType =
                 AutoBattleTools.GetTargetsBySelfTargetType(targetTeam.ToArray(), TargetType, FromWho);
-            return targetsBySelfTargetType.Select(x => x.TakeHeal(this)).ToArray();
+            return targetsBySelfTargetType.SelectMany(x => x.TakeHeal(this)).ToArray();
         }
 
         public SelfTargetType TargetType { get; }
@@ -351,12 +356,12 @@ namespace AutoBattle
             }
 
             var takeHarm = battleCharacter.TakeHarm(this, out _);
-            if (!battleCharacters.Any()) return new[] {takeHarm};
+            if (!battleCharacters.Any()) return takeHarm;
             var next = BattleGround.Random.Next(battleCharacters.Length);
             var character = battleCharacters[next];
             Harm = SplashHarm;
             var harm = character.TakeHarm(this, out _);
-            return new[] {takeHarm, harm};
+            return takeHarm.Concat(harm);
         }
 
         public SplashRandomOneHarmBullet(int harm, BattleCharacter fromWho, OpponentTargetType type, int splashHarm)
@@ -371,6 +376,35 @@ namespace AutoBattle
         public int SplashHarm { get; }
     }
 
+    public class NowHpHarmBullet : IBullet, IAddHarmByOpponentEffect, IOpponentBullet, IHarmBullet
+    {
+        public NowHpHarmBullet(float multiByNowHp, OpponentTargetType type, BattleCharacter fromWho, int harm)
+        {
+            MultiByNowHp = multiByNowHp;
+            Type = type;
+            FromWho = fromWho;
+            Harm = harm;
+        }
+
+        public IEnumerable<IShow> HitTeam(IEnumerable<BattleCharacter> targetTeam,
+            IEnumerable<BattleCharacter> anotherTeam)
+        {
+            var battleCharacters = targetTeam as BattleCharacter[] ?? targetTeam.ToArray();
+            var (battleCharacter, _) = AutoBattleTools.GetFirstAndOtherTargetByOpponentType(battleCharacters, Type);
+            if (battleCharacter == null)
+            {
+                return new IShow[] { };
+            }
+
+            Harm += (int) (battleCharacter.CharacterBattleAttribute.NowHp * MultiByNowHp);
+            return battleCharacter.TakeHarm(this, out _);
+        }
+
+        public float MultiByNowHp { get; }
+        public OpponentTargetType Type { get; }
+        public BattleCharacter FromWho { get; }
+        public int Harm { get; private set; }
+    }
 
     public class StandardHarmBullet : IHarmBullet, IOpponentBullet
     {
@@ -391,13 +425,7 @@ namespace AutoBattle
         {
             var battleCharacters = targetTeam as BattleCharacter[] ?? targetTeam.ToArray();
             var (battleCharacter, _) = AutoBattleTools.GetFirstAndOtherTargetByOpponentType(battleCharacters, Type);
-            if (battleCharacter == null)
-            {
-                return new IShow[] { };
-            }
-
-            IShow takeHarm = battleCharacter.TakeHarm(this, out _);
-            return new[] {takeHarm};
+            return battleCharacter == null ? new IShow[] { } : battleCharacter.TakeHarm(this, out _);
         }
     }
 }

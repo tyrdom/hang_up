@@ -78,7 +78,12 @@ namespace AutoBattle
 
     internal interface IJustKillEffect
     {
-        float KillRate { get; }
+        int KillRatePerMil { get; }
+    }
+
+    public interface IAddHarmByOpponentEffect
+    {
+        float MultiByNowHp { get; }
     }
 
     public class AttackLossHp : IHarmEffect, IToOpponentEffect, ISelfEffect, IAttackLossHp
@@ -120,9 +125,10 @@ namespace AutoBattle
             return new[] {missAndDamageMoreBullet};
         }
 
-        public MissAndDamageMoreEffect(float harmMulti, float noMissMulti, bool needHitOrMiss, int criticalPerMil)
+        public MissAndDamageMoreEffect(float harmMulti, float noMissMulti, bool needHitOrMiss,
+            OpponentTargetType opponentTargetType)
         {
-            OpponentTargetType = OpponentTargetType.FirstOpponent;
+            OpponentTargetType = opponentTargetType;
             HarmMulti = harmMulti;
             NoMissMulti = noMissMulti;
             NeedHitOrMiss = needHitOrMiss;
@@ -138,7 +144,7 @@ namespace AutoBattle
     {
         public IEnumerable<IBullet> GenBullet(BattleCharacter battleCharacter)
         {
-            if (!(KillRate * 1000 > BattleGround.Random.Next(1000)))
+            if (!(KillRatePerMil > BattleGround.Random.Next(1000)))
                 return new[]
                 {
                     new StandardHarmBullet(battleCharacter, OpponentTargetType,
@@ -150,13 +156,13 @@ namespace AutoBattle
 
         public OpponentTargetType OpponentTargetType { get; }
         public float HarmMulti { get; }
-        public float KillRate { get; }
+        public int KillRatePerMil { get; }
 
-        public JustKillEffect(OpponentTargetType opponentTargetType, float harmMulti, float rate)
+        public JustKillEffect(OpponentTargetType opponentTargetType, float harmMulti, int ratePerMil)
         {
             OpponentTargetType = opponentTargetType;
             HarmMulti = harmMulti;
-            KillRate = rate;
+            KillRatePerMil = ratePerMil;
         }
     }
 
@@ -188,6 +194,31 @@ namespace AutoBattle
         public SelfTargetType BuffTargetType { get; }
         public IBattleBuff[] BattleBuffs { get; }
         public bool NeedHitOrMiss { get; }
+    }
+
+    public class AttackAndAddHarmByOpponentNowHp : IAddHarmByOpponentEffect, IToOpponentEffect
+    {
+        public AttackAndAddHarmByOpponentNowHp(float harmMulti, float multiByNowHp,
+            OpponentTargetType opponentTargetType)
+        {
+            HarmMulti = harmMulti;
+            MultiByNowHp = multiByNowHp;
+            OpponentTargetType = opponentTargetType;
+        }
+
+        private float HarmMulti { get; }
+
+        public IEnumerable<IBullet> GenBullet(BattleCharacter battleCharacter)
+        {
+            var ceiling = (int) Math.Ceiling(battleCharacter.GetDamage() * HarmMulti);
+            var executeBullet =
+                new NowHpHarmBullet(MultiByNowHp, OpponentTargetType, battleCharacter, ceiling);
+            return new[] {executeBullet};
+        }
+
+        public OpponentTargetType OpponentTargetType { get; }
+
+        public float MultiByNowHp { get; }
     }
 
 

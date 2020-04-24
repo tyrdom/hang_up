@@ -105,16 +105,21 @@ namespace AutoBattle
             return enumerable.SelectMany(skill => skill.GenIBullets(this)).ToArray();
         }
 
+        private static int ExtraMissFromOpponent(BattleCharacter opponent)
+        {
+            var i = opponent.BattleBuffs.OfType<IBuffAddOpponentMiss>().Select(x => x.GetOpponentMissPreMil()).Sum();
+            return i;
+        }
 
         private int OpponentExtraCritical(BattleCharacter opponent)
         {
             var sum = opponent.PassiveSkills.OfType<IPassiveAddCriticalAboutOpponent>()
                 .Select(x => x.GetCritical(this)).Sum();
             var i = opponent.BattleBuffs.OfType<IBuffCriticalAboutOpponent>().Select(x => x.GetCritical(this)).Sum();
-            return sum + i + 0;
+            return sum + i;
         }
 
-        int OpponentExtraHarm(BattleCharacter opponent)
+        private int OpponentExtraHarm(BattleCharacter opponent)
         {
             var s = opponent.PassiveSkills.OfType<IAddHarmByOpponent>()
                 .Select(x => x.GetHarm(this)).Sum();
@@ -162,21 +167,22 @@ namespace AutoBattle
             var defencePreMil = CharacterBattleAttribute.DefencePreMil;
             var sum = PassiveSkills.OfType<IPassiveAddDefenceAboutSelf>().Select(x => x.GetDefencePreMil(this))
                 .Sum();
-            var i = BattleBuffs.OfType<IBuffAddDefenceSelf>().Select(x => x.GetDefencePreMil(this)).Sum();
+            var i = BattleBuffs.OfType<IBuffAddDefenceSelf>().Select(x => x.GetDefencePreMil()).Sum();
             return CommonSettings.FilterDefencePerMilValue(defencePreMil + sum + i);
         }
 
 
-        private int GetMissPreMil()
+        private int GetMissPreMil(BattleCharacter opponent)
         {
             var missPreMil = CharacterBattleAttribute.MissPreMil;
             var sum = PassiveSkills.OfType<IPassiveAddMissAboutSelf>()
                 .Select(x => x.GetMissPreMil(this)).Sum();
             var i = BattleBuffs.OfType<IBuffAddMissSelf>().Select(x => x.GetMissPreMil(this)).Sum();
-            return CommonSettings.FilterMissPerMilValue(missPreMil + sum + i);
+            var extraMissFromOpponent = ExtraMissFromOpponent(opponent);
+            return CommonSettings.FilterMissPerMilValue(missPreMil + sum + i + extraMissFromOpponent);
         }
 
-        public IShow TakeHarm(IHarmBullet harmBullet, out bool isHit)
+        public IShow[] TakeHarm(IHarmBullet harmBullet, out bool isHit)
         {
             var next = BattleGround.Random.Next(1000);
             var next2 = BattleGround.Random.Next(1000);
@@ -187,7 +193,7 @@ namespace AutoBattle
                 rawHarm *= 2;
             }
 
-            if (next >= GetMissPreMil())
+            if (next >= GetMissPreMil(harmBullet.FromWho))
             {
                 isHit = true;
                 var damageToAnotherOnes = BattleBuffs.OfType<IDamageToAnotherOne>().ToArray();
@@ -195,7 +201,7 @@ namespace AutoBattle
                     .Aggregate(false, (x, y) => x || y);
                 if (b)
                 {
-                    IShow damageAnotherOne = damageToAnotherOnes.First(x => x.ToWho.KeyStatus == KeyStatus.Alive)
+                    var damageAnotherOne = damageToAnotherOnes.First(x => x.ToWho.KeyStatus == KeyStatus.Alive)
                         .DamageAnotherOne(harmBullet);
                     return damageAnotherOne;
                 }
@@ -226,7 +232,7 @@ namespace AutoBattle
                     AutoBattleTools.AddBuffs(harmBullet.FromWho.BattleBuffs, battleBuffsToAtk1);
 
 
-                return new TakeHarmShow(harm, this);
+                return new IShow[] {new TakeHarmShow(harm, this)};
             }
 
             isHit = false;
@@ -236,15 +242,13 @@ namespace AutoBattle
             var battleBuffsToAtk = passiveAboutMisses.SelectMany(x => x.GetBuffsToAttacker).ToArray();
             var battleBuffsToDef = passiveAboutMisses.SelectMany(x => x.GetBuffsToSelf).ToArray();
 
-            BattleBuffs = AutoBattleTools.AddBuffs(BattleBuffs, battleBuffsToDef);
-            harmBullet.FromWho.BattleBuffs =
-                AutoBattleTools.AddBuffs(harmBullet.FromWho.BattleBuffs, battleBuffsToAtk);
-
-
-            return new MissShow(this);
+            var addBuff = this.AddBuff(battleBuffsToDef, this);
+            var shows = AddBuff(battleBuffsToAtk, harmBullet.FromWho);
+            var enumerable = addBuff.Concat(shows).Append(new MissShow(this));
+            return enumerable.ToArray();
         }
 
-        public IShow TakeHeal(IHealBullet healSelfBullet)
+        public IEnumerable<IShow> TakeHeal(IHealBullet healSelfBullet)
         {
             var next = BattleGround.Random.Next(1000);
 
@@ -255,7 +259,8 @@ namespace AutoBattle
             }
 
             CharacterBattleAttribute.GetHeal(rawHeal, GetHealDecreasePerMil());
-            return new HealShow(healSelfBullet.Heal, this);
+            var takeHeal = new HealShow(healSelfBullet.Heal, this);
+            return new IShow[] {takeHeal};
         }
 
         public void DoDead()
@@ -272,9 +277,9 @@ namespace AutoBattle
             }
         }
 
-        public IShow[] AddBuff(IBattleBuff[] battleBuffs, BattleCharacter toWho)
+        public IEnumerable<IShow> AddBuff(IBattleBuff[] battleBuffs, BattleCharacter toWho)
         {
-            BattleBuffs.AddRange(battleBuffs);
+            BattleBuffs = AutoBattleTools.AddBuffs(BattleBuffs, battleBuffs);
             var addBuff = new AddBuff(toWho, battleBuffs);
             return new IShow[] {addBuff};
         }

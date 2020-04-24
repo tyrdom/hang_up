@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection.Metadata.Ecma335;
 
 namespace AutoBattle
 {
@@ -14,6 +15,7 @@ namespace AutoBattle
             RestTimeMs = j;
         }
     }
+
 
     public interface IHasteBuff : IBattleBuff
     {
@@ -35,6 +37,11 @@ namespace AutoBattle
         (int, int) GetDamageAndPerMil(BattleCharacter battleCharacter);
     }
 
+    public interface IBuffAddOpponentMiss : IBattleBuff
+    {
+        int GetOpponentMissPreMil();
+    }
+
     public interface IBuffAddMissSelf : IBattleBuff
     {
         int GetMissPreMil(BattleCharacter battleCharacter);
@@ -42,14 +49,20 @@ namespace AutoBattle
 
     public interface IBuffAddDefenceSelf : IBattleBuff
     {
-        int GetDefencePreMil(BattleCharacter battleCharacter);
+        int GetDefencePreMil();
+    }
+
+    public interface IBindToCast : IBattleBuff
+    {
+        BattleCharacter ToWho { set; }
+        public void BindCharacter(BattleCharacter battleCharacter);
     }
 
     public interface IDamageToAnotherOne
     {
         BattleCharacter ToWho { get; }
 
-        IShow DamageAnotherOne(IHarmBullet harmBullet);
+        IShow[] DamageAnotherOne(IHarmBullet harmBullet);
     }
 
     public interface IBuffAddCriticalSelf : IBattleBuff
@@ -57,14 +70,37 @@ namespace AutoBattle
         int GetCritical(BattleCharacter battleCharacter);
     }
 
-    public class AddDefence : IBuffAddDefenceSelf, IBattleBuff
+
+    public class AddMissToOpponent : IBuffAddOpponentMiss
     {
-        public int DefencePerMil { get; }
         public int MaxStack { get; }
         public int Stack { get; set; }
         public int RestTimeMs { get; set; }
 
-        public int GetDefencePreMil(BattleCharacter battleCharacter)
+        private int OpponentAddMissPreMil { get; }
+
+        public int GetOpponentMissPreMil()
+        {
+            return OpponentAddMissPreMil * Stack;
+        }
+
+        public AddMissToOpponent(int maxStack, int stack, int restTimeMs, int opponentAddMissPreMil)
+        {
+            MaxStack = maxStack;
+            Stack = stack;
+            RestTimeMs = restTimeMs;
+            OpponentAddMissPreMil = opponentAddMissPreMil;
+        }
+    }
+
+    public class AddDefence : IBuffAddDefenceSelf, IBattleBuff
+    {
+        private int DefencePerMil { get; }
+        public int MaxStack { get; }
+        public int Stack { get; set; }
+        public int RestTimeMs { get; set; }
+
+        public int GetDefencePreMil()
         {
             return DefencePerMil * Stack;
         }
@@ -155,49 +191,52 @@ namespace AutoBattle
         }
 
 
-        public class DamageToAnotherOne : IBattleBuff, IDamageToAnotherOne
+        public class DamageToMe : IBattleBuff, IDamageToAnotherOne, IBindToCast
         {
             public int MaxStack { get; }
             public int Stack { get; set; }
             public int RestTimeMs { get; set; }
-            public BattleCharacter ToWho { get; }
+            public BattleCharacter? ToWho { get; set; }
 
 
-            public IShow DamageAnotherOne(IHarmBullet harmBullet)
+            public IShow[] DamageAnotherOne(IHarmBullet harmBullet)
             {
-                return ToWho.TakeHarm(harmBullet, out _);
+                return ToWho != null ? ToWho.TakeHarm(harmBullet, out _) : new IShow[] { };
             }
 
-            public DamageToAnotherOne(int maxStack, int stack, int restTimeMs, BattleCharacter who)
+            public DamageToMe(int maxStack, int stack, int restTimeMs)
             {
                 MaxStack = maxStack;
                 Stack = stack;
                 RestTimeMs = restTimeMs;
-                ToWho = who;
+            }
+
+            public void BindCharacter(BattleCharacter battleCharacter)
+            {
+                ToWho = battleCharacter;
             }
         }
+    }
 
+    public class HealDecrease : IHealDecreasePreMil, IBattleBuff
+    {
+        private readonly int _baseHealDecrease;
 
-        public class HealDecrease : IHealDecreasePreMil, IBattleBuff
+        public int GetHealDecreasePerMil(BattleCharacter battleCharacter)
         {
-            private readonly int _baseHealDecrease;
-
-            public int GetHealDecreasePerMil(BattleCharacter battleCharacter)
-            {
-                return _baseHealDecrease * Stack;
-            }
-
-            public HealDecrease(int restTimeMs, int maxStack, int stack, int baseHealDecrease)
-            {
-                RestTimeMs = restTimeMs;
-                MaxStack = maxStack;
-                Stack = stack;
-                _baseHealDecrease = baseHealDecrease;
-            }
-
-            public int RestTimeMs { get; set; }
-            public int MaxStack { get; }
-            public int Stack { get; set; }
+            return _baseHealDecrease * Stack;
         }
+
+        public HealDecrease(int restTimeMs, int maxStack, int stack, int baseHealDecrease)
+        {
+            RestTimeMs = restTimeMs;
+            MaxStack = maxStack;
+            Stack = stack;
+            _baseHealDecrease = baseHealDecrease;
+        }
+
+        public int RestTimeMs { get; set; }
+        public int MaxStack { get; }
+        public int Stack { get; set; }
     }
 }
