@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection.Metadata.Ecma335;
 
 namespace AutoBattle
@@ -26,7 +27,7 @@ namespace AutoBattle
 
     public interface IBuffCriticalAboutOpponent : IBattleBuff
     {
-        int GetCritical(BattleCharacter battleCharacter);
+        int GetCriticalPerMil(BattleCharacter battleCharacter);
     }
 
 
@@ -62,7 +63,7 @@ namespace AutoBattle
     {
         BattleCharacter ToWho { get; }
 
-        IShow[] DamageAnotherOne(IHarmBullet harmBullet);
+        IEnumerable<IShow> DamageAnotherOne(IHarmBullet harmBullet);
     }
 
     public interface IBuffAddCriticalSelf : IBattleBuff
@@ -189,32 +190,31 @@ namespace AutoBattle
             Damage = damage;
             DamagePerMil = damagePerMil;
         }
+    }
+
+    public class DamageToMe : IBattleBuff, IDamageToAnotherOne, IBindToCast
+    {
+        public int MaxStack { get; }
+        public int Stack { get; set; }
+        public int RestTimeMs { get; set; }
+        public BattleCharacter? ToWho { get; set; }
 
 
-        public class DamageToMe : IBattleBuff, IDamageToAnotherOne, IBindToCast
+        public IEnumerable<IShow> DamageAnotherOne(IHarmBullet harmBullet)
         {
-            public int MaxStack { get; }
-            public int Stack { get; set; }
-            public int RestTimeMs { get; set; }
-            public BattleCharacter? ToWho { get; set; }
+            return ToWho != null ? ToWho.TakeHarm(harmBullet, out _) : new IShow[] { };
+        }
 
+        public DamageToMe(int maxStack, int stack, int restTimeMs)
+        {
+            MaxStack = maxStack;
+            Stack = stack;
+            RestTimeMs = restTimeMs;
+        }
 
-            public IShow[] DamageAnotherOne(IHarmBullet harmBullet)
-            {
-                return ToWho != null ? ToWho.TakeHarm(harmBullet, out _) : new IShow[] { };
-            }
-
-            public DamageToMe(int maxStack, int stack, int restTimeMs)
-            {
-                MaxStack = maxStack;
-                Stack = stack;
-                RestTimeMs = restTimeMs;
-            }
-
-            public void BindCharacter(BattleCharacter battleCharacter)
-            {
-                ToWho = battleCharacter;
-            }
+        public void BindCharacter(BattleCharacter battleCharacter)
+        {
+            ToWho = battleCharacter;
         }
     }
 

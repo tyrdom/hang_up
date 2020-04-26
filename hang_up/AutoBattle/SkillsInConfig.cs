@@ -111,7 +111,7 @@ namespace AutoBattle
 
         public static IActiveSkill ActiveSkill13(int cdMs, float h)
         {
-            var damageToMe = new AddDamageAndHaste.DamageToMe(1, 1, 5000);
+            var damageToMe = new DamageToMe(1, 1, 5000);
             var attackHitOrMissAndAddBuffToSelf = new AttackHitOrMissAndAddBuffToSelf(h, new IBattleBuff[] {damageToMe},
                 SelfTargetType.SelfTeamOthers, true);
             return new StandardActiveSkill(new IActiveEffect[] {attackHitOrMissAndAddBuffToSelf}, cdMs);
@@ -138,7 +138,7 @@ namespace AutoBattle
 
         public static IActiveSkill ActiveSkill16(int cdMs, float h)
         {
-            var addHaste = new AddHaste(1,1,5000,-45);
+            var addHaste = new AddHaste(1, 1, 5000, -45);
             var attackHitOrMissWithBuffToOpponent = new AttackHitOrMissWithBuffToOpponent(
                 OpponentTargetType.FirstOpponent, true, OpponentTargetType.FirstOpponent,
                 new IBattleBuff[] {addHaste}, h);
@@ -147,19 +147,19 @@ namespace AutoBattle
 
         public static IActiveSkill ActiveSkill20(int cdMs, float h)
         {
-            var splashAll = new SplashAll(OpponentTargetType.FirstOpponent,h,0.5f);
-            return new StandardActiveSkill(new IActiveEffect[]{splashAll},cdMs);
+            var splashAll = new SplashAll(OpponentTargetType.FirstOpponent, h, 0.5f);
+            return new StandardActiveSkill(new IActiveEffect[] {splashAll}, cdMs);
         }
 
         public static IActiveSkill ActiveSkill21(int cdMs, float h)
         {
-            var splashAll = new SplashAll(OpponentTargetType.FirstOpponent,h,1f);
-            return new StandardActiveSkill(new IActiveEffect[]{splashAll},cdMs);
+            var splashAll = new SplashAll(OpponentTargetType.FirstOpponent, h, 1f);
+            return new StandardActiveSkill(new IActiveEffect[] {splashAll}, cdMs);
         }
 
         public static IActiveSkill ActiveSkill22(int cdMs, float h)
         {
-            var addDefence = new AddDefence(-500,1,1,10000);
+            var addDefence = new AddDefence(-500, 1, 1, 10000);
             var attackHitOrMissWithBuffToOpponent = new AttackHitOrMissWithBuffToOpponent(
                 OpponentTargetType.FirstOpponent, true, OpponentTargetType.FirstOpponent,
                 new IBattleBuff[] {addDefence}, h);
@@ -168,14 +168,158 @@ namespace AutoBattle
 
         public static IActiveSkill ActiveSkill23(int cdMs, float h)
         {
-            var justKillEffect = new JustKillEffect(OpponentTargetType.FirstOpponent,h,100);
-            return new StandardActiveSkill(new IActiveEffect[]{justKillEffect},cdMs);
+            var justKillEffect = new JustKillEffect(OpponentTargetType.FirstOpponent, h, 100);
+            return new StandardActiveSkill(new IActiveEffect[] {justKillEffect}, cdMs);
         }
-        
+
         public static IActiveSkill ActiveSkill101(int cdMs, float h)
         {
-            var splashAll = new SplashAll(OpponentTargetType.FirstOpponent,h,0.3f);
-            return new StandardActiveSkill(new IActiveEffect[]{splashAll},cdMs);
+            var splashAll = new SplashAll(OpponentTargetType.FirstOpponent, h, 0.3f);
+            return new StandardActiveSkill(new IActiveEffect[] {splashAll}, cdMs);
+        }
+
+        public static IPassiveSkill PassiveSkill7()
+        {
+            var criticalExecute = new CriticalExecute(0.3f);
+            return criticalExecute;
+        }
+
+        public static IPassiveSkill PassiveSkill8()
+        {
+            var splashRandomOne = new SplashRandomOne(1, 0.5f);
+
+            return new ChangeSkill1ToAnother(new IActiveEffect[] {splashRandomOne});
+        }
+
+        public static IPassiveSkill PassiveSkill9()
+        {
+            var addDamageAndHaste = new AddDamageAndHaste(8000, 4, 1, 15, 0, 500);
+            return new AddBuffWhenMiss(new IBattleBuff[] { }, new IBattleBuff[] {addDamageAndHaste});
+        }
+
+        public static IPassiveSkill PassiveSkill10()
+        {
+            return new AddHarmByOpponentNowHp(0.01f);
+        }
+
+        public static IPassiveSkill PassiveSkill11()
+        {
+            return new AddDamageByOpponentDead(500, 3);
+        }
+
+        public static IPassiveSkill PassiveSkill12()
+        {
+            return new LossHpWhenHitByNowHp(0.08f);
+        }
+
+        public static IPassiveSkill PassiveSkill13()
+        {
+            return new HealByDamageWhenBeHit(1f);
+        }
+
+        public static IPassiveSkill PassiveSkill14()
+
+        {
+            return new HealWhenHit(2f);
+        }
+
+        public static IPassiveSkill PassiveSkill15()
+        {
+            return new NotAboveHarm(0.1f);
+        }
+
+        public static IPassiveSkill PassiveSkill16()
+        {
+            var damageToMe = new DamageToMe(1, 1, 2000);
+            var attackHitOrMissAndAddBuffToSelf =
+                new AttackHitOrMissAndAddBuffToSelf(1f, new IBattleBuff[] {damageToMe}, SelfTargetType.SelfWeak, true);
+            return new ChangeSkill1ToAnother(new IActiveEffect[] {attackHitOrMissAndAddBuffToSelf});
+        }
+
+        public static IPassiveSkill PassiveSkill17()
+        {
+            return new PassiveHealDecrease(400);
+        }
+
+        public static IPassiveSkill PassiveSkill19()
+        {
+            return new ReBorn(3);
+        }
+
+        public static IPassiveSkill PassiveSkill20()
+        {
+            return new AddDefenceByLossHp(0.7f);
+        }
+
+        public static IPassiveSkill PassiveSkill101()
+        {
+            return new AddDamagePerMilByNowHp(1f);
+        }
+
+        public static IPassiveSkill PassiveSkill102()
+        {
+            return new AddDefenceByNowHp(0.5f);
+        }
+
+        public static IPassiveSkill PassiveSkill103()
+        {
+            var addDefence = new AddDefence(10, 70, 1, 10000);
+            return new AddBuffWhenBeHit(new IBattleBuff[] {addDefence});
+        }
+
+        public static IPassiveSkill PassiveSkill104()
+        {
+            var addDamagePerMil = new AddDamagePerMil(200, 1, 10000, 10);
+            return new AddBuffWhenBeHit(new IBattleBuff[] {addDamagePerMil});
+        }
+
+        public static IPassiveSkill PassiveSkill105()
+        {
+            return new IgnoreHarmBlow(50);
+        }
+
+        public static IPassiveSkill PassiveSkill106()
+        {
+            return new CopySelf(0.1f, 3f, 2);
+        }
+
+        public static IPassiveSkill PassiveSkill107()
+        {
+            var addDamagePerMil = new AddDamagePerMil(100, 1, 3000, 50);
+            return new AddBuffWhenHit(new IBattleBuff[] { }, new IBattleBuff[] {addDamagePerMil});
+        }
+
+        public static IPassiveSkill PassiveSkill108()
+        {
+            return new AddDamagePerMilByLossHp(1f);
+        }
+
+        public static IPassiveSkill PassiveSkill109()
+        {
+            var splashAll = new SplashAll(OpponentTargetType.FirstOpponent, 0.2f, 1.5f);
+            return new ChangeSkill1ToAnother(new IActiveEffect[] {splashAll});
+        }
+
+        public static IPassiveSkill PassiveSkill110()
+        {
+            var normalAttack = new NormalAttack(1f, OpponentTargetType.WeakestOpponent);
+            return new ChangeSkill1ToAnother(new IActiveEffect[] {normalAttack});
+        }
+
+        public static IPassiveSkill PassiveSkill111()
+        {
+            var justKillEffect = new JustKillEffect(OpponentTargetType.FirstOpponent, 1f, 50);
+            return new ChangeSkill1ToAnother(new IActiveEffect[] {justKillEffect});
+        }
+
+        public static IPassiveSkill PassiveSkill112()
+        {
+            return new ReBorn(5);
+        }
+
+        public static IPassiveSkill PassiveSkill115()
+        {
+            return new CopySelf(1f, 1f, 3);
         }
     }
 }

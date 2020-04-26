@@ -27,11 +27,18 @@ namespace AutoBattle
             CriticalPreMil = criticalPreMil;
         }
 
-        public void GetHeal(int heal, int healDecreasePreMil)
+        public float GetNowHpMulti()
+        {
+            return (float) NowHp / MaxHp;
+        }
+
+        public int GetHeal(int heal, int healDecreasePreMil)
         {
             var decreasePreMil = (1000 - healDecreasePreMil) / 1000f;
-            NowHp = Math.Min(NowHp + (int) (heal * decreasePreMil),
+            var preMil = (int) (heal * decreasePreMil);
+            NowHp = Math.Min(NowHp + preMil,
                 MaxHp);
+            return preMil;
         }
     }
 }

@@ -7,26 +7,35 @@ namespace AutoBattle
     {
     }
 
+    public interface IPassiveAboutAddBuffs
+    {
+        public IBattleBuff[] GetBuffsToAttacker();
+        public IBattleBuff[] GetBuffsToDefence();
+    }
+
     public interface IGetReadyActive
     {
         void GetReadyDo(BattleCharacter battleCharacter);
     }
 
-    public interface IPassiveAddBuffAboutMiss : IPassiveSkill
+    public interface IPassiveAddBuffWhenMiss : IPassiveSkill, IPassiveAboutAddBuffs
     {
-        public IBattleBuff[] GetBuffsToAttacker { get; }
+    }
 
-        public IBattleBuff[] GetBuffsToSelf { get; }
+    public interface IPassiveAddBuffAboutDodge : IPassiveSkill, IPassiveAboutAddBuffs
+    {
     }
 
     public interface IWhenDead : IPassiveSkill
     {
     }
 
-    public interface IPassiveAddBuffAboutHit : IPassiveSkill
+    public interface IPassiveAddBuffsHit : IPassiveSkill, IPassiveAboutAddBuffs
     {
-        public IBattleBuff[] GetBuffsToAttacker();
-        public IBattleBuff[] GetBuffsToSelf();
+    }
+
+    public interface IPassiveAddBuffBeHit : IPassiveSkill, IPassiveAboutAddBuffs
+    {
     }
 
     public interface INotAboveHarm
@@ -34,7 +43,13 @@ namespace AutoBattle
         int MaxHarm(BattleCharacter battleCharacter);
     }
 
+
     public interface IHealWhenHit
+    {
+        int Heals(BattleCharacter opponent);
+    }
+
+    public interface IHealWhenBeHit
     {
         int GetHeal(BattleCharacter battleCharacter);
     }
@@ -74,9 +89,9 @@ namespace AutoBattle
         float GetHarmMulti(BattleCharacter battleCharacter);
     }
 
-    public interface IPassiveAddCriticalAboutOpponent : IPassiveSkill
+    public interface IPassiveAddCriticalByOpponent : IPassiveSkill
     {
-        int GetCritical(BattleCharacter battleCharacter);
+        int GetCriticalPerMil(BattleCharacter battleCharacter);
     }
 
     public interface IPassiveAddDefenceAboutOpponent : IPassiveSkill
@@ -84,27 +99,88 @@ namespace AutoBattle
         int GetDefencePreMil(BattleCharacter battleCharacter);
     }
 
-    public class DecreaseHealAndAddDefence : IPassiveSkill, IHealDecreasePreMil
-    {
-        private readonly int _healDecreasePerMil;
 
-        public DecreaseHealAndAddDefence(int healDecreasePerMil)
+    public class AddBuffWhenHit : IPassiveAddBuffsHit
+    {
+        private readonly IBattleBuff[] _battleBuffsToDef;
+        private readonly IBattleBuff[] _battleBuffsToAtk;
+
+        public AddBuffWhenHit(IBattleBuff[] battleBuffsToDef, IBattleBuff[] battleBuffsToAtk)
         {
-            _healDecreasePerMil = healDecreasePerMil;
+            _battleBuffsToDef = battleBuffsToDef;
+            _battleBuffsToAtk = battleBuffsToAtk;
         }
 
-        public int GetHealDecreasePerMil(BattleCharacter battleCharacter)
+        public IBattleBuff[] GetBuffsToAttacker()
         {
-            return _healDecreasePerMil;
+            return _battleBuffsToAtk;
+        }
+
+        public IBattleBuff[] GetBuffsToDefence()
+        {
+            return _battleBuffsToDef;
         }
     }
 
-    public class TestHastePassive : IHastePassiveEffect, IPassiveSkill
+
+    public class AddBuffWhenMiss : IPassiveAddBuffWhenMiss
     {
-        public int GetHasteValueAndLastMs()
+        private readonly IBattleBuff[] _battleBuffsToDef;
+        private readonly IBattleBuff[] _battleBuffsToAtk;
+
+        public AddBuffWhenMiss(IBattleBuff[] battleBuffsToDef, IBattleBuff[] battleBuffsToAtk)
         {
-            return 0;
+            _battleBuffsToDef = battleBuffsToDef;
+            _battleBuffsToAtk = battleBuffsToAtk;
         }
+
+        public IBattleBuff[] GetBuffsToAttacker()
+        {
+            return _battleBuffsToAtk;
+        }
+
+        public IBattleBuff[] GetBuffsToDefence()
+        {
+            return _battleBuffsToDef;
+        }
+    }
+
+    public class AddBuffWhenBeHit : IPassiveAddBuffBeHit
+    {
+        private readonly IBattleBuff[] _battleBuffs;
+
+        public AddBuffWhenBeHit(IBattleBuff[] battleBuffs)
+        {
+            _battleBuffs = battleBuffs;
+        }
+
+        public IBattleBuff[] GetBuffsToAttacker()
+        {
+            return new IBattleBuff[] { };
+        }
+
+        public IBattleBuff[] GetBuffsToDefence()
+        {
+            return _battleBuffs;
+        }
+    }
+
+    public class CriticalExecute : IPassiveSkill, IPassiveAddCriticalByOpponent, IExecuteEffect
+    {
+        public int GetCriticalPerMil(BattleCharacter battleCharacter)
+        {
+            var nowHp = 1 - (float) battleCharacter.CharacterBattleAttribute.NowHp /
+                battleCharacter.CharacterBattleAttribute.MaxHp;
+            int damageAddMultiBlackHpPercent = (int) (nowHp * DamageAddMultiBlackHpPercent * 1000);
+            return damageAddMultiBlackHpPercent;
+        }
+
+        public CriticalExecute(float damageAddMultiBlackHpPercent)
+        {
+            DamageAddMultiBlackHpPercent = damageAddMultiBlackHpPercent;
+        }
+
+        public float DamageAddMultiBlackHpPercent { get; }
     }
 
     public interface IReborn
@@ -130,7 +206,7 @@ namespace AutoBattle
 
     public interface IResetSkill1
     {
-        IActiveSkill ActiveSkill { get; }
+        IActiveEffect[] ActiveSkillEffects { get; }
     }
 
     public interface ICopyCharacter
@@ -172,19 +248,34 @@ namespace AutoBattle
         }
     }
 
+    public class PassiveHealDecrease : IHealDecreasePreMil, IPassiveSkill
+    {
+        private readonly int _healDecreasePerMil;
+
+        public PassiveHealDecrease(int healDecreasePerMil)
+        {
+            _healDecreasePerMil = healDecreasePerMil;
+        }
+
+        public int GetHealDecreasePerMil(BattleCharacter battleCharacter)
+        {
+            return _healDecreasePerMil;
+        }
+    }
 
     public class ChangeSkill1ToAnother : IResetSkill1, IGetReadyActive, IPassiveSkill
     {
-        public IActiveSkill ActiveSkill { get; }
-
-        public ChangeSkill1ToAnother(IActiveSkill activeSkill)
+        public ChangeSkill1ToAnother(IActiveEffect[] activeSkillEffects)
         {
-            ActiveSkill = activeSkill;
+            ActiveSkillEffects = activeSkillEffects;
         }
+
+        public IActiveEffect[] ActiveSkillEffects { get; }
+
 
         public void GetReadyDo(BattleCharacter battleCharacter)
         {
-            battleCharacter.ActiveSkill1 = ActiveSkill;
+            battleCharacter.ActiveSkill1.ActiveEffect = ActiveSkillEffects;
         }
     }
 
@@ -198,15 +289,26 @@ namespace AutoBattle
         }
     }
 
-    public class AddBuffsWhenMiss : IPassiveAddBuffAboutMiss
+    public class AddBuffsWhenDodge : IPassiveAddBuffAboutDodge
     {
-        public IBattleBuff[] GetBuffsToAttacker { get; }
-        public IBattleBuff[] GetBuffsToSelf { get; }
+        private IBattleBuff[] GetBuffsToAttacker { get; }
+        private IBattleBuff[] GetBuffsToSelf { get; }
 
-        public AddBuffsWhenMiss(IBattleBuff[] buffsToSelf, IBattleBuff[] getBuffsToAttacker)
+        public AddBuffsWhenDodge(IBattleBuff[] buffsToSelf, IBattleBuff[] getBuffsToAttacker)
         {
             GetBuffsToSelf = buffsToSelf;
             GetBuffsToAttacker = getBuffsToAttacker;
+        }
+
+
+        IBattleBuff[] IPassiveAboutAddBuffs.GetBuffsToDefence()
+        {
+            return GetBuffsToSelf;
+        }
+
+        IBattleBuff[] IPassiveAboutAddBuffs.GetBuffsToAttacker()
+        {
+            return GetBuffsToAttacker;
         }
     }
 
@@ -224,6 +326,23 @@ namespace AutoBattle
             var nowHp = battleCharacter.CharacterBattleAttribute.NowHp;
             var harm = (int) (nowHp * HarmMulti);
             return harm;
+        }
+    }
+
+    public class AddDamagePerMilByLossHp : IPassiveAddDamageAboutSelf
+    {
+        private readonly float _lossHpMulti;
+
+        public AddDamagePerMilByLossHp(float lossHpMulti)
+        {
+            _lossHpMulti = lossHpMulti;
+        }
+
+        public (int, int) GetDamageAndPerMil(BattleCharacter battleCharacter)
+        {
+            // ReSharper disable once PossibleLossOfFraction
+            var lossHpMulti = (int) ((1 - battleCharacter.CharacterBattleAttribute.GetNowHpMulti()) * _lossHpMulti * 1000);
+            return (0, lossHpMulti);
         }
     }
 
@@ -245,11 +364,43 @@ namespace AutoBattle
         }
     }
 
-    public class HealByDamageWhenHit : IHealWhenHit, IPassiveSkill
+    public class HealWhenHit : IHealWhenHit, IPassiveSkill
+    {
+        private readonly float _damageMulti;
+
+        public HealWhenHit(float damageMulti)
+        {
+            _damageMulti = damageMulti;
+        }
+
+        public int Heals(BattleCharacter opponent)
+        {
+            int damageMulti = (int) (opponent.CharacterBattleAttribute.Damage * this._damageMulti);
+            return damageMulti;
+        }
+    }
+
+    public class LossHpWhenHitByNowHp : IHealWhenHit, IPassiveSkill
+    {
+        private readonly float _nowHpMulti;
+
+        public LossHpWhenHitByNowHp(float nowHpMulti)
+        {
+            _nowHpMulti = nowHpMulti;
+        }
+
+        public int Heals(BattleCharacter opponent)
+        {
+            var nowHpMulti = -(int) (opponent.CharacterBattleAttribute.NowHp * _nowHpMulti);
+            return nowHpMulti;
+        }
+    }
+
+    public class HealByDamageWhenBeHit : IHealWhenBeHit, IPassiveSkill
     {
         private readonly float _healMulti;
 
-        public HealByDamageWhenHit(float healMulti)
+        public HealByDamageWhenBeHit(float healMulti)
         {
             _healMulti = healMulti;
         }
@@ -331,6 +482,22 @@ namespace AutoBattle
         public int IgnoreHarmValue(BattleCharacter battleCharacter)
         {
             return (int) (battleCharacter.CharacterBattleAttribute.NowHp * _nowHpPerMil / 1000f);
+        }
+    }
+
+    public class AddDefenceByNowHp : IPassiveAddDefenceAboutSelf, IPassiveSkill
+    {
+        private readonly float _nowHpMulti;
+
+        public AddDefenceByNowHp(float nowHpMulti)
+        {
+            _nowHpMulti = nowHpMulti;
+        }
+
+        public int GetDefencePreMil(BattleCharacter battleCharacter)
+        {
+            int nowHpMulti = (int) (battleCharacter.CharacterBattleAttribute.GetNowHpMulti() * _nowHpMulti * 1000);
+            return nowHpMulti;
         }
     }
 }

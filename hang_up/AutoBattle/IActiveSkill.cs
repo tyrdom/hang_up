@@ -6,7 +6,7 @@ namespace AutoBattle
 {
     public interface IActiveSkill : ITimeAble
     {
-        public IActiveEffect[] ActiveEffect { get; }
+        public IActiveEffect[] ActiveEffect { get; set; }
 
         public int ResetTime { get; }
 
@@ -29,7 +29,9 @@ namespace AutoBattle
         }
 
         public int RestTimeMs { get; set; }
-        public IActiveEffect[] ActiveEffect { get; }
+        public IActiveEffect[] ActiveEffect { get; set; }
         public int ResetTime { get; }
     }
+    
+    
 }

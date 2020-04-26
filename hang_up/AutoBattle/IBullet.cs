@@ -202,11 +202,11 @@ namespace AutoBattle
                 AutoBattleTools.GetFirstAndOtherTargetByOpponentType(anotherTeam.ToArray(), BuffTargetType);
             if (item1 != null)
             {
-                var addBuff = item1.AddBuff(BattleBuffs, item1);
+                var addBuff = BattleCharacter.AddBuff(BattleBuffs, item1);
                 takeHarm = takeHarm.Union(addBuff).ToArray();
             }
 
-            var selectMany = item2.SelectMany(x => x.AddBuff(BattleBuffs, x));
+            var selectMany = item2.SelectMany(x => BattleCharacter.AddBuff(BattleBuffs, x));
             var enumerable = takeHarm.Union(selectMany);
             return enumerable.ToArray();
         }
@@ -254,7 +254,7 @@ namespace AutoBattle
             });
             var targetsBySelfTargetType =
                 AutoBattleTools.GetTargetsBySelfTargetType(anotherTeam.ToArray(), SelfTargetType, FromWho);
-            var selectMany = targetsBySelfTargetType.SelectMany(x => x.AddBuff(battleBuffs.ToArray(), x));
+            var selectMany = targetsBySelfTargetType.SelectMany(x => BattleCharacter.AddBuff(battleBuffs.ToArray(), x));
             var enumerable = takeHarm.Union(selectMany);
             return enumerable.ToArray();
         }
