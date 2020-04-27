@@ -47,26 +47,39 @@ namespace Test
             var skill4 = activeSkill(3500, 3f);
             var passiveSkill3 = SkillsInConfig.PassiveSkills[9];
             var battleCharacter1 = new BattleCharacter(KeyStatus.Alive, characterBattleBaseAttribute, skill1, skill2,
-                new IPassiveSkill[] { passiveSkill});
+                new IPassiveSkill[] {passiveSkill});
             var battleCharacter2 = new BattleCharacter(KeyStatus.Alive, characterBattleBaseAttribute, skill2, skill3,
-                new IPassiveSkill[] { passiveSkill});
+                new IPassiveSkill[] {passiveSkill});
             var battleCharacter3 = new BattleCharacter(KeyStatus.Alive, characterBattleBaseAttribute, skill2, skill2,
-                new IPassiveSkill[] {passiveSkill3 });
+                new IPassiveSkill[] {passiveSkill3});
 
 
-           
             var battleCharacter4 = new BattleCharacter(KeyStatus.Alive, characterBattleBaseAttribute, skill3, skill4,
-                new IPassiveSkill[] { passiveSkill3});
+                new IPassiveSkill[] {passiveSkill3});
             var battleCharacter5 = new BattleCharacter(KeyStatus.Alive, characterBattleBaseAttribute, skill3, skill4,
-                new IPassiveSkill[] { passiveSkill});
+                new IPassiveSkill[] {passiveSkill});
             var battleCharacter6 = new BattleCharacter(KeyStatus.Alive, characterBattleBaseAttribute, skill3, skill4,
-                new IPassiveSkill[] { passiveSkill3});
+                new IPassiveSkill[] {passiveSkill3});
             var battleCharacters = new[] {battleCharacter1, battleCharacter2, battleCharacter3};
             var characters = new[] {battleCharacter4, battleCharacter5, battleCharacter6};
 
             var battleGround = new BattleGround(battleCharacters, characters);
 
-            var goBattle = battleGround.GoBattle();
+            WhoWin GoBattleTest()
+            {
+                battleGround.GetReady();
+
+                while (battleGround.CheckEnd() == WhoWin.NotEnd)
+                {
+                    battleGround.GoNextTimeEvent();
+                    Console.Out.WriteLine("_______________________");
+                    Console.ReadKey();
+                }
+
+                return battleGround.CheckEnd();
+            }
+
+            var goBattle = GoBattleTest();
             Console.Out.WriteLine("result:" + goBattle);
 
 

@@ -48,7 +48,7 @@ namespace AutoBattle
             return CheckEnd();
         }
 
-        private void GetReady()
+        public void GetReady()
         {
             foreach (var battleCharacter in _teamA)
             {
@@ -74,7 +74,7 @@ namespace AutoBattle
             _teamB = _teamB.Concat(battleCharacters1).ToArray();
         }
 
-        private IShow[] GoNextTimeEvent()
+        public IShow[] GoNextTimeEvent()
         {
             var aliveTeamA = _teamA.Where(x => x.KeyStatus == KeyStatus.Alive).ToArray();
 
@@ -150,7 +150,7 @@ namespace AutoBattle
             return effects.ToArray();
         }
 
-        private WhoWin CheckEnd()
+        public WhoWin CheckEnd()
         {
             var aAlive = _teamA.Select(x => x.KeyStatus == KeyStatus.Alive).Aggregate(false, (x, y) => x || y);
             var bAlive = _teamB.Select(x => x.KeyStatus == KeyStatus.Alive).Aggregate(false, (x, y) => x || y);
