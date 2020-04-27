@@ -8,8 +8,6 @@ namespace AutoBattle
 {
     public interface IBullet
     {
-        public IEnumerable<IShow> HitTeam(IEnumerable<BattleCharacter> targetTeam,
-            IEnumerable<BattleCharacter> anotherTeam);
     }
 
 
@@ -47,11 +45,17 @@ namespace AutoBattle
 
     public interface IOpponentBullet : IBullet
     {
+        public IEnumerable<IShow> HitTeam(IEnumerable<BattleCharacter> targetTeam,
+            IEnumerable<BattleCharacter> anotherTeam);
+
         OpponentTargetType Type { get; }
     }
 
     public interface ISelfBullet : IBullet
     {
+        public IEnumerable<IShow> HelpTeam(IEnumerable<BattleCharacter> targetTeam,
+            IEnumerable<BattleCharacter> anotherTeam);
+
         SelfTargetType TargetType { get; }
     }
 
@@ -320,7 +324,7 @@ namespace AutoBattle
     {
         public BattleCharacter FromWho { get; }
 
-        public IEnumerable<IShow> HitTeam(IEnumerable<BattleCharacter> targetTeam,
+        public IEnumerable<IShow> HelpTeam(IEnumerable<BattleCharacter> targetTeam,
             IEnumerable<BattleCharacter> anotherTeam)
         {
             var targetsBySelfTargetType =
@@ -425,6 +429,7 @@ namespace AutoBattle
         {
             var battleCharacters = targetTeam as BattleCharacter[] ?? targetTeam.ToArray();
             var (battleCharacter, _) = AutoBattleTools.GetFirstAndOtherTargetByOpponentType(battleCharacters, Type);
+
             return battleCharacter == null ? new IShow[] { } : battleCharacter.TakeHarm(this, out _);
         }
     }

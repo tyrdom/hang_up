@@ -4,8 +4,8 @@ namespace AutoBattle
 {
     public static class CommonSettings
     {
-        private const int HasteMax = 200;
-        private const int HasteMin = 30;
+        private const int HasteMax = 100;
+        private const int HasteMin =-70;
         private const int MaxMissPerMil = 750;
         private const int MaxDefencePerMil = 800;
 

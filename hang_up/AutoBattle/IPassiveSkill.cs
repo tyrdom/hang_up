@@ -201,7 +201,7 @@ namespace AutoBattle
 
     public interface IHastePassiveEffect
     {
-        int GetHasteValueAndLastMs();
+        int GetHasteValueAndLastMs(BattleCharacter battleCharacter);
     }
 
     public interface IResetSkill1
@@ -216,6 +216,21 @@ namespace AutoBattle
         int CopyTimes { get; }
 
         BattleCharacter[] GenCopies(BattleCharacter battleCharacter);
+    }
+
+    public class HasteByLossHp : IHastePassiveEffect
+    {
+        private readonly float _lossMulti;
+
+        public HasteByLossHp(float lossMulti)
+        {
+            _lossMulti = lossMulti;
+        }
+
+        public int GetHasteValueAndLastMs(BattleCharacter battleCharacter)
+        {
+            return (int) ((1 - battleCharacter.CharacterBattleAttribute.GetNowHpMulti()) * _lossMulti * 100);
+        }
     }
 
     public class CopySelf : ICopyCharacter, IPassiveSkill
@@ -341,7 +356,8 @@ namespace AutoBattle
         public (int, int) GetDamageAndPerMil(BattleCharacter battleCharacter)
         {
             // ReSharper disable once PossibleLossOfFraction
-            var lossHpMulti = (int) ((1 - battleCharacter.CharacterBattleAttribute.GetNowHpMulti()) * _lossHpMulti * 1000);
+            var lossHpMulti =
+                (int) ((1 - battleCharacter.CharacterBattleAttribute.GetNowHpMulti()) * _lossHpMulti * 1000);
             return (0, lossHpMulti);
         }
     }
@@ -459,6 +475,7 @@ namespace AutoBattle
 
         public (int, int) GetDamageAndPerMil(BattleCharacter battleCharacter)
         {
+            if (battleCharacter.InWhichBattleGround == null) return (0, 0);
             var battleGlobals = battleCharacter.InWhichBattleGround.BattleGlobals;
             var f = battleCharacter.BelongTeam switch
             {
@@ -467,6 +484,7 @@ namespace AutoBattle
                 _ => throw new ArgumentOutOfRangeException()
             };
             return (0, f);
+
         }
     }
 

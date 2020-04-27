@@ -8,10 +8,10 @@ namespace AutoBattle
     {
         public IActiveEffect[] ActiveEffect { get; set; }
 
-        public int ResetTime { get; }
+        public int CdMsTime { get; }
 
 
-        public void Reset() => RestTimeMs = ResetTime;
+        public void Reset() => RestTimeMs = CdMsTime;
 
         IEnumerable<IBullet> GenIBullets(BattleCharacter battleCharacter)
         {
@@ -21,16 +21,16 @@ namespace AutoBattle
 
     public class StandardActiveSkill : IActiveSkill
     {
-        public StandardActiveSkill( IActiveEffect[] activeEffect, int resetTime)
+        public StandardActiveSkill( IActiveEffect[] activeEffect, int cdMsTime)
         {
-            RestTimeMs = resetTime;
+            RestTimeMs = cdMsTime;
             ActiveEffect = activeEffect;
-            ResetTime = resetTime;
+            CdMsTime = cdMsTime;
         }
 
         public int RestTimeMs { get; set; }
         public IActiveEffect[] ActiveEffect { get; set; }
-        public int ResetTime { get; }
+        public int CdMsTime { get; }
     }
     
     

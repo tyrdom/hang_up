@@ -7,11 +7,26 @@ namespace AutoBattle
 {
     public static class SkillsInConfig
     {
-        public static ImmutableDictionary<int, Func<int, float, IActiveSkill>> ActiveSkills =
+        public static readonly ImmutableDictionary<int, Func<int, float, IActiveSkill>> ActiveSkills =
             new Dictionary<int, Func<int, float, IActiveSkill>>()
             {
                 {0, ActiveSkill0}, {1, ActiveSkill1}, {2, ActiveSkill2}, {3, ActiveSkill3}, {4, ActiveSkill4},
-                {5, ActiveSkill0}, {6, ActiveSkill6}, {7, ActiveSkill7}
+                 {6, ActiveSkill6}, {7, ActiveSkill7}, {8, ActiveSkill8}, {9, ActiveSkill9},
+                {10, ActiveSkill10}, {11, ActiveSkill11}, {12, ActiveSkill12}, {13, ActiveSkill13}, {14, ActiveSkill14},
+                {15, ActiveSkill15}, {16, ActiveSkill16}, {20, ActiveSkill20}, {21, ActiveSkill21}, {22, ActiveSkill22},
+                {23, ActiveSkill23}, {101, ActiveSkill101}
+            }.ToImmutableDictionary();
+
+        public static readonly ImmutableDictionary<int, IPassiveSkill> PassiveSkills =
+            new Dictionary<int, IPassiveSkill>
+            {
+                {7, PassiveSkill7()}, {8, PassiveSkill8()}, {9, PassiveSkill9()}, {10, PassiveSkill10()},
+                {11, PassiveSkill11()}, {12, PassiveSkill12()}, {13, PassiveSkill13()}, {14, PassiveSkill14()},
+                {15, PassiveSkill15()}, {16, PassiveSkill16()}, {17, PassiveSkill17()}, {19, PassiveSkill19()},
+                {20, PassiveSkill20()}, {101, PassiveSkill101()}, {102, PassiveSkill102()}, {103, PassiveSkill103()},
+                {104, PassiveSkill104()}, {105, PassiveSkill105()}, {106, PassiveSkill106()}, {107, PassiveSkill107()},
+                {108, PassiveSkill108()}, {109, PassiveSkill109()}, {110, PassiveSkill110()}, {111, PassiveSkill111()},
+                {112, PassiveSkill112()}, {115, PassiveSkill115()}
             }.ToImmutableDictionary();
 
         public static IActiveSkill ActiveSkill0(int cdMs, float harmMulti)

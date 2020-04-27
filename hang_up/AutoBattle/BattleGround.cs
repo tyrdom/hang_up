@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 
 namespace AutoBattle
@@ -9,19 +10,44 @@ namespace AutoBattle
         private BattleCharacter[] _teamA;
         private BattleCharacter[] _teamB;
 
-        public static readonly Random Random = new Random();
+        public static readonly Random Random = new Random(Seed:123);
 
 
         public readonly BattleGlobals BattleGlobals;
 
         public BattleGround(BattleCharacter[] teamA, BattleCharacter[] teamB)
         {
+            foreach (var battleCharacter in teamA)
+            {
+                battleCharacter.JoinBattleGround(this);
+            }
+
+            foreach (var battleCharacter in teamB)
+            {
+                battleCharacter.JoinBattleGround(this);
+            }
+
             _teamA = teamA;
+
             _teamB = teamB;
+
             BattleGlobals = new BattleGlobals();
         }
 
-        
+        public WhoWin GoBattle()
+        {
+            GetReady();
+
+            while (CheckEnd() == WhoWin.NotEnd)
+            {
+                GoNextTimeEvent();
+                Console.Out.WriteLine("_______________________");
+                Console.ReadKey();
+            }
+
+            return CheckEnd();
+        }
+
         private void GetReady()
         {
             foreach (var battleCharacter in _teamA)
@@ -57,34 +83,50 @@ namespace AutoBattle
             var minB = aliveTeamB.Select(character => character.GetEventTime()).Min();
             var i = Math.Min(min, minB);
 
-            var teamABullets = aliveTeamA.SelectMany(x => x.TakeTime(i));
+            var teamABullets = aliveTeamA.SelectMany(x => x.TakeTime(i)).ToArray();
+            // foreach (var teamABullet in teamABullets)
+            // {
+            //     var s = teamABullet.GetType().ToString();
+            //     Console.Out.WriteLine($"bA:{s}");
+            // }
 
-            var teamBBullets = aliveTeamB.SelectMany(x => x.TakeTime(i));
+            var teamBBullets = aliveTeamB.SelectMany(x => x.TakeTime(i)).ToArray();
+            // foreach (var teamBBullet in teamBBullets)
+            // {
+            //     var s = teamBBullet.GetType().ToString();
+            //     Console.Out.WriteLine($"bB:{s}");
+            // }
 
             var showEffects = teamABullets.SelectMany(x =>
             {
                 return x switch
                 {
                     IOpponentBullet opponentBullet => opponentBullet.HitTeam(aliveTeamB, aliveTeamA),
-                    ISelfBullet selfBullet => selfBullet.HitTeam(aliveTeamA, aliveTeamB),
+                    ISelfBullet selfBullet => selfBullet.HelpTeam(aliveTeamA, aliveTeamB),
                     _ => throw new ArgumentOutOfRangeException(nameof(x))
                 };
             });
-            var enumerable = teamBBullets.SelectMany(x =>
+            var enumerable = teamBBullets.SelectMany( x =>
             {
                 return x switch
                 {
                     IOpponentBullet opponentBullet => opponentBullet.HitTeam(aliveTeamA, aliveTeamB),
-                    ISelfBullet selfBullet => selfBullet.HitTeam(aliveTeamB, aliveTeamA),
+                    ISelfBullet selfBullet => selfBullet.HelpTeam(aliveTeamB, aliveTeamA),
                     _ => throw new ArgumentOutOfRangeException(nameof(x))
                 };
             });
             var effects = showEffects.Union(enumerable);
 
             //CheckDead
-            foreach (var battleCharacter in aliveTeamA)
+            for (var index = 0; index < aliveTeamA.Length; index++)
             {
-                if (battleCharacter.CharacterBattleAttribute.NowHp > 0) continue;
+                var battleCharacter = aliveTeamA[index];
+                if (battleCharacter.CharacterBattleAttribute.NowHp > 0)
+                {
+                    Console.Out.WriteLine($"AHp{index}:{battleCharacter.CharacterBattleAttribute.NowHp}");
+                    continue;
+                }
+
                 battleCharacter.DoDead();
 
 
@@ -92,9 +134,15 @@ namespace AutoBattle
             }
 
 
-            foreach (var battleCharacter in aliveTeamB)
+            for (var index2 = 0; index2 < aliveTeamB.Length; index2++)
             {
-                if (battleCharacter.CharacterBattleAttribute.NowHp > 0) continue;
+                var battleCharacter = aliveTeamB[index2];
+                if (battleCharacter.CharacterBattleAttribute.NowHp > 0)
+                {
+                    Console.Out.WriteLine($"BHp{index2}:{battleCharacter.CharacterBattleAttribute.NowHp}");
+                    continue;
+                }
+
                 battleCharacter.DoDead();
                 BattleGlobals.TeamBDeadTime++;
             }
@@ -137,7 +185,7 @@ namespace AutoBattle
         }
     }
 
-    internal enum WhoWin
+    public enum WhoWin
     {
         TeamAWin,
         TeamBWin,

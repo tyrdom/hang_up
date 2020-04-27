@@ -7,8 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\AutoBattle\AutoBattle.csproj" />
       <ProjectReference Include="..\GameConfig\GameConfig.csproj" />
       <ProjectReference Include="..\GameProtos\GameProtos.csproj" />
+      <ProjectReference Include="..\GameServers\GameServers.csproj" />
     </ItemGroup>
 
     <ItemGroup>

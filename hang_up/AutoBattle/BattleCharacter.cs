@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Xml.Serialization;
 
 namespace AutoBattle
 {
     public class BattleCharacter
     {
-        public BattleGround InWhichBattleGround;
+        public BattleGround? InWhichBattleGround;
         public KeyStatus KeyStatus;
+
         public BelongTeam BelongTeam;
         public CharacterBattleBaseAttribute CharacterBattleAttribute;
 
@@ -20,18 +22,25 @@ namespace AutoBattle
 
         private (int, int)[] _tempHasteBuffData;
 
+        private int _tempBaseHaste;
+
+
         public BattleCharacter(KeyStatus keyStatus, CharacterBattleBaseAttribute characterBattleAttribute,
-            IActiveSkill activeSkill1, IActiveSkill activeSkill2, IPassiveSkill[] passiveSkills,
-            List<IBattleBuff> battleBuffs, BattleGround inWhichBattleGround)
+            IActiveSkill activeSkill1, IActiveSkill activeSkill2, IPassiveSkill[] passiveSkills)
         {
             KeyStatus = keyStatus;
             CharacterBattleAttribute = characterBattleAttribute;
             ActiveSkill1 = activeSkill1;
             ActiveSkill2 = activeSkill2;
             PassiveSkills = passiveSkills;
-            BattleBuffs = battleBuffs;
+            BattleBuffs = new List<IBattleBuff>();
             _tempHasteBuffData = new (int, int)[] { };
-            InWhichBattleGround = inWhichBattleGround;
+            InWhichBattleGround = null;
+        }
+
+        public void JoinBattleGround(BattleGround battleGround)
+        {
+            InWhichBattleGround = battleGround;
         }
 
 
@@ -39,27 +48,29 @@ namespace AutoBattle
         {
             var baseHaste = CharacterBattleAttribute.Haste;
 
-            var passiveSkills = PassiveSkills.OfType<IHastePassiveEffect>().Sum(x => x.GetHasteValueAndLastMs());
+            var passiveSkills = PassiveSkills.OfType<IHastePassiveEffect>().Sum(x => x.GetHasteValueAndLastMs(this));
             var haste = baseHaste + passiveSkills;
             var valueTuples = BattleBuffs.OfType<IHasteBuff>().Select(x => x.GetHasteValueAndLastMs())
                 .OrderBy(x => x.Item2).ToArray();
             for (var i = 0; i < valueTuples.Length; i++)
             {
-                var sum = valueTuples.Skip(i).Take(valueTuples.Length - i - 1).Sum(x => x.Item1);
-                valueTuples[i].Item1 += sum;
+                var sum = valueTuples.Skip(i).Take(valueTuples.Length - i).Sum(x => x.Item1);
+                valueTuples[i].Item1 = sum;
                 valueTuples[i].Item2 = i == 0 ? valueTuples[i].Item2 : valueTuples[i].Item2 - valueTuples[i - 1].Item2;
             }
 
+            _tempBaseHaste = haste;
             _tempHasteBuffData = valueTuples;
+            // Console.Out.WriteLine($"$_tempHasteBuff:{valueTuples}");
             var skill1RestTimeMs = ActiveSkill1.RestTimeMs;
             var skill2RestTimeMs = ActiveSkill2.RestTimeMs;
-            var rest = new[] {skill1RestTimeMs, skill2RestTimeMs};
+            var rest = new[] {skill1RestTimeMs, skill2RestTimeMs}.OrderBy(x => x).ToArray();
             var buffLast = 0;
             foreach (var (item1, item2) in valueTuples)
             {
                 var hasteValue = CommonSettings.FilterHasteValue(item1 + haste);
 
-                var orderedEnumerable = rest.Select(x => 1 + x * 100 / hasteValue).OrderBy(x => x);
+                var orderedEnumerable = rest.Select(x => (int) MathF.Ceiling(x * 100f / (100 + hasteValue)));
                 foreach (var i in orderedEnumerable)
                 {
                     if (i <= item2)
@@ -72,7 +83,7 @@ namespace AutoBattle
                 }
             }
 
-            return buffLast + rest.Min();
+            return buffLast + (int) MathF.Ceiling(rest.Min() * 100f / (100 + haste));
         }
 
         public IEnumerable<IBullet> TakeTime(int ms)
@@ -91,15 +102,24 @@ namespace AutoBattle
                 costMs += valueTupleItem1 * valueTupleItem2;
             }
 
+            costMs += (int) MathF.Ceiling(restToGo * ((_tempBaseHaste + 100) / 100f));
+            // Console.Out.WriteLine($"costMs{costMs}");
             BattleBuffs.ForEach(x => x.TakeTime(costMs));
             BattleBuffs = BattleBuffs.Where(x => x.RestTimeMs > 0).ToList();
 
             ActiveSkill1.TakeTime(costMs);
             ActiveSkill2.TakeTime(costMs);
             var activeSkills = new[] {ActiveSkill1, ActiveSkill2};
+
+
             var enumerable = activeSkills.Where(skill =>
             {
-                if (skill.ResetTime > 0) return false;
+                if (skill.RestTimeMs > 0)
+                {
+                    // Console.Out.WriteLine($"SkillRest::{skill.RestTimeMs}");
+                    return false;
+                }
+
                 skill.Reset();
                 return true;
             });
@@ -210,13 +230,30 @@ namespace AutoBattle
                 }
 
                 var harm = (int) rawHarm * (1000 - GetDefencePreMil()) / 1000;
-                var min = Math.Min(PassiveSkills.OfType<INotAboveHarm>().Select(x => x.MaxHarm(this)).Min(),
-                    BattleBuffs.OfType<INotAboveHarm>().Select(x => x.MaxHarm(this)).Min());
-                harm = Math.Min(min, harm);
-                var max = Math.Max(PassiveSkills.OfType<IIgnoreHarm>().Select(x => x.IgnoreHarmValue(this)).Max(),
-                    BattleBuffs.OfType<IIgnoreHarm>().Select(x => x.IgnoreHarmValue(this)).Max()
-                );
-                if (max >= harm)
+                var select1 = PassiveSkills.OfType<INotAboveHarm>().Select(x => x.MaxHarm(this)).ToArray();
+
+                var ints = BattleBuffs.OfType<INotAboveHarm>().Select(x => x.MaxHarm(this)).ToArray();
+
+                if (select1.Any())
+                {
+                    harm = Math.Min(select1.Min(), harm);
+                }
+
+                if (ints.Any())
+                {
+                    harm = Math.Min(ints.Min(), harm);
+                }
+
+
+                var intArray1 = PassiveSkills.OfType<IIgnoreHarm>().Select(x => x.IgnoreHarmValue(this)).ToArray();
+                var intArray2 = BattleBuffs.OfType<IIgnoreHarm>().Select(x => x.IgnoreHarmValue(this)).ToArray();
+
+                if (intArray1.Any() && intArray1.Max() >= harm)
+                {
+                    harm = 0;
+                }
+
+                if (intArray2.Any() && intArray2.Max() >= harm)
                 {
                     harm = 0;
                 }
