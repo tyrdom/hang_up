@@ -41,8 +41,8 @@ namespace AutoBattle
             while (CheckEnd() == WhoWin.NotEnd)
             {
                 GoNextTimeEvent();
-                Console.Out.WriteLine("_______________________");
-                Console.ReadKey();
+                // Console.Out.WriteLine("_______________________");
+                // Console.ReadKey();
             }
 
             return CheckEnd();
