@@ -33,6 +33,14 @@ message RequestMsg {
         BankItemCustomRequest = 5;
 
         CharactersGetRequest = 6;
+        StartMainLevelBattleRequest = 7;
+        StarUpRequest = 8;
+        RuneRandRequest = 9;
+        RuneUpRequest = 10;
+        BreakUpCharacterRequest = 11;
+        RebornRequest = 12;
+        LevelUpCharacterRequest = 13;
+
     }
     Head head = 1;
 
@@ -52,11 +60,45 @@ message RequestMsg {
         BankCustomItemRequest bankCustomItemRequest = 7;
 
         CharactersGetRequest charactersGetRequest = 8;
+
+        StartMainLevelBattleRequest startMainLevelBattleRequest = 9;
+        StarUpRequest starUpRequest = 10;
+        RuneRandRequest runeRandRequest = 11;
+        RuneUpRequest runeUpRequest = 12;
+        BreakUpCharacterRequest breakUpCharacterRequest = 13;
+        RebornRequest rebornRequest = 14;
+        LevelUpCharacterRequest levelUpCharacterRequest = 15;
+
+
     }
 
 }
-message CharactersGetRequest {
+message LevelUpCharacterRequest {
+    uint32 cId = 1;
+    uint32 level = 2;
 
+}
+message RebornRequest {
+
+}
+message BreakUpCharacterRequest {
+    uint32 cId = 1;
+}
+message RuneUpRequest {
+    uint32 cId = 1;
+    uint32 level = 2;
+}
+message RuneRandRequest {
+    uint32 cId = 1;
+}
+message StarUpRequest {
+    uint32 cId = 1;
+    uint32 level = 2;
+}
+
+message StartMainLevelBattleRequest {
+}
+message CharactersGetRequest {
 }
 message ResponseMsg {
     enum Head {
@@ -96,22 +138,53 @@ message ResponseMsg {
 
         BankItemResponse bankItemResponse = 7;
         CharactersGetResponse charactersGetResponse = 8;
+        LevelUpCharacterResponse LevelUpCharacterResponse = 9;
+
+
+        RebornResponse RebornResponse = 10;
+        BreakUpCharacterResponse BreakUpCharacterResponse = 11;
+        RuneUpResponse RuneUpResponse = 12;
+        RuneRandResponse RuneRandResponse = 13;
+        StarUpResponse StarUpResponse = 14;
+
+        StartMainLevelBattleResponse StartMainLevelBattleResponse = 15;
+
     }
 }
-
-
+message LevelUpCharacterResponse {
+    bool ok = 1;
+}
+message RebornResponse {
+    bool ok = 1;
+}
+message BreakUpCharacterResponse {
+    bool ok = 1;
+}
+message RuneUpResponse {
+    bool ok = 1;
+}
+message RuneRandResponse {
+    bool ok = 1;
+}
+message StarUpResponse {
+    bool ok = 1;
+}
+message StartMainLevelBattleResponse {
+    bool pass = 1;
+}
+message CharacterStatus {
+    uint32 Level = 1;
+    uint32 Star = 2;
+    bool InBattle = 3;
+    uint32 RuneType = 4;
+    uint32 RuneLevel = 5;
+}
 message CharactersGetResponse {
     repeated Character characters = 1;
     message Character {
         uint32 Id = 1;
         CharacterStatus characterStatus = 2;
-        message CharacterStatus {
-            uint32 Level = 1;
-            uint32 Star = 2;
-            bool InBattle = 3;
-            uint32 RuneType = 4;
-            uint32 RuneLevel = 5;
-        }
+
     }
 }
 message BankCustomItemRequest {
@@ -126,21 +199,23 @@ message BankBaseRequest {
 }
 
 message BankBaseResponse {
-    uint64 Gold = 1;
-    uint64 Soul = 2;
-    uint64 Crystal = 3;
-    uint64 RunePoint = 4;
-}
 
+    repeated Money Moneys = 1;
+
+
+}
+message Money {
+    uint32 itemId = 1;
+    uint64 num = 2;
+}
 message BankItemResponse {
     repeated Item Items = 1;
-
-    message Item {
-        uint32 itemId = 1;
-        uint32 num = 2;
-    }
+    
 }
-
+message Item {
+    uint32 itemId = 1;
+    uint32 num = 2;
+}
 
 message LogoutResponse {
 

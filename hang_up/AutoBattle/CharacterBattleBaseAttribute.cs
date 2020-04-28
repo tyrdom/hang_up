@@ -4,8 +4,8 @@ namespace AutoBattle
 {
     public struct CharacterBattleBaseAttribute
     {
-        public int MaxHp;
-        public int NowHp;
+        public long MaxHp;
+        public long NowHp;
         public int Damage;
 
         public readonly int DamagePerMil;
@@ -14,7 +14,7 @@ namespace AutoBattle
         public readonly int Haste;
         public readonly int MissPreMil;
 
-        public CharacterBattleBaseAttribute(int maxHp, int damage, int defencePreMil, int haste, int missPreMil,
+        public CharacterBattleBaseAttribute(long maxHp, int damage, int defencePreMil, int haste, int missPreMil,
             int damagePerMil, int criticalPreMil)
         {
             MaxHp = maxHp;

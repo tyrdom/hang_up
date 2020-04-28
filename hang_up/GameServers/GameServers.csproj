@@ -14,6 +14,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\AutoBattle\AutoBattle.csproj" />
+      <ProjectReference Include="..\GameConfig\GameConfig.csproj" />
       <ProjectReference Include="..\GameProtos\GameProtos.csproj" />
     </ItemGroup>
 

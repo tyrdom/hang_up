@@ -73,14 +73,14 @@ namespace GameServers
                 var firstOrDefault = accountBaseTable.Find(filter).FirstOrDefault();
                 if (firstOrDefault == null)
                 {
-                    var @base = new PlayerBase
+                    var aBase = new PlayerBase
                     {
                         AccountId = requestAccountId, Password = Tools.GetMd5Hash(requestPassword),
                         NickName = requestAccountId, LastInTime = DateTime.Now,
                         LastOutTime = DateTime.MinValue
                     };
-                    accountBaseTable.InsertOne(@base);
-                    FamousActors.MongodbBankActor.Tell(new CreateBank(requestAccountId));
+                    accountBaseTable.InsertOne(aBase);
+                    FamousActors.MongodbPlayerStatusActor.Tell(new CreateBank(requestAccountId));
                     var loginResponse = new LoginResponse {reason = LoginResponse.Reason.NotExistSoCreate, Nickname = requestAccountId};
                     Sender.Tell(loginResponse);
                 }

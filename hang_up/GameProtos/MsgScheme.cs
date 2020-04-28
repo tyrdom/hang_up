@@ -2,7 +2,7 @@
 // Consider using 'partial classes' to extend these types
 // Input: MsgScheme.proto
 
-#pragma warning disable CS1591, CS0612, CS3021, IDE1006
+#pragma warning disable CS0612, CS1591, CS3021, IDE1006, RCS1036, RCS1057, RCS1085, RCS1192
 namespace GameProtos
 {
 
@@ -120,6 +120,69 @@ namespace GameProtos
         public bool ShouldSerializecharactersGetRequest() => __pbn__body.Is(8);
         public void ResetcharactersGetRequest() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 8);
 
+        [global::ProtoBuf.ProtoMember(9)]
+        public StartMainLevelBattleRequest startMainLevelBattleRequest
+        {
+            get { return __pbn__body.Is(9) ? ((StartMainLevelBattleRequest)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(9, value); }
+        }
+        public bool ShouldSerializestartMainLevelBattleRequest() => __pbn__body.Is(9);
+        public void ResetstartMainLevelBattleRequest() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 9);
+
+        [global::ProtoBuf.ProtoMember(10)]
+        public StarUpRequest starUpRequest
+        {
+            get { return __pbn__body.Is(10) ? ((StarUpRequest)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(10, value); }
+        }
+        public bool ShouldSerializestarUpRequest() => __pbn__body.Is(10);
+        public void ResetstarUpRequest() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 10);
+
+        [global::ProtoBuf.ProtoMember(11)]
+        public RuneRandRequest runeRandRequest
+        {
+            get { return __pbn__body.Is(11) ? ((RuneRandRequest)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(11, value); }
+        }
+        public bool ShouldSerializeruneRandRequest() => __pbn__body.Is(11);
+        public void ResetruneRandRequest() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 11);
+
+        [global::ProtoBuf.ProtoMember(12)]
+        public RuneUpRequest runeUpRequest
+        {
+            get { return __pbn__body.Is(12) ? ((RuneUpRequest)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(12, value); }
+        }
+        public bool ShouldSerializeruneUpRequest() => __pbn__body.Is(12);
+        public void ResetruneUpRequest() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 12);
+
+        [global::ProtoBuf.ProtoMember(13)]
+        public BreakUpCharacterRequest breakUpCharacterRequest
+        {
+            get { return __pbn__body.Is(13) ? ((BreakUpCharacterRequest)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(13, value); }
+        }
+        public bool ShouldSerializebreakUpCharacterRequest() => __pbn__body.Is(13);
+        public void ResetbreakUpCharacterRequest() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 13);
+
+        [global::ProtoBuf.ProtoMember(14)]
+        public RebornRequest rebornRequest
+        {
+            get { return __pbn__body.Is(14) ? ((RebornRequest)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(14, value); }
+        }
+        public bool ShouldSerializerebornRequest() => __pbn__body.Is(14);
+        public void ResetrebornRequest() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 14);
+
+        [global::ProtoBuf.ProtoMember(15)]
+        public LevelUpCharacterRequest levelUpCharacterRequest
+        {
+            get { return __pbn__body.Is(15) ? ((LevelUpCharacterRequest)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(15, value); }
+        }
+        public bool ShouldSerializelevelUpCharacterRequest() => __pbn__body.Is(15);
+        public void ResetlevelUpCharacterRequest() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 15);
+
         [global::ProtoBuf.ProtoContract()]
         public enum Head
         {
@@ -130,7 +193,101 @@ namespace GameProtos
             BankItemAllRequest = 4,
             BankItemCustomRequest = 5,
             CharactersGetRequest = 6,
+            StartMainLevelBattleRequest = 7,
+            StarUpRequest = 8,
+            RuneRandRequest = 9,
+            RuneUpRequest = 10,
+            BreakUpCharacterRequest = 11,
+            RebornRequest = 12,
+            LevelUpCharacterRequest = 13,
         }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class LevelUpCharacterRequest : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1)]
+        public uint cId { get; set; }
+
+        [global::ProtoBuf.ProtoMember(2, Name = @"level")]
+        public uint Level { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class RebornRequest : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class BreakUpCharacterRequest : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1)]
+        public uint cId { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class RuneUpRequest : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1)]
+        public uint cId { get; set; }
+
+        [global::ProtoBuf.ProtoMember(2, Name = @"level")]
+        public uint Level { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class RuneRandRequest : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1)]
+        public uint cId { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class StarUpRequest : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1)]
+        public uint cId { get; set; }
+
+        [global::ProtoBuf.ProtoMember(2, Name = @"level")]
+        public uint Level { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class StartMainLevelBattleRequest : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
     }
 
@@ -218,6 +375,69 @@ namespace GameProtos
         public bool ShouldSerializecharactersGetResponse() => __pbn__body.Is(8);
         public void ResetcharactersGetResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 8);
 
+        [global::ProtoBuf.ProtoMember(9)]
+        public LevelUpCharacterResponse LevelUpCharacterResponse
+        {
+            get { return __pbn__body.Is(9) ? ((LevelUpCharacterResponse)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(9, value); }
+        }
+        public bool ShouldSerializeLevelUpCharacterResponse() => __pbn__body.Is(9);
+        public void ResetLevelUpCharacterResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 9);
+
+        [global::ProtoBuf.ProtoMember(10)]
+        public RebornResponse RebornResponse
+        {
+            get { return __pbn__body.Is(10) ? ((RebornResponse)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(10, value); }
+        }
+        public bool ShouldSerializeRebornResponse() => __pbn__body.Is(10);
+        public void ResetRebornResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 10);
+
+        [global::ProtoBuf.ProtoMember(11)]
+        public BreakUpCharacterResponse BreakUpCharacterResponse
+        {
+            get { return __pbn__body.Is(11) ? ((BreakUpCharacterResponse)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(11, value); }
+        }
+        public bool ShouldSerializeBreakUpCharacterResponse() => __pbn__body.Is(11);
+        public void ResetBreakUpCharacterResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 11);
+
+        [global::ProtoBuf.ProtoMember(12)]
+        public RuneUpResponse RuneUpResponse
+        {
+            get { return __pbn__body.Is(12) ? ((RuneUpResponse)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(12, value); }
+        }
+        public bool ShouldSerializeRuneUpResponse() => __pbn__body.Is(12);
+        public void ResetRuneUpResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 12);
+
+        [global::ProtoBuf.ProtoMember(13)]
+        public RuneRandResponse RuneRandResponse
+        {
+            get { return __pbn__body.Is(13) ? ((RuneRandResponse)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(13, value); }
+        }
+        public bool ShouldSerializeRuneRandResponse() => __pbn__body.Is(13);
+        public void ResetRuneRandResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 13);
+
+        [global::ProtoBuf.ProtoMember(14)]
+        public StarUpResponse StarUpResponse
+        {
+            get { return __pbn__body.Is(14) ? ((StarUpResponse)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(14, value); }
+        }
+        public bool ShouldSerializeStarUpResponse() => __pbn__body.Is(14);
+        public void ResetStarUpResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 14);
+
+        [global::ProtoBuf.ProtoMember(15)]
+        public StartMainLevelBattleResponse StartMainLevelBattleResponse
+        {
+            get { return __pbn__body.Is(15) ? ((StartMainLevelBattleResponse)__pbn__body.Object) : default; }
+            set { __pbn__body = new global::ProtoBuf.DiscriminatedUnionObject(15, value); }
+        }
+        public bool ShouldSerializeStartMainLevelBattleResponse() => __pbn__body.Is(15);
+        public void ResetStartMainLevelBattleResponse() => global::ProtoBuf.DiscriminatedUnionObject.Reset(ref __pbn__body, 15);
+
         [global::ProtoBuf.ProtoContract()]
         public enum Head
         {
@@ -229,6 +449,114 @@ namespace GameProtos
             BankItemResponse = 5,
             CharactersGetResponse = 6,
         }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class LevelUpCharacterResponse : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1, Name = @"ok")]
+        public bool Ok { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class RebornResponse : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1, Name = @"ok")]
+        public bool Ok { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class BreakUpCharacterResponse : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1, Name = @"ok")]
+        public bool Ok { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class RuneUpResponse : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1, Name = @"ok")]
+        public bool Ok { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class RuneRandResponse : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1, Name = @"ok")]
+        public bool Ok { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class StarUpResponse : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1, Name = @"ok")]
+        public bool Ok { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class StartMainLevelBattleResponse : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1, Name = @"pass")]
+        public bool Pass { get; set; }
+
+    }
+
+    [global::ProtoBuf.ProtoContract()]
+    public partial class CharacterStatus : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+
+        [global::ProtoBuf.ProtoMember(1)]
+        public uint Level { get; set; }
+
+        [global::ProtoBuf.ProtoMember(2)]
+        public uint Star { get; set; }
+
+        [global::ProtoBuf.ProtoMember(3)]
+        public bool InBattle { get; set; }
+
+        [global::ProtoBuf.ProtoMember(4)]
+        public uint RuneType { get; set; }
+
+        [global::ProtoBuf.ProtoMember(5)]
+        public uint RuneLevel { get; set; }
 
     }
 
@@ -254,30 +582,6 @@ namespace GameProtos
 
             [global::ProtoBuf.ProtoMember(2)]
             public CharacterStatus characterStatus { get; set; }
-
-            [global::ProtoBuf.ProtoContract()]
-            public partial class CharacterStatus : global::ProtoBuf.IExtensible
-            {
-                private global::ProtoBuf.IExtension __pbn__extensionData;
-                global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-                    => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-                [global::ProtoBuf.ProtoMember(1)]
-                public uint Level { get; set; }
-
-                [global::ProtoBuf.ProtoMember(2)]
-                public uint Star { get; set; }
-
-                [global::ProtoBuf.ProtoMember(3)]
-                public bool InBattle { get; set; }
-
-                [global::ProtoBuf.ProtoMember(4)]
-                public uint RuneType { get; set; }
-
-                [global::ProtoBuf.ProtoMember(5)]
-                public uint RuneLevel { get; set; }
-
-            }
 
         }
 
@@ -321,16 +625,22 @@ namespace GameProtos
             => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
         [global::ProtoBuf.ProtoMember(1)]
-        public ulong Gold { get; set; }
+        public global::System.Collections.Generic.List<Money> Moneys { get; set; } = new global::System.Collections.Generic.List<Money>();
 
-        [global::ProtoBuf.ProtoMember(2)]
-        public ulong Soul { get; set; }
+    }
 
-        [global::ProtoBuf.ProtoMember(3)]
-        public ulong Crystal { get; set; }
+    [global::ProtoBuf.ProtoContract()]
+    public partial class Money : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
-        [global::ProtoBuf.ProtoMember(4)]
-        public ulong RunePoint { get; set; }
+        [global::ProtoBuf.ProtoMember(1)]
+        public uint itemId { get; set; }
+
+        [global::ProtoBuf.ProtoMember(2, Name = @"num")]
+        public ulong Num { get; set; }
 
     }
 
@@ -344,20 +654,20 @@ namespace GameProtos
         [global::ProtoBuf.ProtoMember(1)]
         public global::System.Collections.Generic.List<Item> Items { get; set; } = new global::System.Collections.Generic.List<Item>();
 
-        [global::ProtoBuf.ProtoContract()]
-        public partial class Item : global::ProtoBuf.IExtensible
-        {
-            private global::ProtoBuf.IExtension __pbn__extensionData;
-            global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-                => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
+    }
 
-            [global::ProtoBuf.ProtoMember(1)]
-            public uint itemId { get; set; }
+    [global::ProtoBuf.ProtoContract()]
+    public partial class Item : global::ProtoBuf.IExtensible
+    {
+        private global::ProtoBuf.IExtension __pbn__extensionData;
+        global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+            => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
-            [global::ProtoBuf.ProtoMember(2, Name = @"num")]
-            public uint Num { get; set; }
+        [global::ProtoBuf.ProtoMember(1)]
+        public uint itemId { get; set; }
 
-        }
+        [global::ProtoBuf.ProtoMember(2, Name = @"num")]
+        public uint Num { get; set; }
 
     }
 
@@ -512,4 +822,4 @@ namespace GameProtos
 
 }
 
-#pragma warning restore CS1591, CS0612, CS3021, IDE1006
+#pragma warning restore CS0612, CS1591, CS3021, IDE1006, RCS1036, RCS1057, RCS1085, RCS1192

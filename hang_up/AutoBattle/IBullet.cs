@@ -78,7 +78,7 @@ namespace AutoBattle
     public interface IHarmBullet
     {
         BattleCharacter FromWho { get; }
-        int Harm { get; }
+        long Harm { get; }
     }
 
     internal interface IExecuteBullet
@@ -116,7 +116,7 @@ namespace AutoBattle
 
         public OpponentTargetType Type { get; }
         public BattleCharacter FromWho { get; }
-        public int Harm { get; private set; }
+        public long Harm { get; private set; }
         public int SplashHarm { get; }
     }
 
@@ -132,7 +132,7 @@ namespace AutoBattle
                 return new IShow[] { };
             }
 
-            Harm = battleCharacter.CharacterBattleAttribute.MaxHp * 999;
+            Harm = long.MaxValue;
             var takeHarm = battleCharacter.TakeHarm(this, out _);
             return takeHarm;
         }
@@ -147,7 +147,7 @@ namespace AutoBattle
         }
 
         public BattleCharacter FromWho { get; }
-        public int Harm { get; private set; }
+        public long Harm { get; private set; }
     }
 
     public class MissAndDamageMoreBullet : IOpponentBullet, IBulletTrickBuffHitOrMiss, IHarmBullet, IHealBullet
@@ -182,7 +182,7 @@ namespace AutoBattle
         public OpponentTargetType Type { get; }
         public bool HitOrMiss { get; }
         public BattleCharacter FromWho { get; }
-        public int Harm { get; }
+        public long Harm { get; }
         public int Heal { get; }
     }
 
@@ -230,7 +230,7 @@ namespace AutoBattle
         public OpponentTargetType BuffTargetType { get; }
         public IBattleBuff[] BattleBuffs { get; }
         public BattleCharacter FromWho { get; }
-        public int Harm { get; }
+        public long Harm { get; }
         public bool HitOrMiss { get; }
     }
 
@@ -279,7 +279,7 @@ namespace AutoBattle
         public IBattleBuff[] BattleBuffs { get; }
 
         public BattleCharacter FromWho { get; }
-        public int Harm { get; }
+        public long Harm { get; }
         public bool HitOrMiss { get; }
     }
 
@@ -315,7 +315,7 @@ namespace AutoBattle
         }
 
         public OpponentTargetType Type { get; }
-        public int Harm { get; private set; }
+        public long Harm { get; private set; }
         public float DamageAddMultiBlackHpPercent { get; }
     }
 
@@ -346,7 +346,7 @@ namespace AutoBattle
 
     public class SplashRandomOneHarmBullet : IHarmBullet, IOpponentBullet, ISplashBullet
     {
-        public int Harm { get; private set; }
+        public long Harm { get; private set; }
         public BattleCharacter FromWho { get; }
 
         public IEnumerable<IShow> HitTeam(IEnumerable<BattleCharacter> targetTeam,
@@ -407,14 +407,14 @@ namespace AutoBattle
         public float MultiByNowHp { get; }
         public OpponentTargetType Type { get; }
         public BattleCharacter FromWho { get; }
-        public int Harm { get; private set; }
+        public long Harm { get; private set; }
     }
 
     public class StandardHarmBullet : IHarmBullet, IOpponentBullet
     {
         public BattleCharacter FromWho { get; }
         public OpponentTargetType Type { get; }
-        public int Harm { get; }
+        public long Harm { get; }
 
 
         public StandardHarmBullet(BattleCharacter fromWho, OpponentTargetType type, int harm)

@@ -15,7 +15,7 @@ namespace GameServers
             // Convert the input string to a byte array and compute the hash.
             var data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
 
-            // Create a new Stringbuilder to collect the bytes
+            // Create a new StringBuilder to collect the bytes
             // and create a string.
             var sBuilder = new StringBuilder();
 
@@ -56,16 +56,21 @@ namespace GameServers
         {
             return new PlayerBank
             {
-                AccountId = accountId, Gold = 0, Crystal = 0, Soul = 0, ItemsIdToNum = new Dictionary<uint, uint>(),
-                RunePoint = 0
+                AccountId = accountId, ItemsIdToNum = new Dictionary<uint, uint>(),
+                MoneysIdToNum = new Dictionary<uint, ulong>()
             };
         }
 
-        public static PlayerCharacters PlayerCharactersNew(string accountId)
+        public static PlayerGames PlayerNewGames(string accountId)
         {
-            var characterStatus = new CharactersGetResponse.Character.CharacterStatus()
+            return new PlayerGames() {AccountId = accountId, MainLevel = 1, TowerLevel = -1};
+        }
+
+        public static PlayerCharacters PlayerNewCharacters(string accountId)
+        {
+            var characterStatus = new CharacterStatus()
                 {InBattle = true, Level = 1, RuneLevel = 0, RuneType = 0, Star = 1};
-            var charactersIdToStatus = new Dictionary<uint, CharactersGetResponse.Character.CharacterStatus>
+            var charactersIdToStatus = new Dictionary<uint, CharacterStatus>
                 {[1] = characterStatus};
             return new PlayerCharacters()
                 {AccountId = accountId, CharactersIdToStatus = charactersIdToStatus};
@@ -73,17 +78,18 @@ namespace GameServers
 
         public static BankBaseResponse GenBankBaseResponseByPlayBank(PlayerBank playerBank)
         {
+            var playerBankMoneysIdToNum = playerBank.MoneysIdToNum
+                .Select(x => new Money() {itemId = x.Key, Num = x.Value}).ToList();
             return new BankBaseResponse
             {
-                Gold = playerBank.Gold, Crystal = playerBank.Crystal, Soul = playerBank.Soul,
-                RunePoint = playerBank.RunePoint
+                Moneys = playerBankMoneysIdToNum
             };
         }
 
         public static BankItemResponse GenBankItemResponseByPlayBank(PlayerBank playerBank)
         {
             var items = playerBank.ItemsIdToNum
-                .Select(x => new BankItemResponse.Item() {itemId = x.Key, Num = x.Value}).ToList();
+                .Select(x => new Item() {itemId = x.Key, Num = x.Value}).ToList();
 
             var bank = new BankItemResponse {Items = items};
 
@@ -94,7 +100,7 @@ namespace GameServers
         {
             var items = playerBank.ItemsIdToNum.Where(a =>
                 itemId.Contains(a.Key)
-            ).Select(x => new BankItemResponse.Item {itemId = x.Key, Num = x.Value}).ToList();
+            ).Select(x => new Item {itemId = x.Key, Num = x.Value}).ToList();
             var bank = new BankItemResponse {Items = items};
             return bank;
         }
@@ -107,7 +113,7 @@ namespace GameServers
                 Id = pair.Key, characterStatus = pair.Value
             });
 
-            return new CharactersGetResponse() {Characters = characters.ToList()};
+            return new CharactersGetResponse {Characters = characters.ToList()};
         }
     }
 }

@@ -25,9 +25,7 @@ namespace GameConfig
         public float AttackSpeed { get; set; }
         public float SkillCd { get; set; }
         public int SkillId { get; set; }
-        public int Passive1 { get; set; }
-        public int Passive2 { get; set; }
-        public int Passive3 { get; set; }
+        public int[] PassiveSkills { get; set; }
         public long AwardGold { get; set; }
         public long AwardSoul { get; set; }
         public long AwardCrystal { get; set; }
@@ -84,13 +82,11 @@ namespace GameConfig
         public float SkillCd { get; set; }
         public int StandType { get; set; }
         public int SkillId { get; set; }
-        public int Passive1 { get; set; }
+        public int Passive { get; set; }
         public int Passive2 { get; set; }
         public int Passive3 { get; set; }
         public int ActiveSkill { get; set; }
-        public int PassiveSkill1 { get; set; }
-        public int PassiveSkill2 { get; set; }
-        public int PassiveSkill3 { get; set; }
+        public SimpleObj1[] PassiveSkills { get; set; }
     }
 
     public class Hero_tower : IGameConfig
@@ -252,5 +248,11 @@ namespace GameConfig
         public static ImmutableDictionary<int, Rune> Runes = GameConfigTools.GenConfigDict<Rune>();
         public static ImmutableDictionary<int, Skill> Skills = GameConfigTools.GenConfigDict<Skill>();
         public static ImmutableDictionary<int, Surprise> Surprises = GameConfigTools.GenConfigDict<Surprise>();
+    }
+
+    public class SimpleObj1 : IGameConfig
+    {
+        public int Level { get; set; }
+        public int PassiveSkillId { get; set; }
     }
 }

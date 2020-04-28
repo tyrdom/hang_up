@@ -9,7 +9,7 @@ using GameProtos;
 
 namespace GameServers
 {
-    enum GameState
+    internal enum GameState
     {
         Online,
         OffLine
@@ -27,9 +27,9 @@ namespace GameServers
 
         private PlayerBank _myWallet;
         private PlayerCharacters _myCharacters;
+        private PlayerGames _myGames;
 
-
-        public static Tcp.Write GenTcpWrite(AMsg aMsg)
+        private static Tcp.Write GenTcpWrite(AMsg aMsg)
         {
             return Tcp.Write.Create(ByteString.FromBytes(ProtoTool.Serialize(aMsg)));
         }
@@ -47,8 +47,8 @@ namespace GameServers
             FamousActors.HallActor.Tell(new OutHall(_accountId));
             FamousActors.MongodbAccountActor.Tell(new Logout
                 (_accountId, reason));
-            FamousActors.MongodbBankActor.Tell(new SaveBank(_myWallet));
-            FamousActors.MongodbCharacterActor.Tell(new SaveCharacters(_myCharacters));
+            FamousActors.MongodbPlayerStatusActor.Tell(new SaveBank(_myWallet));
+            FamousActors.MongodbPlayerStatusActor.Tell(new SaveCharacters(_myCharacters));
         }
 
         private void OffLine()
@@ -59,6 +59,7 @@ namespace GameServers
                 {
                     _log.Error($"link error close link!");
                     Sender.Tell(Tcp.Close.Instance);
+                    return;
                 }
 
                 var aMsg = ProtoTool.DeSerialize<AMsg>(received.Data.ToArray());
@@ -230,8 +231,7 @@ namespace GameServers
 
         private void OnLine()
         {
-            FamousActors.MongodbBankActor.Tell(new GetBank(_accountId));
-            FamousActors.MongodbCharacterActor.Tell(new GetCharacters(_accountId));
+            FamousActors.MongodbPlayerStatusActor.Tell(new InitStatus(_accountId));
 
             // ICancelable scheduleTellRepeatedlyCancelable = Context.System.Scheduler.ScheduleTellRepeatedlyCancelable(
             //     TimeSpan.FromMinutes(10),
@@ -250,22 +250,13 @@ namespace GameServers
                 _tcpActorRef.Tell(GenTcpWrite(aMsg));
             }
 
-            Receive<PlayerBank>(bank =>
+            Receive<PlayerStatus>(status =>
             {
-                _myWallet = bank;
-                if (_myCharacters == null) return;
+                _myWallet = status.PlayerBank;
+                _myGames = status.PlayerGames;
+                _myCharacters = status.PlayerCharacters;
                 ReallyLoginOk();
             });
-
-            Receive<PlayerCharacters>(characters =>
-                {
-                    _myCharacters = characters;
-                    if (_myWallet == null) return;
-                    ReallyLoginOk();
-                }
-            );
-
-            // Receive<SavePlayerDB>(_ => { });
 
 
             Receive<ErrorResponse>(response =>
@@ -351,6 +342,8 @@ namespace GameServers
                                 }
                             }));
                             break;
+                        
+                        
                         case RequestMsg.Head.LogoutRequest:
 
                             OffLineSave(OutReason.LogOut);
