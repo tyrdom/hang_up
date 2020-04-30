@@ -26,25 +26,15 @@ namespace GameConfig
         public float SkillCd { get; set; }
         public int SkillId { get; set; }
         public int[] PassiveSkills { get; set; }
-        public long AwardGold { get; set; }
-        public long AwardSoul { get; set; }
-        public long AwardCrystal { get; set; }
-        public int AwardRunePoint { get; set; }
-        public long AwardGem { get; set; }
-        public int LastAwardGold { get; set; }
-        public int LastAwardSoul { get; set; }
-        public int LastAwardCrystal { get; set; }
-        public int LastRunePoint { get; set; }
-        public int AwardSliverKey { get; set; }
-        public int AwardGoldKey { get; set; }
+        public SimpleObj1[] Award { get; set; }
+        public SimpleObj1[] LastAwardPerMin { get; set; }
     }
 
     public class Class_up : IGameConfig
     {
         public int id { get; set; }
         public int Class { get; set; }
-        public int Gold { get; set; }
-        public int Crystal { get; set; }
+        public SimpleObj1[] UpGradeCost { get; set; }
     }
 
     public class Compose : IGameConfig
@@ -77,6 +67,7 @@ namespace GameConfig
         public int[] DamageBase { get; set; }
         public int[] HPUp { get; set; }
         public int[] DamageUp { get; set; }
+        public int Rank { get; set; }
         public float Critical { get; set; }
         public float Miss { get; set; }
         public float SkillCd { get; set; }
@@ -86,7 +77,7 @@ namespace GameConfig
         public int Passive2 { get; set; }
         public int Passive3 { get; set; }
         public int ActiveSkill { get; set; }
-        public SimpleObj1[] PassiveSkills { get; set; }
+        public SimpleObj2[] PassiveSkills { get; set; }
     }
 
     public class Hero_tower : IGameConfig
@@ -96,7 +87,8 @@ namespace GameConfig
         public int HeroStar { get; set; }
         public float AttributeMulti { get; set; }
         public int HeroMaxRank { get; set; }
-        public long AwardGold { get; set; }
+        public SimpleObj1[] Award { get; set; }
+        public int AwardGold { get; set; }
         public int AwardRunePoint { get; set; }
         public long AwardGem { get; set; }
         public int AwardSliverKey { get; set; }
@@ -106,15 +98,19 @@ namespace GameConfig
     public class Item : IGameConfig
     {
         public int id { get; set; }
-        public string Icon { get; set; }
+        public bool IsMoney { get; set; }
+        public int ShowType { get; set; }
+        public string Name { get; set; }
         public string another_name { get; set; }
-        public string Info { get; set; }
+        public string Icon { get; set; }
     }
 
     public class Level_up : IGameConfig
     {
         public int id { get; set; }
         public int Lv { get; set; }
+        public SimpleObj3[] Cost { get; set; }
+        public SimpleObj3[] TotalCost { get; set; }
         public long Gold { get; set; }
         public long Soul { get; set; }
         public long TotalGold { get; set; }
@@ -137,13 +133,7 @@ namespace GameConfig
         public int id { get; set; }
         public int MissionType { get; set; }
         public int Parameter { get; set; }
-        public long AwardGold { get; set; }
-        public long AwardSoul { get; set; }
-        public long AwardCrystal { get; set; }
-        public long AwardRunePoint { get; set; }
-        public long AwardGem { get; set; }
-        public int AwardSliverKey { get; set; }
-        public int AwardGoldKey { get; set; }
+        public SimpleObj1[] Awards { get; set; }
     }
 
     public class Passive_skill : IGameConfig
@@ -164,12 +154,6 @@ namespace GameConfig
     {
         public int id { get; set; }
         public string Icon { get; set; }
-        public int HP { get; set; }
-        public int Damage { get; set; }
-        public int AttackSpeed { get; set; }
-        public int Critical { get; set; }
-        public int Miss { get; set; }
-        public int SkillCD { get; set; }
         public float HPPercentBase { get; set; }
         public float DefenceBase { get; set; }
         public float MissBase { get; set; }
@@ -182,6 +166,18 @@ namespace GameConfig
         public float CriticalGrow { get; set; }
         public float DamagePercentGrow { get; set; }
         public float HasteGrow { get; set; }
+    }
+
+    public class Rune_level_up : IGameConfig
+    {
+        public int id { get; set; }
+        public int Lv { get; set; }
+        public SimpleObj3[] UpCost { get; set; }
+        public SimpleObj3[] ResetCost { get; set; }
+        public int UpGold { get; set; }
+        public int UpPoint { get; set; }
+        public int ResetGold { get; set; }
+        public int ResetPoint { get; set; }
     }
 
     public class Skill : IGameConfig
@@ -222,7 +218,8 @@ namespace GameConfig
             {typeof(Hero), "hero_s.json"}, {typeof(Hero_tower), "hero_tower_s.json"}, {typeof(Item), "item_s.json"},
             {typeof(Level_up), "level_up_s.json"}, {typeof(Market), "market_s.json"},
             {typeof(Mission), "mission_s.json"}, {typeof(Passive_skill), "passive_skill_s.json"},
-            {typeof(Rune), "rune_s.json"}, {typeof(Skill), "skill_s.json"}, {typeof(Surprise), "surprise_s.json"}
+            {typeof(Rune), "rune_s.json"}, {typeof(Rune_level_up), "rune_level_up_s.json"},
+            {typeof(Skill), "skill_s.json"}, {typeof(Surprise), "surprise_s.json"}
         };
     }
 
@@ -246,13 +243,29 @@ namespace GameConfig
             GameConfigTools.GenConfigDict<Passive_skill>();
 
         public static ImmutableDictionary<int, Rune> Runes = GameConfigTools.GenConfigDict<Rune>();
+
+        public static ImmutableDictionary<int, Rune_level_up> Rune_level_ups =
+            GameConfigTools.GenConfigDict<Rune_level_up>();
+
         public static ImmutableDictionary<int, Skill> Skills = GameConfigTools.GenConfigDict<Skill>();
         public static ImmutableDictionary<int, Surprise> Surprises = GameConfigTools.GenConfigDict<Surprise>();
     }
 
     public class SimpleObj1 : IGameConfig
     {
+        public int item { get; set; }
+        public int num { get; set; }
+    }
+
+    public class SimpleObj2 : IGameConfig
+    {
         public int Level { get; set; }
         public int PassiveSkillId { get; set; }
+    }
+
+    public class SimpleObj3 : IGameConfig
+    {
+        public int item { get; set; }
+        public long num { get; set; }
     }
 }
