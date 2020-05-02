@@ -1,38 +1,27 @@
 using System;
 using System.Collections.Generic;
+using Akka.Util;
 
 namespace GameServers
 {
     public static class PlayerBankOp
     {
-        static PlayerBank Use(PlayerBank playerBank, Dictionary<uint, ulong> moneys,
-            Dictionary<uint, uint> items, out bool ok)
+        public static bool Use(PlayerBank playerBank, Dictionary<int, ulong> moneys,
+            Dictionary<int, uint> items)
         {
             foreach (var (key, value) in moneys)
             {
-                if (playerBank.MoneysIdToNum.TryGetValue(key, out var num))
-                {
-                    if (num >= value) continue;
-                    ok = false;
-                    return playerBank;
-                }
-
-                ok = false;
-                return playerBank;
+                if (!playerBank.MoneysIdToNum.TryGetValue(key, out var num)) return false;
+                if (num >= value) continue;
+                return false;
             }
 
 
             foreach (var (key, value) in items)
             {
-                if (playerBank.ItemsIdToNum.TryGetValue(key, out var num))
-                {
-                    if (num >= value) continue;
-                    ok = false;
-                    return playerBank;
-                }
-
-                ok = false;
-                return playerBank;
+                if (!playerBank.ItemsIdToNum.TryGetValue(key, out var num)) return false;
+                if (num >= value) continue;
+                return false;
             }
 
             foreach (var (k, v) in items)
@@ -44,13 +33,11 @@ namespace GameServers
             {
                 playerBank.MoneysIdToNum[k] -= v;
             }
-
-            ok = true;
-            return playerBank;
+            return true;
         }
 
-        public static PlayerBank Gain(PlayerBank playerBank, Dictionary<uint, ulong> moneys,
-            Dictionary<uint, uint> items)
+        public static PlayerBank Gain(PlayerBank playerBank, Dictionary<int, ulong> moneys,
+            Dictionary<int, uint> items)
         {
             foreach (var (key, value) in moneys)
             {

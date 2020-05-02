@@ -22,9 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Include="Resource\surprise_s.json" />
       <None Remove="Resource\skill_s.json" />
-      <EmbeddedResource Include="Resource\skill_s.json" />
     </ItemGroup>
 
 </Project>

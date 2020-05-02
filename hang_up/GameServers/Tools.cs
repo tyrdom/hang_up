@@ -56,21 +56,21 @@ namespace GameServers
         {
             return new PlayerBank
             {
-                AccountId = accountId, ItemsIdToNum = new Dictionary<uint, uint>(),
-                MoneysIdToNum = new Dictionary<uint, ulong>()
+                AccountId = accountId, ItemsIdToNum = new Dictionary<int, uint>(),
+                MoneysIdToNum = new Dictionary<int, ulong>()
             };
         }
 
         public static PlayerGames PlayerNewGames(string accountId)
         {
-            return new PlayerGames() {AccountId = accountId, MainLevel = 1, TowerLevel = -1};
+            return new PlayerGames() {AccountId = accountId, MainLevel = 1, TowerLevel = 0};
         }
 
         public static PlayerCharacters PlayerNewCharacters(string accountId)
         {
             var characterStatus = new CharacterStatus()
-                {InBattle = true, Level = 1, RuneLevel = 0, RuneType = 0, Star = 1};
-            var charactersIdToStatus = new Dictionary<uint, CharacterStatus>
+                {InBattle = true, Level = 1, RuneLevel = 0, RuneType = 0, Star = 1, BreakTimes = 1};
+            var charactersIdToStatus = new Dictionary<int, CharacterStatus>
                 {[1] = characterStatus};
             return new PlayerCharacters()
                 {AccountId = accountId, CharactersIdToStatus = charactersIdToStatus};
@@ -96,7 +96,7 @@ namespace GameServers
             return bank;
         }
 
-        public static BankItemResponse GenBankItemResponseByPlayBank(PlayerBank playerBank, IEnumerable<uint> itemId)
+        public static BankItemResponse GenBankItemResponseByPlayBank(PlayerBank playerBank, IEnumerable<int> itemId)
         {
             var items = playerBank.ItemsIdToNum.Where(a =>
                 itemId.Contains(a.Key)

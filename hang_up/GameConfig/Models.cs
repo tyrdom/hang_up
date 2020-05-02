@@ -35,16 +35,13 @@ namespace GameConfig
         public int id { get; set; }
         public int Class { get; set; }
         public SimpleObj1[] UpGradeCost { get; set; }
+        public int MaxLevel { get; set; }
     }
 
     public class Compose : IGameConfig
     {
         public int id { get; set; }
-        public int Star { get; set; }
-        public int Piece { get; set; }
-        public int Piece1 { get; set; }
-        public int Piece2 { get; set; }
-        public int Piece3 { get; set; }
+        public int[] Pieces { get; set; }
     }
 
     public class Frame : IGameConfig
@@ -61,6 +58,7 @@ namespace GameConfig
         public int id { get; set; }
         public string Name { get; set; }
         public string Avatar { get; set; }
+        public int[] items { get; set; }
         public string Vocation { get; set; }
         public float AttackSpeed { get; set; }
         public int[] HPBase { get; set; }
@@ -111,10 +109,6 @@ namespace GameConfig
         public int Lv { get; set; }
         public SimpleObj3[] Cost { get; set; }
         public SimpleObj3[] TotalCost { get; set; }
-        public long Gold { get; set; }
-        public long Soul { get; set; }
-        public long TotalGold { get; set; }
-        public long TotalSoul { get; set; }
     }
 
     public class Market : IGameConfig
@@ -254,7 +248,7 @@ namespace GameConfig
     public class SimpleObj1 : IGameConfig
     {
         public int item { get; set; }
-        public int num { get; set; }
+        public uint num { get; set; }
     }
 
     public class SimpleObj2 : IGameConfig
@@ -266,6 +260,6 @@ namespace GameConfig
     public class SimpleObj3 : IGameConfig
     {
         public int item { get; set; }
-        public long num { get; set; }
+        public ulong num { get; set; }
     }
 }

@@ -31,8 +31,8 @@ namespace GameServers
         
 
         [BsonId] public string AccountId { get; set; }
-        public Dictionary<uint, ulong> MoneysIdToNum { get; set; }
-        public Dictionary<uint, uint> ItemsIdToNum { get; set; }
+        public Dictionary<int, ulong> MoneysIdToNum { get; set; }
+        public Dictionary<int, uint> ItemsIdToNum { get; set; }
     }
 
 

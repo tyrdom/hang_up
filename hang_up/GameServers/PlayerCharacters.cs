@@ -7,7 +7,7 @@ namespace GameServers
     public class PlayerCharacters
     {
         [BsonId] public string AccountId { get; set; }
-        public Dictionary<uint, CharacterStatus> CharactersIdToStatus { get; set; }
+        public Dictionary<int, CharacterStatus> CharactersIdToStatus { get; set; }
     }
 
     public class SaveCharacters
