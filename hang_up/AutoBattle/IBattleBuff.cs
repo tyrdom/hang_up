@@ -27,30 +27,30 @@ namespace AutoBattle
 
     public interface IBuffCriticalAboutOpponent : IBattleBuff
     {
-        int GetCriticalPerMil(BattleCharacter battleCharacter);
+        float GetCritical(BattleCharacter battleCharacter);
     }
 
 
     public interface IBuffAddDamageSelf : IBattleBuff
     {
         int Damage { get; }
-        int DamagePerMil { get; }
-        (int, int) GetDamageAndPerMil(BattleCharacter battleCharacter);
+        float DamageMulti { get; }
+        (int, float) GetDamageAndMulti(BattleCharacter battleCharacter);
     }
 
     public interface IBuffAddOpponentMiss : IBattleBuff
     {
-        int GetOpponentMissPreMil();
+        float GetOpponentMiss();
     }
 
     public interface IBuffAddMissSelf : IBattleBuff
     {
-        int GetMissPreMil(BattleCharacter battleCharacter);
+        float GetMiss(BattleCharacter battleCharacter);
     }
 
     public interface IBuffAddDefenceSelf : IBattleBuff
     {
-        int GetDefencePreMil();
+        float GetDefence();
     }
 
     public interface IBindToCast : IBattleBuff
@@ -78,37 +78,37 @@ namespace AutoBattle
         public int Stack { get; set; }
         public int RestTimeMs { get; set; }
 
-        private int OpponentAddMissPreMil { get; }
+        private float OpponentAddMiss { get; }
 
-        public int GetOpponentMissPreMil()
+        public float GetOpponentMiss()
         {
-            return OpponentAddMissPreMil * Stack;
+            return OpponentAddMiss * Stack;
         }
 
-        public AddMissToOpponent(int maxStack, int stack, int restTimeMs, int opponentAddMissPreMil)
+        public AddMissToOpponent(int maxStack, int stack, int restTimeMs, float opponentAddMiss)
         {
             MaxStack = maxStack;
             Stack = stack;
             RestTimeMs = restTimeMs;
-            OpponentAddMissPreMil = opponentAddMissPreMil;
+            OpponentAddMiss = opponentAddMiss;
         }
     }
 
     public class AddDefence : IBuffAddDefenceSelf, IBattleBuff
     {
-        private int DefencePerMil { get; }
+        private float Defence { get; }
         public int MaxStack { get; }
         public int Stack { get; set; }
         public int RestTimeMs { get; set; }
 
-        public int GetDefencePreMil()
+        public float GetDefence()
         {
-            return DefencePerMil * Stack;
+            return Defence * Stack;
         }
 
-        public AddDefence(int defencePerMil, int maxStack, int stack, int restTimeMs)
+        public AddDefence(float defence, int maxStack, int stack, int restTimeMs)
         {
-            DefencePerMil = defencePerMil;
+            Defence = defence;
             MaxStack = maxStack;
             Stack = stack;
             RestTimeMs = restTimeMs;
@@ -137,26 +137,26 @@ namespace AutoBattle
         public int Haste { get; }
     }
 
-    public class AddDamagePerMil : IBuffAddDamageSelf, IBattleBuff
+    public class AddDamageMulti : IBuffAddDamageSelf, IBattleBuff
     {
-        public AddDamagePerMil(int maxStack, int stack, int restTimeMs, int damagePerMil)
+        public AddDamageMulti(int maxStack, int stack, int restTimeMs, float damagePerMil)
         {
             MaxStack = maxStack;
             Stack = stack;
             RestTimeMs = restTimeMs;
             Damage = 0;
-            DamagePerMil = damagePerMil;
+            DamageMulti = damagePerMil;
         }
 
         public int MaxStack { get; }
         public int Stack { get; set; }
         public int RestTimeMs { get; set; }
         public int Damage { get; }
-        public int DamagePerMil { get; }
+        public float DamageMulti { get; }
 
-        public (int, int) GetDamageAndPerMil(BattleCharacter battleCharacter)
+        public (int, float) GetDamageAndMulti(BattleCharacter battleCharacter)
         {
-            return (0, Stack * DamagePerMil);
+            return (0, Stack * DamageMulti);
         }
     }
 
@@ -166,11 +166,11 @@ namespace AutoBattle
         public int MaxStack { get; }
         public int Stack { get; set; }
         public int Damage { get; }
-        public int DamagePerMil { get; }
+        public float DamageMulti { get; }
 
-        public (int, int) GetDamageAndPerMil(BattleCharacter battleCharacter)
+        public (int, float) GetDamageAndMulti(BattleCharacter battleCharacter)
         {
-            return (Damage, DamagePerMil);
+            return (Damage, DamageMulti);
         }
 
         public (int, int) GetHasteValueAndLastMs()
@@ -181,14 +181,14 @@ namespace AutoBattle
         public int Haste { get; }
 
 
-        public AddDamageAndHaste(int restTimeMs, int maxStack, int stack, int haste, int damage, int damagePerMil)
+        public AddDamageAndHaste(int restTimeMs, int maxStack, int stack, int haste, int damage, float damageMulti)
         {
             RestTimeMs = restTimeMs;
             MaxStack = maxStack;
             Stack = stack;
             Haste = haste;
             Damage = damage;
-            DamagePerMil = damagePerMil;
+            DamageMulti = damageMulti;
         }
     }
 

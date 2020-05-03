@@ -6,8 +6,8 @@ namespace AutoBattle
     {
         private const int HasteMax = 100;
         private const int HasteMin =-70;
-        private const int MaxMissPerMil = 750;
-        private const int MaxDefencePerMil = 800;
+        private const float MaxMissPerMil = 0.75f;
+        private const float MaxDefence = 0.8f;
 
         public static int FilterHasteValue(int haste)
         {
@@ -15,14 +15,14 @@ namespace AutoBattle
         }
 
 
-        public static int FilterMissPerMilValue(int missPerMil)
+        public static float FilterMissPerMilValue(float missPerMil)
         {
-            return Math.Min(missPerMil, MaxMissPerMil);
+            return MathF.Min(missPerMil, MaxMissPerMil);
         }
 
-        public static int FilterDefencePerMilValue(int defencePerMil)
+        public static float FilterDefencePerMilValue(float defence)
         {
-            return Math.Min(defencePerMil, MaxDefencePerMil);
+            return MathF.Min(defence, MaxDefence);
         }
     }
 }

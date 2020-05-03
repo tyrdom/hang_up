@@ -56,12 +56,12 @@ namespace AutoBattle
 
     public interface IPassiveAddDamageAboutSelf : IPassiveSkill
     {
-        (int, int) GetDamageAndPerMil(BattleCharacter battleCharacter);
+        (int, float) GetDamageAndMulti(BattleCharacter battleCharacter);
     }
 
     public interface IPassiveAddDefenceAboutSelf : IPassiveSkill
     {
-        int GetDefencePreMil(BattleCharacter battleCharacter);
+        float GetDefence(BattleCharacter battleCharacter);
     }
 
     public interface IPassiveAddCriticalAboutSelf : IPassiveSkill
@@ -71,7 +71,7 @@ namespace AutoBattle
 
     public interface IPassiveAddMissAboutSelf : IPassiveSkill
     {
-        int GetMissPreMil(BattleCharacter battleCharacter);
+        float GetMiss(BattleCharacter battleCharacter);
     }
 
     public interface IAddHarmByOpponent
@@ -91,7 +91,7 @@ namespace AutoBattle
 
     public interface IPassiveAddCriticalByOpponent : IPassiveSkill
     {
-        int GetCriticalPerMil(BattleCharacter battleCharacter);
+        float GetCritical(BattleCharacter battleCharacter);
     }
 
     public interface IPassiveAddDefenceAboutOpponent : IPassiveSkill
@@ -167,11 +167,11 @@ namespace AutoBattle
 
     public class CriticalExecute : IPassiveSkill, IPassiveAddCriticalByOpponent, IExecuteEffect
     {
-        public int GetCriticalPerMil(BattleCharacter battleCharacter)
+        public float GetCritical(BattleCharacter battleCharacter)
         {
             var nowHp = 1 - (float) battleCharacter.CharacterBattleAttribute.NowHp /
                 battleCharacter.CharacterBattleAttribute.MaxHp;
-            int damageAddMultiBlackHpPercent = (int) (nowHp * DamageAddMultiBlackHpPercent * 1000);
+            var damageAddMultiBlackHpPercent = nowHp * DamageAddMultiBlackHpPercent;
             return damageAddMultiBlackHpPercent;
         }
 
@@ -353,7 +353,7 @@ namespace AutoBattle
             _lossHpMulti = lossHpMulti;
         }
 
-        public (int, int) GetDamageAndPerMil(BattleCharacter battleCharacter)
+        public (int, float) GetDamageAndMulti(BattleCharacter battleCharacter)
         {
             // ReSharper disable once PossibleLossOfFraction
             var lossHpMulti =
@@ -371,7 +371,7 @@ namespace AutoBattle
             _nowHpMulti = nowHpMulti;
         }
 
-        public (int, int) GetDamageAndPerMil(BattleCharacter battleCharacter)
+        public (int, float) GetDamageAndMulti(BattleCharacter battleCharacter)
         {
             // ReSharper disable once PossibleLossOfFraction
             var nowHp = (int) (battleCharacter.CharacterBattleAttribute.NowHp * 1000 /
@@ -453,38 +453,37 @@ namespace AutoBattle
             DefenceMulti = defenceMulti;
         }
 
-        public int GetDefencePreMil(BattleCharacter battleCharacter)
+        public float GetDefence(BattleCharacter battleCharacter)
         {
             var defenceMulti =
                 (1 - (float) battleCharacter.CharacterBattleAttribute.NowHp /
-                    battleCharacter.CharacterBattleAttribute.MaxHp) * DefenceMulti * 1000;
-            return (int) defenceMulti;
+                    battleCharacter.CharacterBattleAttribute.MaxHp) * DefenceMulti;
+            return defenceMulti;
         }
     }
 
     public class AddDamageByOpponentDead : IWhenDead, IPassiveAddDamageAboutSelf, IPassiveSkill
     {
-        private readonly int _damagePerMil;
+        private readonly float _damageMulti;
         private readonly int _maxStack;
 
-        public AddDamageByOpponentDead(int damagePerMil, int maxStack)
+        public AddDamageByOpponentDead(int damageMulti, int maxStack)
         {
-            _damagePerMil = damagePerMil;
+            _damageMulti = damageMulti;
             _maxStack = maxStack;
         }
 
-        public (int, int) GetDamageAndPerMil(BattleCharacter battleCharacter)
+        public (int, float) GetDamageAndMulti(BattleCharacter battleCharacter)
         {
             if (battleCharacter.InWhichBattleGround == null) return (0, 0);
             var battleGlobals = battleCharacter.InWhichBattleGround.BattleGlobals;
             var f = battleCharacter.BelongTeam switch
             {
-                BelongTeam.A => Math.Min(_maxStack, battleGlobals.TeamBDeadTime) * _damagePerMil,
-                BelongTeam.B => Math.Min(_maxStack, battleGlobals.TeamADeadTime) * _damagePerMil,
+                BelongTeam.A => Math.Min(_maxStack, battleGlobals.TeamBDeadTime) * _damageMulti,
+                BelongTeam.B => Math.Min(_maxStack, battleGlobals.TeamADeadTime) * _damageMulti,
                 _ => throw new ArgumentOutOfRangeException()
             };
             return (0, f);
-
         }
     }
 
@@ -512,9 +511,9 @@ namespace AutoBattle
             _nowHpMulti = nowHpMulti;
         }
 
-        public int GetDefencePreMil(BattleCharacter battleCharacter)
+        public float GetDefence(BattleCharacter battleCharacter)
         {
-            int nowHpMulti = (int) (battleCharacter.CharacterBattleAttribute.GetNowHpMulti() * _nowHpMulti * 1000);
+            var nowHpMulti = battleCharacter.CharacterBattleAttribute.GetNowHpMulti() * _nowHpMulti;
             return nowHpMulti;
         }
     }

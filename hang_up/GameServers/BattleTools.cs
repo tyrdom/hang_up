@@ -27,20 +27,14 @@ namespace GameServers
                         throw new Exception($"not found PassiveSkill{x}");
                     return passiveSkill;
                 }).ToArray();
-            var passAttr = activePass.Select(passiveSkill =>
-            {
-                var tuple = new[]
-                {
-                    passiveSkill.haste, (int) (1000 * passiveSkill.DamagePercent),
-                    (int) (1000 * passiveSkill.Defense), (int) (1000 * passiveSkill.Critical),
-                    (int) (1000 * passiveSkill.Miss)
-                };
-                return tuple;
-            }).Aggregate(new[] {0, 0, 0, 0, 0}, (t1, t2) =>
-                t1.Zip(t2, (i, i1) => i + i1).ToArray()
+
+            var characterBattleBaseAttribute = new CharacterBattleBaseAttribute(hp, damage,
+                activePass.Sum(x => x.Defense),
+                activePass.Sum(x => x.haste),
+                activePass.Sum(x => x.Miss),
+                activePass.Sum(x => x.DamagePercent),
+                activePass.Sum(x => x.Critical)
             );
-            var characterBattleBaseAttribute = new CharacterBattleBaseAttribute(hp, damage, passAttr[2],
-                passAttr[0], passAttr[4], passAttr[1], passAttr[3]);
             var valueAttackSpeed = (int) (attackSpeed * 1000);
 
             var activeSkill = SkillsInConfig.ActiveSkills[0](valueAttackSpeed, 1f);
@@ -69,6 +63,7 @@ namespace GameServers
             var damage = baseDamage + growDamage * characterStatusLevel;
             var activePass = hero.PassiveSkills.Where(x => x.Level <= characterStatus.Level)
                 .Select(x => x.PassiveSkillId).ToArray();
+
             return GenACharacter(activePass, hp, damage, hero.AttackSpeed, hero.ActiveSkill, hero.SkillCd);
         }
     }

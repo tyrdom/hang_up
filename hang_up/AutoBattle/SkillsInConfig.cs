@@ -70,7 +70,7 @@ namespace AutoBattle
 
         public static IActiveSkill ActiveSkill6(int cdMs, float harmM)
         {
-            var addDamageAndHaste = new AddDamageAndHaste(1500, 1, 1, -50, 0, 2000);
+            var addDamageAndHaste = new AddDamageAndHaste(1500, 1, 1, -50, 0, 2f);
             var attackHitOrMissAndAddBuffToSelf =
                 new AttackHitOrMissAndAddBuffToSelf(harmM, new IBattleBuff[] {addDamageAndHaste}, SelfTargetType.Self,
                     true);
@@ -134,7 +134,7 @@ namespace AutoBattle
 
         public static IActiveSkill ActiveSkill14(int cdMs, float h)
         {
-            var addDamagePerMil = new AddDamagePerMil(2, 1, 10000, -250);
+            var addDamagePerMil = new AddDamageMulti(2, 1, 10000, -0.25f);
             var attackHitOrMissWithBuffToOpponent = new AttackHitOrMissWithBuffToOpponent(
                 OpponentTargetType.FirstOpponent, true, OpponentTargetType.FirstOpponent,
                 new IBattleBuff[] {addDamagePerMil}, h);
@@ -143,7 +143,7 @@ namespace AutoBattle
 
         public static IActiveSkill ActiveSkill15(int cdMs, float h)
         {
-            var addMissToOpponent = new AddMissToOpponent(1, 1, 10000, 150);
+            var addMissToOpponent = new AddMissToOpponent(1, 1, 10000, 0.15f);
             var attackHitOrMissWithBuffToOpponent = new AttackHitOrMissWithBuffToOpponent(
                 OpponentTargetType.FirstOpponent, true, OpponentTargetType.FirstOpponent,
                 new IBattleBuff[] {addMissToOpponent}, h);
@@ -174,7 +174,7 @@ namespace AutoBattle
 
         public static IActiveSkill ActiveSkill22(int cdMs, float h)
         {
-            var addDefence = new AddDefence(-500, 1, 1, 10000);
+            var addDefence = new AddDefence(-0.5f, 1, 1, 10000);
             var attackHitOrMissWithBuffToOpponent = new AttackHitOrMissWithBuffToOpponent(
                 OpponentTargetType.FirstOpponent, true, OpponentTargetType.FirstOpponent,
                 new IBattleBuff[] {addDefence}, h);
@@ -208,7 +208,7 @@ namespace AutoBattle
 
         public static IPassiveSkill PassiveSkill9()
         {
-            var addDamageAndHaste = new AddDamageAndHaste(8000, 4, 1, 15, 0, 500);
+            var addDamageAndHaste = new AddDamageAndHaste(8000, 4, 1, 15, 0, 0.5f);
             return new AddBuffWhenMiss(new IBattleBuff[] { }, new IBattleBuff[] {addDamageAndHaste});
         }
 
@@ -278,13 +278,13 @@ namespace AutoBattle
 
         public static IPassiveSkill PassiveSkill103()
         {
-            var addDefence = new AddDefence(10, 70, 1, 10000);
+            var addDefence = new AddDefence(0.01f, 70, 1, 10000);
             return new AddBuffWhenBeHit(new IBattleBuff[] {addDefence});
         }
 
         public static IPassiveSkill PassiveSkill104()
         {
-            var addDamagePerMil = new AddDamagePerMil(200, 1, 10000, 10);
+            var addDamagePerMil = new AddDamageMulti(200, 1, 10000, 0.01f);
             return new AddBuffWhenBeHit(new IBattleBuff[] {addDamagePerMil});
         }
 
@@ -300,7 +300,7 @@ namespace AutoBattle
 
         public static IPassiveSkill PassiveSkill107()
         {
-            var addDamagePerMil = new AddDamagePerMil(100, 1, 3000, 50);
+            var addDamagePerMil = new AddDamageMulti(100, 1, 3000, 0.05f);
             return new AddBuffWhenHit(new IBattleBuff[] { }, new IBattleBuff[] {addDamagePerMil});
         }
 

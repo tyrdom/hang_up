@@ -119,12 +119,11 @@ namespace GameServers
             }
             else
             {
-                playerCharacters.CharactersIdToStatus[cid] = new CharacterStatus()
+                playerCharacters.CharactersIdToStatus[cid] = new CharacterStatus
                     {InBattle = false, Level = 1, RuneLevel = 0, RuneType = 0, Star = level, BreakTimes = 1};
             }
 
             return false;
-
         }
 
 

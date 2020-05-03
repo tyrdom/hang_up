@@ -126,17 +126,17 @@ namespace AutoBattle
             return enumerable.SelectMany(skill => skill.GenIBullets(this)).ToArray();
         }
 
-        private static int ExtraMissFromOpponent(BattleCharacter opponent)
+        private static float ExtraMissFromOpponent(BattleCharacter opponent)
         {
-            var i = opponent.BattleBuffs.OfType<IBuffAddOpponentMiss>().Select(x => x.GetOpponentMissPreMil()).Sum();
+            var i = opponent.BattleBuffs.OfType<IBuffAddOpponentMiss>().Select(x => x.GetOpponentMiss()).Sum();
             return i;
         }
 
-        private int OpponentExtraCritical(BattleCharacter opponent)
+        private float OpponentExtraCritical(BattleCharacter opponent)
         {
             var sum = opponent.PassiveSkills.OfType<IPassiveAddCriticalByOpponent>()
-                .Select(x => x.GetCriticalPerMil(this)).Sum();
-            var i = opponent.BattleBuffs.OfType<IBuffCriticalAboutOpponent>().Select(x => x.GetCriticalPerMil(this))
+                .Select(x => x.GetCritical(this)).Sum();
+            var i = opponent.BattleBuffs.OfType<IBuffCriticalAboutOpponent>().Select(x => x.GetCritical(this))
                 .Sum();
             return sum + i;
         }
@@ -150,9 +150,9 @@ namespace AutoBattle
             return s + i;
         }
 
-        private int GetCritical()
+        private float GetCritical()
         {
-            var criticalPreMil = CharacterBattleAttribute.CriticalPreMil;
+            var criticalPreMil = CharacterBattleAttribute.Critical;
             var sum = PassiveSkills.OfType<IPassiveAddCriticalAboutSelf>().Select(x => x.GetCritical(this)).Sum();
             var i = BattleBuffs.OfType<IBuffAddCriticalSelf>().Select(x => x.GetCritical(this)).Sum();
             return criticalPreMil + sum + i;
@@ -161,17 +161,17 @@ namespace AutoBattle
         public int GetDamage()
         {
             int damage;
-            int damagePerMil;
-            (damage, damagePerMil) = (CharacterBattleAttribute.Damage, CharacterBattleAttribute.DamagePerMil);
-            static (int, int) Func((int, int) x, (int, int) y) => (x.Item1 + y.Item1, x.Item2 + y.Item2);
+            float damagePerMil;
+            (damage, damagePerMil) = (CharacterBattleAttribute.Damage, CharacterBattleAttribute.DamageMulti);
+            static (int, float) Func((int, float) x, (int, float) y) => (x.Item1 + y.Item1, x.Item2 + y.Item2);
             var (item1, item2) = PassiveSkills.OfType<IPassiveAddDamageAboutSelf>()
-                .Select(x => x.GetDamageAndPerMil(this))
-                .Aggregate((0, 0), Func);
-            var (i, f) = BattleBuffs.OfType<IBuffAddDamageSelf>().Select(x => x.GetDamageAndPerMil(this))
-                .Aggregate((0, 0), Func);
+                .Select(x => x.GetDamageAndMulti(this))
+                .Aggregate((0, 0f), Func);
+            var (i, f) = BattleBuffs.OfType<IBuffAddDamageSelf>().Select(x => x.GetDamageAndMulti(this))
+                .Aggregate((0, 0f), Func);
             var iItem1 = damage + item1 + i;
             var iItem2 = damagePerMil + item2 + f;
-            var getDamage = (int) MathF.Ceiling(iItem1 * (1 + iItem2 / 1000f));
+            var getDamage = (int) MathF.Ceiling(iItem1 * (1 + iItem2));
 
             return getDamage;
         }
@@ -184,33 +184,33 @@ namespace AutoBattle
             return Math.Min(sum, 1000);
         }
 
-        private int GetDefencePreMil()
+        private float GetDefence()
         {
-            var defencePreMil = CharacterBattleAttribute.DefencePreMil;
-            var sum = PassiveSkills.OfType<IPassiveAddDefenceAboutSelf>().Select(x => x.GetDefencePreMil(this))
+            var defencePreMil = CharacterBattleAttribute.Defence;
+            var sum = PassiveSkills.OfType<IPassiveAddDefenceAboutSelf>().Select(x => x.GetDefence(this))
                 .Sum();
-            var i = BattleBuffs.OfType<IBuffAddDefenceSelf>().Select(x => x.GetDefencePreMil()).Sum();
+            var i = BattleBuffs.OfType<IBuffAddDefenceSelf>().Select(x => x.GetDefence()).Sum();
             return CommonSettings.FilterDefencePerMilValue(defencePreMil + sum + i);
         }
 
 
-        private int GetMissPreMil(BattleCharacter opponent)
+        private float GetMiss(BattleCharacter opponent)
         {
-            var missPreMil = CharacterBattleAttribute.MissPreMil;
+            var missPreMil = CharacterBattleAttribute.OpMiss;
             var sum = PassiveSkills.OfType<IPassiveAddMissAboutSelf>()
-                .Select(x => x.GetMissPreMil(this)).Sum();
-            var i = BattleBuffs.OfType<IBuffAddMissSelf>().Select(x => x.GetMissPreMil(this)).Sum();
+                .Select(x => x.GetMiss(this)).Sum();
+            var i = BattleBuffs.OfType<IBuffAddMissSelf>().Select(x => x.GetMiss(this)).Sum();
             var extraMissFromOpponent = ExtraMissFromOpponent(opponent);
             return CommonSettings.FilterMissPerMilValue(missPreMil + sum + i + extraMissFromOpponent);
         }
 
         public IEnumerable<IShow> TakeHarm(IHarmBullet harmBullet, out bool isHit)
         {
-            var next = BattleGround.Random.Next(1000);
-            var next2 = BattleGround.Random.Next(1000);
+            var next = BattleGround.Random.Next(10000) / 10000f;
+            var next2 = BattleGround.Random.Next(10000) / 10000f;
             var rawHarm = harmBullet.Harm + harmBullet.FromWho.OpponentExtraHarm(this);
 
-            if (next >= GetMissPreMil(harmBullet.FromWho))
+            if (next >= GetMiss(harmBullet.FromWho))
             {
                 isHit = true;
                 if (next2 < harmBullet.FromWho.GetCritical() +
@@ -229,7 +229,7 @@ namespace AutoBattle
                     return damageAnotherOne;
                 }
 
-                var harm = (int) rawHarm * (1000 - GetDefencePreMil()) / 1000;
+                var harm = (int) (rawHarm * (1 - GetDefence()));
                 var select1 = PassiveSkills.OfType<INotAboveHarm>().Select(x => x.MaxHarm(this)).ToArray();
 
                 var ints = BattleBuffs.OfType<INotAboveHarm>().Select(x => x.MaxHarm(this)).ToArray();
@@ -311,7 +311,7 @@ namespace AutoBattle
 
         public IEnumerable<IShow> TakeHeal(IHealBullet healSelfBullet)
         {
-            var next = BattleGround.Random.Next(1000);
+            var next = BattleGround.Random.Next(10000) / 10000f;
 
             var rawHeal = healSelfBullet.Heal;
             if (next < healSelfBullet.FromWho.GetCritical() + healSelfBullet.FromWho.OpponentExtraCritical(this))

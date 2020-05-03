@@ -8,23 +8,23 @@ namespace AutoBattle
         public long NowHp;
         public int Damage;
 
-        public readonly int DamagePerMil;
-        public readonly int CriticalPreMil;
-        public readonly int DefencePreMil;
+        public readonly float DamageMulti;
+        public readonly float Critical;
+        public readonly float Defence;
         public readonly int Haste;
-        public readonly int MissPreMil;
+        public readonly float OpMiss;
 
-        public CharacterBattleBaseAttribute(long maxHp, int damage, int defencePreMil, int haste, int missPreMil,
-            int damagePerMil, int criticalPreMil)
+        public CharacterBattleBaseAttribute(long maxHp, int damage, float defence, int haste, float opMiss,
+            float damageMulti, float critical)
         {
             MaxHp = maxHp;
             NowHp = maxHp;
             Damage = damage;
-            DefencePreMil = defencePreMil;
+            Defence = defence;
             Haste = haste;
-            MissPreMil = missPreMil;
-            DamagePerMil = damagePerMil;
-            CriticalPreMil = criticalPreMil;
+            OpMiss = opMiss;
+            DamageMulti = damageMulti;
+            Critical = critical;
         }
 
         public float GetNowHpMulti()
