@@ -99,7 +99,7 @@ message StartMainLevelBattleRequest {
 }
 
 message ChangeTeamRequest{
-  int32 slot1 = 1; int32 slot2 = 2; int32 slot3 = 3; int32 slot4 = 4; int32 slot5 = 5;int32 slot6 = 6;
+  repeated  int32  cIds = 1;
 }
 message CharactersGetRequest {
 }
@@ -181,13 +181,13 @@ message ChangeTeamResponse{
 message CharacterStatus {
   int32 Level = 1;
   int32 Star = 2;
-  bool InBattle = 3;
-  int32 RuneType = 4;
-  int32 RuneLevel = 5;
-  int32 BreakTimes = 6;
+  repeated int32 RuneTypes = 3;
+  int32 RuneLevel = 4;
+  int32 ClassLevel = 5;
 }
 message CharactersGetResponse {
   repeated Character characters = 1;
+  repeated int32 inBattleIds = 2;
   message Character {
     int32 Id = 1;
     CharacterStatus characterStatus = 2;

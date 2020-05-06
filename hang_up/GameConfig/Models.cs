@@ -42,6 +42,7 @@ namespace GameConfig
     {
         public int id { get; set; }
         public int[] Pieces { get; set; }
+        public int RuneNum { get; set; }
     }
 
     public class Frame : IGameConfig

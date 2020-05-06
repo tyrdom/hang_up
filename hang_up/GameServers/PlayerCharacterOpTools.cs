@@ -120,16 +120,30 @@ namespace GameServers
             else
             {
                 playerCharacters.CharactersIdToStatus[cid] = new CharacterStatus
-                    {InBattle = false, Level = 1, RuneLevel = 0, RuneType = 0, Star = level, BreakTimes = 1};
+                {
+                    Level = 1, RuneLevel = 0, RuneTypes = new int[] { }, Star = level, ClassLevel = 1
+                };
             }
 
             return false;
         }
 
-
+        public static bool CharacterClassUpDo(int cid, uint level, PlayerBank playerBank,
+            PlayerCharacters playerCharacters)
+        {
+            
+            return false;
+        }
+        public static bool CharacterRuneResetDo(int cid, uint level, PlayerBank playerBank,
+            PlayerCharacters playerCharacters)
+        {
+            
+            return false;
+        }
         public static bool CharacterRuneUpDo(int cid, uint level, PlayerBank playerBank,
             PlayerCharacters playerCharacters)
         {
+            
             return false;
         }
 
@@ -148,7 +162,7 @@ namespace GameServers
             if (!PlayerBankOp.Use(playerBank, moneys, items)) return false;
             var u = playerCharacters.CharactersIdToStatus[cid].Level;
             var min = Math.Min(u + level, Content.Level_ups.Keys.Max());
-            var i = Content.Class_ups.TryGetValue(status.BreakTimes, out var value)
+            var i = Content.Class_ups.TryGetValue(status.ClassLevel, out var value)
                 ? Math.Min(min, value.MaxLevel)
                 : min;
             playerCharacters.CharactersIdToStatus[cid].Level = i;

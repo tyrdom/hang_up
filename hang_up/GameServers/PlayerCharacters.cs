@@ -8,6 +8,7 @@ namespace GameServers
     {
         [BsonId] public string AccountId { get; set; }
         public Dictionary<int, CharacterStatus> CharactersIdToStatus { get; set; }
+        public HashSet<int> inBattle { get; set; }
     }
 
     public class SaveCharacters

@@ -69,11 +69,11 @@ namespace GameServers
         public static PlayerCharacters PlayerNewCharacters(string accountId)
         {
             var characterStatus = new CharacterStatus()
-                {InBattle = true, Level = 1, RuneLevel = 0, RuneType = 0, Star = 1, BreakTimes = 1};
+                {Level = 1, RuneLevel = 0, RuneTypes = new int[] { }, Star = 1, ClassLevel = 1};
             var charactersIdToStatus = new Dictionary<int, CharacterStatus>
                 {[1] = characterStatus};
             return new PlayerCharacters()
-                {AccountId = accountId, CharactersIdToStatus = charactersIdToStatus};
+                {AccountId = accountId, CharactersIdToStatus = charactersIdToStatus, inBattle = new HashSet<int>() {1}};
         }
 
         public static BankBaseResponse GenBankBaseResponseByPlayBank(PlayerBank playerBank)
@@ -113,7 +113,8 @@ namespace GameServers
                 Id = pair.Key, characterStatus = pair.Value
             });
 
-            return new CharactersGetResponse {Characters = characters.ToList()};
+            return new CharactersGetResponse
+                {Characters = characters.ToList(), inBattleIds = playerCharacters.inBattle.ToArray()};
         }
     }
 }

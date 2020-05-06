@@ -261,7 +261,7 @@ namespace GameProtos
         public int cId { get; set; }
 
         [global::ProtoBuf.ProtoMember(2, Name = @"level")]
-        public uint Level { get; set; }
+        public int Level { get; set; }
 
     }
 
@@ -273,7 +273,7 @@ namespace GameProtos
             => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
         [global::ProtoBuf.ProtoMember(1)]
-        public uint cId { get; set; }
+        public int cId { get; set; }
 
     }
 
@@ -288,7 +288,7 @@ namespace GameProtos
         public int cId { get; set; }
 
         [global::ProtoBuf.ProtoMember(2, Name = @"level")]
-        public uint Level { get; set; }
+        public int Level { get; set; }
 
     }
 
@@ -308,23 +308,8 @@ namespace GameProtos
         global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
             => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
-        [global::ProtoBuf.ProtoMember(1, Name = @"slot1")]
-        public int Slot1 { get; set; }
-
-        [global::ProtoBuf.ProtoMember(2, Name = @"slot2")]
-        public int Slot2 { get; set; }
-
-        [global::ProtoBuf.ProtoMember(3, Name = @"slot3")]
-        public int Slot3 { get; set; }
-
-        [global::ProtoBuf.ProtoMember(4, Name = @"slot4")]
-        public int Slot4 { get; set; }
-
-        [global::ProtoBuf.ProtoMember(5, Name = @"slot5")]
-        public int Slot5 { get; set; }
-
-        [global::ProtoBuf.ProtoMember(6, Name = @"slot6")]
-        public int Slot6 { get; set; }
+        [global::ProtoBuf.ProtoMember(1, IsPacked = true)]
+        public int[] cIds { get; set; }
 
     }
 
@@ -615,17 +600,14 @@ namespace GameProtos
         [global::ProtoBuf.ProtoMember(2)]
         public int Star { get; set; }
 
-        [global::ProtoBuf.ProtoMember(3)]
-        public bool InBattle { get; set; }
+        [global::ProtoBuf.ProtoMember(3, IsPacked = true)]
+        public int[] RuneTypes { get; set; }
 
         [global::ProtoBuf.ProtoMember(4)]
-        public int RuneType { get; set; }
-
-        [global::ProtoBuf.ProtoMember(5)]
         public int RuneLevel { get; set; }
 
-        [global::ProtoBuf.ProtoMember(6)]
-        public int BreakTimes { get; set; }
+        [global::ProtoBuf.ProtoMember(5)]
+        public int ClassLevel { get; set; }
 
     }
 
@@ -638,6 +620,9 @@ namespace GameProtos
 
         [global::ProtoBuf.ProtoMember(1, Name = @"characters")]
         public global::System.Collections.Generic.List<Character> Characters { get; set; } = new global::System.Collections.Generic.List<Character>();
+
+        [global::ProtoBuf.ProtoMember(2, IsPacked = true)]
+        public int[] inBattleIds { get; set; }
 
         [global::ProtoBuf.ProtoContract()]
         public partial class Character : global::ProtoBuf.IExtensible
