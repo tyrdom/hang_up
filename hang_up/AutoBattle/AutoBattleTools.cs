@@ -6,34 +6,37 @@ namespace AutoBattle
 {
     public static class AutoBattleTools
     {
-        public static (BattleCharacter?, BattleCharacter[]) GetFirstAndOtherTargetByOpponentType(BattleCharacter[] team,
+        public static (BattleCharacter?, BattleCharacter[]) GetFirstAndOtherTargetByOpponentType(List<BattleCharacter> team,
             OpponentTargetType opponentTargetType)
         {
-            if (!team.Any()) return (null, new BattleCharacter[] { });
+            var characters = team.Where(x => x.KeyStatus == KeyStatus.Alive).ToList();
+          
+            if (!characters.Any()) return (null, new BattleCharacter[] { });
             BattleCharacter battleCharacter = opponentTargetType switch
             {
-                OpponentTargetType.FirstOpponent => team.First(),
-                OpponentTargetType.WeakestOpponent => team.OrderBy(x => x.CharacterBattleAttribute.NowHp).First(),
+                OpponentTargetType.FirstOpponent => characters.First(),
+                OpponentTargetType.WeakestOpponent => characters.OrderBy(x => x.CharacterBattleAttribute.NowHp).First(),
                 _ => throw new ArgumentOutOfRangeException(nameof(opponentTargetType), opponentTargetType, null)
             };
 
-            var battleCharacters = team.Where(x => x != battleCharacter).ToArray();
+            var battleCharacters = characters.Where(x => x != battleCharacter).ToArray();
             return (battleCharacter, battleCharacters);
         }
 
-        public static BattleCharacter[] GetTargetsBySelfTargetType(BattleCharacter[] team,
+        public static BattleCharacter[] GetTargetsBySelfTargetType(List<BattleCharacter> team,
             SelfTargetType selfTargetType, BattleCharacter fromWho)
-        {
-            if (!team.Any()) return new BattleCharacter[] { };
+        {var characters = team.Where(x => x.KeyStatus == KeyStatus.Alive).ToList();
+
+            if (!characters.Any()) return new BattleCharacter[] { };
 
             return selfTargetType switch
             {
-                SelfTargetType.Self => team.Where(x => x == fromWho).ToArray(),
-                SelfTargetType.SelfTeam => team,
-                SelfTargetType.SelfWeak => team
+                SelfTargetType.Self => characters.Where(x => x == fromWho).ToArray(),
+                SelfTargetType.SelfTeam => characters.ToArray(),
+                SelfTargetType.SelfWeak => characters
                     .OrderBy(x => x.CharacterBattleAttribute.NowHp / x.CharacterBattleAttribute.MaxHp).Take(1)
                     .ToArray(),
-                SelfTargetType.SelfTeamOthers => team.Where(x => x != fromWho).ToArray(),
+                SelfTargetType.SelfTeamOthers => characters.Where(x => x != fromWho).ToArray(),
                 _ => throw new ArgumentOutOfRangeException(nameof(selfTargetType), selfTargetType, null)
             };
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 
@@ -7,10 +8,10 @@ namespace AutoBattle
 {
     public class BattleGround
     {
-        private BattleCharacter[] _teamA;
-        private BattleCharacter[] _teamB;
+        private List<BattleCharacter> _teamA;
+        private List<BattleCharacter> _teamB;
 
-        public static readonly Random Random = new Random(Seed:123);
+        public static readonly Random Random = new Random(Seed: 123);
 
 
         public readonly BattleGlobals BattleGlobals;
@@ -27,9 +28,9 @@ namespace AutoBattle
                 battleCharacter.JoinBattleGround(this);
             }
 
-            _teamA = teamA;
+            _teamA = teamA.ToList();
 
-            _teamB = teamB;
+            _teamB = teamB.ToList();
 
             BattleGlobals = new BattleGlobals();
         }
@@ -68,17 +69,17 @@ namespace AutoBattle
 
             var battleCharacters =
                 _teamA.SelectMany(x => x.PassiveSkills.OfType<ICopyCharacter>().SelectMany(c => c.GenCopies(x)));
-            _teamA = _teamA.Concat(battleCharacters).ToArray();
+            _teamA = _teamA.Concat(battleCharacters).ToList();
             var battleCharacters1 =
                 _teamB.SelectMany(x => x.PassiveSkills.OfType<ICopyCharacter>().SelectMany(c => c.GenCopies(x)));
-            _teamB = _teamB.Concat(battleCharacters1).ToArray();
+            _teamB = _teamB.Concat(battleCharacters1).ToList();
         }
 
         public IShow[] GoNextTimeEvent()
         {
-            var aliveTeamA = _teamA.Where(x => x.KeyStatus == KeyStatus.Alive).ToArray();
+            var aliveTeamA = _teamA.Where(x => x.KeyStatus == KeyStatus.Alive).ToList();
 
-            var aliveTeamB = _teamB.Where(x => x.KeyStatus == KeyStatus.Alive).ToArray();
+            var aliveTeamB = _teamB.Where(x => x.KeyStatus == KeyStatus.Alive).ToList();
             var min = aliveTeamA.Select(character => character.GetEventTime()).Min();
             var minB = aliveTeamB.Select(character => character.GetEventTime()).Min();
             var i = Math.Min(min, minB);
@@ -101,24 +102,24 @@ namespace AutoBattle
             {
                 return x switch
                 {
-                    IOpponentBullet opponentBullet => opponentBullet.HitTeam(aliveTeamB, aliveTeamA),
-                    ISelfBullet selfBullet => selfBullet.HelpTeam(aliveTeamA, aliveTeamB),
+                    IOpponentBullet opponentBullet => opponentBullet.HitTeam(_teamB, _teamA),
+                    ISelfBullet selfBullet => selfBullet.HelpTeam(_teamA, _teamB),
                     _ => throw new ArgumentOutOfRangeException(nameof(x))
                 };
             });
-            var enumerable = teamBBullets.SelectMany( x =>
+            var enumerable = teamBBullets.SelectMany(x =>
             {
                 return x switch
                 {
-                    IOpponentBullet opponentBullet => opponentBullet.HitTeam(aliveTeamA, aliveTeamB),
-                    ISelfBullet selfBullet => selfBullet.HelpTeam(aliveTeamB, aliveTeamA),
+                    IOpponentBullet opponentBullet => opponentBullet.HitTeam(_teamA, _teamB),
+                    ISelfBullet selfBullet => selfBullet.HelpTeam(_teamB, _teamA),
                     _ => throw new ArgumentOutOfRangeException(nameof(x))
                 };
             });
             var effects = showEffects.Union(enumerable);
 
             //CheckDead
-            for (var index = 0; index < aliveTeamA.Length; index++)
+            for (var index = 0; index < aliveTeamA.Count; index++)
             {
                 var battleCharacter = aliveTeamA[index];
                 if (battleCharacter.CharacterBattleAttribute.NowHp > 0)
@@ -134,7 +135,7 @@ namespace AutoBattle
             }
 
 
-            for (var index2 = 0; index2 < aliveTeamB.Length; index2++)
+            for (var index2 = 0; index2 < aliveTeamB.Count; index2++)
             {
                 var battleCharacter = aliveTeamB[index2];
                 if (battleCharacter.CharacterBattleAttribute.NowHp > 0)

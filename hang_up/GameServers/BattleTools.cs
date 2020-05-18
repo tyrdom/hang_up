@@ -89,8 +89,10 @@ namespace GameServers
                     activeSkill2.DamageMulti)
                 : SkillsInConfig.ActiveSkills[0](cd, activeSkill2.DamageMulti);
             var passiveSkills = activePass.Select(x => SkillsInConfig.PassiveSkills[x.Effect]).ToArray();
-            var battleCharacter = new BattleCharacter(KeyStatus.Alive, characterBattleBaseAttribute, activeSkill,
-                skill, passiveSkills);
+            var battleCharacter = new BattleCharacter(KeyStatus.Alive, characterBattleBaseAttribute, new[]
+                {
+                    activeSkill, skill
+                }, passiveSkills);
             return battleCharacter;
         }
 

@@ -15,8 +15,8 @@ namespace AutoBattle
         public BelongTeam BelongTeam;
         public CharacterBattleBaseAttribute CharacterBattleAttribute;
 
-        public IActiveSkill ActiveSkill1;
-        public IActiveSkill ActiveSkill2;
+        public IActiveSkill[] ActiveSkills;
+
         public IPassiveSkill[] PassiveSkills;
         public List<IBattleBuff> BattleBuffs;
 
@@ -24,18 +24,21 @@ namespace AutoBattle
 
         private int _tempBaseHaste;
 
+        public BattleCharacter? WhoSummon;
 
         public BattleCharacter(KeyStatus keyStatus, CharacterBattleBaseAttribute characterBattleAttribute,
-            IActiveSkill activeSkill1, IActiveSkill activeSkill2, IPassiveSkill[] passiveSkills)
+            IActiveSkill[] activeSkills, IPassiveSkill[] passiveSkills, BattleCharacter? whoSummon = null)
         {
             KeyStatus = keyStatus;
             CharacterBattleAttribute = characterBattleAttribute;
-            ActiveSkill1 = activeSkill1;
-            ActiveSkill2 = activeSkill2;
+            ActiveSkills = activeSkills;
+
             PassiveSkills = passiveSkills;
+            WhoSummon = whoSummon;
             BattleBuffs = new List<IBattleBuff>();
             _tempHasteBuffData = new (int, int)[] { };
             InWhichBattleGround = null;
+            WhoSummon = whoSummon;
         }
 
         public void JoinBattleGround(BattleGround battleGround)
@@ -62,9 +65,8 @@ namespace AutoBattle
             _tempBaseHaste = haste;
             _tempHasteBuffData = valueTuples;
             // Console.Out.WriteLine($"$_tempHasteBuff:{valueTuples}");
-            var skill1RestTimeMs = ActiveSkill1.RestTimeMs;
-            var skill2RestTimeMs = ActiveSkill2.RestTimeMs;
-            var rest = new[] {skill1RestTimeMs, skill2RestTimeMs}.OrderBy(x => x).ToArray();
+
+            var rest = ActiveSkills.Select(x => x.RestTimeMs).OrderBy(x => x).ToArray();
             var buffLast = 0;
             foreach (var (item1, item2) in valueTuples)
             {
@@ -107,9 +109,12 @@ namespace AutoBattle
             BattleBuffs.ForEach(x => x.TakeTime(costMs));
             BattleBuffs = BattleBuffs.Where(x => x.RestTimeMs > 0).ToList();
 
-            ActiveSkill1.TakeTime(costMs);
-            ActiveSkill2.TakeTime(costMs);
-            var activeSkills = new[] {ActiveSkill1, ActiveSkill2};
+            foreach (var activeSkill in ActiveSkills)
+            {
+                activeSkill.TakeTime(costMs);
+            }
+
+            var activeSkills = ActiveSkills;
 
 
             var enumerable = activeSkills.Where(skill =>

@@ -66,6 +66,18 @@ namespace AutoBattle
         IEnumerable<IBullet> GenBullet(BattleCharacter battleCharacter);
     }
 
+    public interface ISummonUnitEffect
+    {
+        float HpMulti { get; set; }
+        float DamageMulti { get; set; }
+
+        IActiveSkill[] ActiveSkills { get; set; }
+        IPassiveSkill[] PassiveSkills { get; set; }
+
+        int MaxNum { get; set; }
+        bool IsOnHead { get; set; }
+    }
+
     public interface ISplashAllEffect
     {
         float SplashHarmMulti { get; }
@@ -84,6 +96,45 @@ namespace AutoBattle
     public interface IAddHarmByOpponentEffect
     {
         float MultiByNowHp { get; }
+    }
+
+    public class AttackSummonUnit : IHarmEffect, IToOpponentEffect, ISummonUnitEffect
+    {
+        public float HarmMulti { get; }
+
+        public IEnumerable<IBullet> GenBullet(BattleCharacter battleCharacter)
+        {
+            var ceiling = (int) Math.Ceiling(battleCharacter.GetDamage() * HarmMulti);
+            var hpMulti = (int) (battleCharacter.CharacterBattleAttribute.MaxHp * this.HpMulti);
+            var damageMulti = (int) (battleCharacter.CharacterBattleAttribute.Damage * this.DamageMulti);
+            var summonUnit = new BattleCharacter(KeyStatus.Alive,
+                new CharacterBattleBaseAttribute(hpMulti, damageMulti, 0, 0, 0, 0, 0),
+                ActiveSkills, new IPassiveSkill[] { }, battleCharacter);
+            var summonUnitBullet = new SummonUnitBullet(summonUnit, MaxNum, IsOnHead, battleCharacter, ceiling,
+                OpponentTargetType);
+            return new[] {summonUnitBullet};
+        }
+
+        public AttackSummonUnit(float harmMulti, OpponentTargetType opponentTargetType, int hpMulti, int damageMulti,
+            IActiveSkill[] activeSkills, IPassiveSkill[] passiveSkills, int maxNum, bool isOnHead)
+        {
+            HarmMulti = harmMulti;
+            OpponentTargetType = opponentTargetType;
+            HpMulti = hpMulti;
+            DamageMulti = damageMulti;
+            ActiveSkills = activeSkills;
+            PassiveSkills = passiveSkills;
+            MaxNum = maxNum;
+            IsOnHead = isOnHead;
+        }
+
+        public OpponentTargetType OpponentTargetType { get; }
+        public float HpMulti { get; set; }
+        public float DamageMulti { get; set; }
+        public IActiveSkill[] ActiveSkills { get; set; }
+        public IPassiveSkill[] PassiveSkills { get; set; }
+        public int MaxNum { get; set; }
+        public bool IsOnHead { get; set; }
     }
 
     public class AttackLossHp : IHarmEffect, IToOpponentEffect, ISelfEffect, IAttackLossHp

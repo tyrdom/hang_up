@@ -290,7 +290,7 @@ namespace AutoBattle
 
         public void GetReadyDo(BattleCharacter battleCharacter)
         {
-            battleCharacter.ActiveSkill1.ActiveEffect = ActiveSkillEffects;
+            battleCharacter.ActiveSkills[0].ActiveEffect = ActiveSkillEffects;
         }
     }
 
