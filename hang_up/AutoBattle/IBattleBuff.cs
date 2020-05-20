@@ -71,7 +71,7 @@ namespace AutoBattle
         int GetCritical(BattleCharacter battleCharacter);
     }
 
-
+    
     public class AddMissToOpponent : IBuffAddOpponentMiss
     {
         public int MaxStack { get; }

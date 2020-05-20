@@ -89,6 +89,31 @@ namespace AutoBattle
         float GetHarmMulti(BattleCharacter battleCharacter);
     }
 
+    public interface IAddBuffWhenDanger
+    {
+        int TrickTimes { get; set; }
+        float DangerHpMulti { get; }
+        IBattleBuff[] BattleBuffs { get; }
+
+        IBattleBuff[] GetBattleBuffs(float hpRate)
+        {
+            if (TrickTimes <= 0 || hpRate > DangerHpMulti) return new IBattleBuff[] { };
+            TrickTimes -= 1;
+            return BattleBuffs;
+        }
+    }
+
+    public interface INoDead
+    {
+        int NoDeadStack { get; set; }
+
+        public bool AvoidDeadOnce()
+        {
+            NoDeadStack -= 1;
+            return NoDeadStack >= 0;
+        }
+    }
+
     public interface IPassiveAddCriticalByOpponent : IPassiveSkill
     {
         float GetCritical(BattleCharacter battleCharacter);
@@ -99,6 +124,22 @@ namespace AutoBattle
         int GetDefencePreMil(BattleCharacter battleCharacter);
     }
 
+    public class NoDeadAndAddBuffWhenDanger : INoDead, IAddBuffWhenDanger, IPassiveSkill
+    {
+        public NoDeadAndAddBuffWhenDanger(int noDeadStack, int trickTimes, float dangerHpMulti,
+            IBattleBuff[] battleBuffs)
+        {
+            NoDeadStack = noDeadStack;
+            TrickTimes = trickTimes;
+            DangerHpMulti = dangerHpMulti;
+            BattleBuffs = battleBuffs;
+        }
+
+        public int NoDeadStack { get; set; }
+        public int TrickTimes { get; set; }
+        public float DangerHpMulti { get; }
+        public IBattleBuff[] BattleBuffs { get; }
+    }
 
     public class AddBuffWhenHit : IPassiveAddBuffsHit
     {

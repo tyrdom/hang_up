@@ -98,7 +98,7 @@ namespace AutoBattle
             //     Console.Out.WriteLine($"bB:{s}");
             // }
 
-            var showEffects = teamABullets.SelectMany(x =>
+            var teamAiShow = teamABullets.SelectMany(x =>
             {
                 return x switch
                 {
@@ -106,8 +106,8 @@ namespace AutoBattle
                     ISelfBullet selfBullet => selfBullet.HelpTeam(_teamA, _teamB),
                     _ => throw new ArgumentOutOfRangeException(nameof(x))
                 };
-            });
-            var enumerable = teamBBullets.SelectMany(x =>
+            }).ToArray();
+            var teamBiShow = teamBBullets.SelectMany(x =>
             {
                 return x switch
                 {
@@ -115,38 +115,16 @@ namespace AutoBattle
                     ISelfBullet selfBullet => selfBullet.HelpTeam(_teamB, _teamA),
                     _ => throw new ArgumentOutOfRangeException(nameof(x))
                 };
-            });
-            var effects = showEffects.Union(enumerable);
+            }).ToArray();
 
-            //CheckDead
-            for (var index = 0; index < aliveTeamA.Count; index++)
-            {
-                var battleCharacter = aliveTeamA[index];
-                if (battleCharacter.CharacterBattleAttribute.NowHp > 0)
-                {
-                    Console.Out.WriteLine($"AHp{index}:{battleCharacter.CharacterBattleAttribute.NowHp}");
-                    continue;
-                }
+            //CheckKillNum
+            var count = teamAiShow.OfType<DeadShow>().Select(x => _teamB.Contains(x.Who)).Count();
+            var count2 = teamBiShow.OfType<DeadShow>().Select(x => _teamA.Contains(x.Who)).Count();
+            BattleGlobals.TeamADeadTime += count2;
+            BattleGlobals.TeamBDeadTime += count;
 
-                battleCharacter.DoDead();
+            var effects = teamAiShow.Union(teamBiShow);
 
-
-                BattleGlobals.TeamADeadTime++;
-            }
-
-
-            for (var index2 = 0; index2 < aliveTeamB.Count; index2++)
-            {
-                var battleCharacter = aliveTeamB[index2];
-                if (battleCharacter.CharacterBattleAttribute.NowHp > 0)
-                {
-                    Console.Out.WriteLine($"BHp{index2}:{battleCharacter.CharacterBattleAttribute.NowHp}");
-                    continue;
-                }
-
-                battleCharacter.DoDead();
-                BattleGlobals.TeamBDeadTime++;
-            }
 
             return effects.ToArray();
         }

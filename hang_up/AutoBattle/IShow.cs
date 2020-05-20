@@ -49,4 +49,14 @@ namespace AutoBattle
             Who = who;
         }
     }
+
+    public class DeadShow : IShow
+    {
+        public BattleCharacter Who { get; }
+
+        public DeadShow(BattleCharacter who)
+        {
+            Who = who;
+        }
+    }
 }

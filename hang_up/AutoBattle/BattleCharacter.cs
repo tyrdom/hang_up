@@ -264,6 +264,20 @@ namespace AutoBattle
                 }
 
                 CharacterBattleAttribute.NowHp -= harm;
+                var takeHarm = new TakeHarmShow(harm, this);
+                var nowHpMulti = CharacterBattleAttribute.GetNowHpMulti();
+
+
+                if (CharacterBattleAttribute.NowHp <= 0)
+                {
+                    if (!PassiveSkills.OfType<INoDead>().Aggregate(false, (b1, dead) => b1 || dead.AvoidDeadOnce()))
+                    {
+                        DoKill();
+                        var deadShow = new DeadShow(this);
+                        return new IShow[] {takeHarm, deadShow};
+                    }
+                }
+
                 var sum = PassiveSkills.OfType<IHealWhenBeHit>().Select(x => x.GetHeal(this)).Sum();
                 var beHeal = BeHeal(sum);
 
@@ -273,9 +287,13 @@ namespace AutoBattle
 
                 var passiveAddBuffsHits = harmBullet.FromWho.PassiveSkills.OfType<IPassiveAddBuffsHit>().ToArray();
 
+                var dangerBuff = PassiveSkills.OfType<IAddBuffWhenDanger>()
+                        .SelectMany(x => x.GetBattleBuffs(nowHpMulti))
+                    ;
                 var buffs = passiveAddBuffsHits.SelectMany(x => x.GetBuffsToAttacker());
                 var battleBuff = passiveAddBuffsHits.SelectMany(x => x.GetBuffsToDefence());
 
+                var addBuff3 = AddBuff(dangerBuff.ToArray(), this);
                 var buff1 = AddBuff(buffs.ToArray(), harmBullet.FromWho);
                 var addBuff2 = AddBuff(battleBuff.ToArray(), this);
 
@@ -287,7 +305,7 @@ namespace AutoBattle
                 var addBuff1 = AddBuff(battleBuffsToDef1, this);
                 var shows1 = AddBuff(battleBuffsToAtk1, harmBullet.FromWho);
 
-                var takeHarm = new TakeHarmShow(harm, this);
+
                 return addBuff1.Concat(shows1).Concat(buff1).Concat(addBuff2).Append(takeHarm).Append(beHeal)
                     .Append(heal);
             }
@@ -334,7 +352,7 @@ namespace AutoBattle
             return new HealShow(heal, this);
         }
 
-        public void DoDead()
+        public void DoKill()
         {
             var aggregate = PassiveSkills.OfType<IReborn>().Select(x => x.RebornAndOk())
                 .Aggregate(false, (x, y) => x || y);
