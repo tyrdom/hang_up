@@ -84,14 +84,15 @@ namespace AutoBattle
             var minB = aliveTeamB.Select(character => character.GetEventTime()).Min();
             var i = Math.Min(min, minB);
 
-            var teamABullets = aliveTeamA.SelectMany(x => x.TakeTime(i)).ToArray();
+            var teamABullets = aliveTeamA.SelectMany(x => x.TakeTime(i).Item1);
             // foreach (var teamABullet in teamABullets)
             // {
             //     var s = teamABullet.GetType().ToString();
             //     Console.Out.WriteLine($"bA:{s}");
             // }
-
-            var teamBBullets = aliveTeamB.SelectMany(x => x.TakeTime(i)).ToArray();
+            var teamAExShow = aliveTeamA.SelectMany(x => x.TakeTime(i).Item2);
+            var teamBBullets = aliveTeamB.SelectMany(x => x.TakeTime(i).Item1);
+            var teamBExShow = aliveTeamB.SelectMany(x => x.TakeTime(i).Item2);
             // foreach (var teamBBullet in teamBBullets)
             // {
             //     var s = teamBBullet.GetType().ToString();
@@ -106,7 +107,7 @@ namespace AutoBattle
                     ISelfBullet selfBullet => selfBullet.HelpTeam(_teamA, _teamB),
                     _ => throw new ArgumentOutOfRangeException(nameof(x))
                 };
-            }).ToArray();
+            }).Concat(teamAExShow).ToArray();
             var teamBiShow = teamBBullets.SelectMany(x =>
             {
                 return x switch
@@ -115,7 +116,7 @@ namespace AutoBattle
                     ISelfBullet selfBullet => selfBullet.HelpTeam(_teamB, _teamA),
                     _ => throw new ArgumentOutOfRangeException(nameof(x))
                 };
-            }).ToArray();
+            }).Concat(teamBExShow).ToArray();
 
             //CheckKillNum
             var count = teamAiShow.OfType<DeadShow>().Select(x => _teamB.Contains(x.Who)).Count();

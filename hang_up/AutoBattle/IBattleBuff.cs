@@ -4,11 +4,18 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace AutoBattle
 {
+    public interface IEventBuff
+    {
+        int GetEventTime();
+        IEnumerable<IShow> Active(BattleCharacter battleCharacter);
+    }
+
     public interface IBattleBuff : ITimeAble
     {
         public int MaxStack { get; }
         public int Stack { get; set; }
         new int RestTimeMs { get; set; }
+
 
         public void AddStack(int i, int j)
         {
@@ -17,6 +24,11 @@ namespace AutoBattle
         }
     }
 
+    public interface IRefreshBuff : IEventBuff
+    {
+        int OriginTimeMs { get; }
+        int RefreshStack { set; get; }
+    }
 
     public interface IHasteBuff : IBattleBuff
     {
@@ -53,6 +65,11 @@ namespace AutoBattle
         float GetDefence();
     }
 
+    public interface IDelayDamage : IBattleBuff
+    {
+        int GetDamage();
+    }
+
     public interface IBindToCast : IBattleBuff
     {
         BattleCharacter ToWho { set; }
@@ -71,7 +88,40 @@ namespace AutoBattle
         int GetCritical(BattleCharacter battleCharacter);
     }
 
-    
+
+    public class DamageOverTime : IDelayDamage, IRefreshBuff
+    {
+        public DamageOverTime(int originTimeMs, int maxStack)
+        {
+            OriginTimeMs = originTimeMs;
+            MaxStack = maxStack;
+        }
+
+        public int MaxStack { get; }
+        public int Stack { get; set; }
+        public int RestTimeMs { get; set; }
+
+
+        public int GetDamage()
+        {
+            throw new NotImplementedException();
+        }
+
+        public int OriginTimeMs { get; }
+        public int RefreshStack { get; set; }
+
+        public int GetEventTime()
+        {
+            return RestTimeMs;
+        }
+
+        public IEnumerable<IShow> Active(BattleCharacter battleCharacter)
+        {
+           
+            throw new NotImplementedException();
+        }
+    }
+
     public class AddMissToOpponent : IBuffAddOpponentMiss
     {
         public int MaxStack { get; }
@@ -101,6 +151,7 @@ namespace AutoBattle
         public int Stack { get; set; }
         public int RestTimeMs { get; set; }
 
+
         public float GetDefence()
         {
             return Defence * Stack;
@@ -120,6 +171,7 @@ namespace AutoBattle
         public int MaxStack { get; }
         public int Stack { get; set; }
         public int RestTimeMs { get; set; }
+
 
         public (int, int) GetHasteValueAndLastMs()
         {
@@ -151,6 +203,7 @@ namespace AutoBattle
         public int MaxStack { get; }
         public int Stack { get; set; }
         public int RestTimeMs { get; set; }
+        public int RefreshStack { get; set; }
         public int Damage { get; }
         public float DamageMulti { get; }
 
@@ -163,6 +216,7 @@ namespace AutoBattle
     public class AddDamageAndHaste : IHasteBuff, IBuffAddDamageSelf, IBattleBuff
     {
         public int RestTimeMs { get; set; }
+        public int RefreshStack { get; set; }
         public int MaxStack { get; }
         public int Stack { get; set; }
         public int Damage { get; }
@@ -197,6 +251,7 @@ namespace AutoBattle
         public int MaxStack { get; }
         public int Stack { get; set; }
         public int RestTimeMs { get; set; }
+        public int RefreshStack { get; set; }
         public BattleCharacter? ToWho { get; set; }
 
 
@@ -236,6 +291,7 @@ namespace AutoBattle
         }
 
         public int RestTimeMs { get; set; }
+        public int RefreshStack { get; set; }
         public int MaxStack { get; }
         public int Stack { get; set; }
     }

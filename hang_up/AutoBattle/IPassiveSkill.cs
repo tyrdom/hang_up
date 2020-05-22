@@ -259,7 +259,7 @@ namespace AutoBattle
         BattleCharacter[] GenCopies(BattleCharacter battleCharacter);
     }
 
-    public class HasteByLossHp : IHastePassiveEffect
+    public class HasteByLossHp : IHastePassiveEffect,IPassiveSkill
     {
         private readonly float _lossMulti;
 

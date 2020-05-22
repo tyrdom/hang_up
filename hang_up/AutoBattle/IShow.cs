@@ -8,9 +8,9 @@ namespace AutoBattle
     public class TakeHarmShow : IShow
     {
         public BattleCharacter Who { get; }
-        public int Harm;
+        public long Harm;
 
-        public TakeHarmShow(int harm, BattleCharacter who)
+        public TakeHarmShow(long harm, BattleCharacter who)
         {
             Harm = harm;
             Who = who;

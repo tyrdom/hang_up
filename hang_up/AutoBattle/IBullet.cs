@@ -88,6 +88,10 @@ namespace AutoBattle
         long Harm { get; }
     }
 
+    interface INoMissBullet
+    {
+        
+    }
     internal interface IExecuteBullet
     {
         public float DamageAddMultiBlackHpPercent { get; }
@@ -143,7 +147,8 @@ namespace AutoBattle
     }
 
 
-    public class SplashAllBullet : IOpponentBullet, IHarmBullet, ISplashAllBullet
+
+public class SplashAllBullet : IOpponentBullet, IHarmBullet, ISplashAllBullet
     {
         public IEnumerable<IShow> HitTeam(List<BattleCharacter> targetTeam,
             List<BattleCharacter> anotherTeam)

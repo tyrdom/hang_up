@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Xml.Serialization;
 
 namespace AutoBattle
 {
@@ -85,10 +82,12 @@ namespace AutoBattle
                 }
             }
 
-            return buffLast + (int) MathF.Ceiling(rest.Min() * 100f / (100 + haste));
+            var eventTime = buffLast + (int) MathF.Ceiling(rest.Min() * 100f / (100 + haste));
+            var min = BattleBuffs.OfType<IEventBuff>().Select(x => x.GetEventTime()).Append(eventTime).Min();
+            return min;
         }
 
-        public IEnumerable<IBullet> TakeTime(int ms)
+        public (IEnumerable<IBullet>, IEnumerable<IShow>) TakeTime(int ms)
         {
             var restToGo = ms;
             var costMs = 0;
@@ -107,6 +106,8 @@ namespace AutoBattle
             costMs += (int) MathF.Ceiling(restToGo * ((_tempBaseHaste + 100) / 100f));
             // Console.Out.WriteLine($"costMs{costMs}");
             BattleBuffs.ForEach(x => x.TakeTime(costMs));
+            var selectMany = BattleBuffs.OfType<IEventBuff>().SelectMany(x => x.Active(this));
+
             BattleBuffs = BattleBuffs.Where(x => x.RestTimeMs > 0).ToList();
 
             foreach (var activeSkill in ActiveSkills)
@@ -128,7 +129,8 @@ namespace AutoBattle
                 skill.Reset();
                 return true;
             });
-            return enumerable.SelectMany(skill => skill.GenIBullets(this)).ToArray();
+            var takeTime = enumerable.SelectMany(skill => skill.GenIBullets(this));
+            return (takeTime, selectMany);
         }
 
         private static float ExtraMissFromOpponent(BattleCharacter opponent)
@@ -209,6 +211,45 @@ namespace AutoBattle
             return CommonSettings.FilterMissPerMilValue(missPreMil + sum + i + extraMissFromOpponent);
         }
 
+        public IEnumerable<IShow> TakeUnNameHarm(int harm)
+        {
+            throw new NotImplementedException();
+        }
+
+        public long CalculateHarms(long rawHarm)
+        {
+            var harm = (int) (rawHarm * (1 - GetDefence()));
+            var select1 = PassiveSkills.OfType<INotAboveHarm>().Select(x => x.MaxHarm(this)).ToArray();
+
+            var ints = BattleBuffs.OfType<INotAboveHarm>().Select(x => x.MaxHarm(this)).ToArray();
+
+            if (select1.Any())
+            {
+                harm = Math.Min(select1.Min(), harm);
+            }
+
+            if (ints.Any())
+            {
+                harm = Math.Min(ints.Min(), harm);
+            }
+
+
+            var intArray1 = PassiveSkills.OfType<IIgnoreHarm>().Select(x => x.IgnoreHarmValue(this)).ToArray();
+            var intArray2 = BattleBuffs.OfType<IIgnoreHarm>().Select(x => x.IgnoreHarmValue(this)).ToArray();
+
+            if (intArray1.Any() && intArray1.Max() >= harm)
+            {
+                harm = 0;
+            }
+
+            if (intArray2.Any() && intArray2.Max() >= harm)
+            {
+                harm = 0;
+            }
+
+            return harm;
+        }
+
         public IEnumerable<IShow> TakeHarm(IHarmBullet harmBullet, out bool isHit)
         {
             var next = BattleGround.Random.Next(10000) / 10000f;
@@ -218,11 +259,7 @@ namespace AutoBattle
             if (next >= GetMiss(harmBullet.FromWho))
             {
                 isHit = true;
-                if (next2 < harmBullet.FromWho.GetCritical() +
-                    harmBullet.FromWho.OpponentExtraCritical(this))
-                {
-                    rawHarm *= 2;
-                }
+
 
                 var damageToAnotherOnes = BattleBuffs.OfType<IDamageToAnotherOne>().ToArray();
                 var b = damageToAnotherOnes.Select(x => x.ToWho.KeyStatus == KeyStatus.Alive)
@@ -234,39 +271,21 @@ namespace AutoBattle
                     return damageAnotherOne;
                 }
 
-                var harm = (int) (rawHarm * (1 - GetDefence()));
-                var select1 = PassiveSkills.OfType<INotAboveHarm>().Select(x => x.MaxHarm(this)).ToArray();
-
-                var ints = BattleBuffs.OfType<INotAboveHarm>().Select(x => x.MaxHarm(this)).ToArray();
-
-                if (select1.Any())
+                if (next2 < harmBullet.FromWho.GetCritical() +
+                    harmBullet.FromWho.OpponentExtraCritical(this))
                 {
-                    harm = Math.Min(select1.Min(), harm);
+                    rawHarm *= 2;
                 }
 
-                if (ints.Any())
-                {
-                    harm = Math.Min(ints.Min(), harm);
-                }
+                var harm = CalculateHarms(rawHarm);
 
-
-                var intArray1 = PassiveSkills.OfType<IIgnoreHarm>().Select(x => x.IgnoreHarmValue(this)).ToArray();
-                var intArray2 = BattleBuffs.OfType<IIgnoreHarm>().Select(x => x.IgnoreHarmValue(this)).ToArray();
-
-                if (intArray1.Any() && intArray1.Max() >= harm)
-                {
-                    harm = 0;
-                }
-
-                if (intArray2.Any() && intArray2.Max() >= harm)
-                {
-                    harm = 0;
-                }
 
                 CharacterBattleAttribute.NowHp -= harm;
                 var takeHarm = new TakeHarmShow(harm, this);
                 var nowHpMulti = CharacterBattleAttribute.GetNowHpMulti();
-
+                var dangerBuff = PassiveSkills.OfType<IAddBuffWhenDanger>()
+                    .SelectMany(x => x.GetBattleBuffs(nowHpMulti));
+                var dangerBuffShow = AddBuff(dangerBuff.ToArray(), this);
 
                 if (CharacterBattleAttribute.NowHp <= 0)
                 {
@@ -276,8 +295,11 @@ namespace AutoBattle
                         var deadShow = new DeadShow(this);
                         return new IShow[] {takeHarm, deadShow};
                     }
+
+                    CharacterBattleAttribute.NowHp = 1L;
                 }
 
+                // hit heal
                 var sum = PassiveSkills.OfType<IHealWhenBeHit>().Select(x => x.GetHeal(this)).Sum();
                 var beHeal = BeHeal(sum);
 
@@ -285,32 +307,32 @@ namespace AutoBattle
                     .Sum();
                 var heal = harmBullet.FromWho.BeHeal(i);
 
+                //hit buff to attacker
                 var passiveAddBuffsHits = harmBullet.FromWho.PassiveSkills.OfType<IPassiveAddBuffsHit>().ToArray();
 
-                var dangerBuff = PassiveSkills.OfType<IAddBuffWhenDanger>()
-                        .SelectMany(x => x.GetBattleBuffs(nowHpMulti))
-                    ;
+
                 var buffs = passiveAddBuffsHits.SelectMany(x => x.GetBuffsToAttacker());
                 var battleBuff = passiveAddBuffsHits.SelectMany(x => x.GetBuffsToDefence());
 
-                var addBuff3 = AddBuff(dangerBuff.ToArray(), this);
-                var buff1 = AddBuff(buffs.ToArray(), harmBullet.FromWho);
-                var addBuff2 = AddBuff(battleBuff.ToArray(), this);
-
-
+                //hit buff to defence r
                 var passiveSkills1 =
                     PassiveSkills.OfType<IPassiveAddBuffBeHit>().ToArray();
                 var battleBuffsToAtk1 = passiveSkills1.SelectMany(x => x.GetBuffsToAttacker()).ToArray();
                 var battleBuffsToDef1 = passiveSkills1.SelectMany(x => x.GetBuffsToDefence()).ToArray();
                 var addBuff1 = AddBuff(battleBuffsToDef1, this);
+
+                var addBuff4 = AddBuff(buffs.ToArray(), harmBullet.FromWho);
+                var addBuff2 = AddBuff(battleBuff.ToArray(), this);
                 var shows1 = AddBuff(battleBuffsToAtk1, harmBullet.FromWho);
 
 
-                return addBuff1.Concat(shows1).Concat(buff1).Concat(addBuff2).Append(takeHarm).Append(beHeal)
+                return addBuff1.Concat(shows1).Concat(addBuff4).Concat(dangerBuffShow).Concat(addBuff2).Append(takeHarm)
+                    .Append(beHeal)
                     .Append(heal);
             }
 
             isHit = false;
+
 
             //attack passive buff
             var passiveAddBuffWhenMisses = harmBullet.FromWho.PassiveSkills.OfType<IPassiveAddBuffWhenMiss>().ToArray();
@@ -327,6 +349,8 @@ namespace AutoBattle
 
             var addBuff = AddBuff(battleBuffsToDef, this);
             var shows = AddBuff(battleBuffsToAtk, harmBullet.FromWho);
+
+
             var enumerable = addBuff.Concat(shows).Concat(buff).Concat(enumerable1).Append(new MissShow(this));
             return enumerable;
         }
@@ -343,7 +367,7 @@ namespace AutoBattle
             }
 
             var takeHeal = BeHeal(rawHeal);
-            return new IShow[] {takeHeal};
+            return new[] {takeHeal};
         }
 
         private IShow BeHeal(int rawHeal)
