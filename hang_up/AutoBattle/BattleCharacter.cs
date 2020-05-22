@@ -179,7 +179,6 @@ namespace AutoBattle
             var iItem1 = damage + item1 + i;
             var iItem2 = damagePerMil + item2 + f;
             var getDamage = (int) MathF.Ceiling(iItem1 * (1 + iItem2));
-
             return getDamage;
         }
 
@@ -211,9 +210,29 @@ namespace AutoBattle
             return CommonSettings.FilterMissPerMilValue(missPreMil + sum + i + extraMissFromOpponent);
         }
 
-        public IEnumerable<IShow> TakeUnNameHarm(int harm)
+        public IEnumerable<IShow> TakeUnnamedHarm(long harm)
         {
-            throw new NotImplementedException();
+            CharacterBattleAttribute.NowHp -= harm;
+            var takeHarm = new TakeHarmShow(harm, this);
+
+            if (CharacterBattleAttribute.NowHp <= 0)
+            {
+                if (!PassiveSkills.OfType<INoDead>().Aggregate(false, (b1, dead) => b1 || dead.AvoidDeadOnce()))
+                {
+                    DoKill();
+                    var deadShow = new DeadShow(this);
+                    return new IShow[] {takeHarm, deadShow};
+                }
+
+                CharacterBattleAttribute.NowHp = 1L;
+            }
+
+            var nowHpMulti = CharacterBattleAttribute.GetNowHpMulti();
+            var dangerBuff = PassiveSkills.OfType<IAddBuffWhenDanger>()
+                .SelectMany(x => x.GetBattleBuffs(nowHpMulti));
+
+            var dangerBuffShow = AddBuff(dangerBuff.ToArray(), this);
+            return dangerBuffShow.Append(takeHarm);
         }
 
         public long CalculateHarms(long rawHarm)
@@ -259,8 +278,7 @@ namespace AutoBattle
             if (next >= GetMiss(harmBullet.FromWho))
             {
                 isHit = true;
-
-
+                
                 var damageToAnotherOnes = BattleBuffs.OfType<IDamageToAnotherOne>().ToArray();
                 var b = damageToAnotherOnes.Select(x => x.ToWho.KeyStatus == KeyStatus.Alive)
                     .Aggregate(false, (x, y) => x || y);
@@ -271,34 +289,18 @@ namespace AutoBattle
                     return damageAnotherOne;
                 }
 
-                if (next2 < harmBullet.FromWho.GetCritical() +
-                    harmBullet.FromWho.OpponentExtraCritical(this))
+                if (next2 < harmBullet.FromWho.GetCritical()
+                    + harmBullet.FromWho.OpponentExtraCritical(this))
                 {
                     rawHarm *= 2;
                 }
 
                 var harm = CalculateHarms(rawHarm);
-
-
-                CharacterBattleAttribute.NowHp -= harm;
-                var takeHarm = new TakeHarmShow(harm, this);
+                var takeUnNameHarm = TakeUnnamedHarm(harm);
                 var nowHpMulti = CharacterBattleAttribute.GetNowHpMulti();
                 var dangerBuff = PassiveSkills.OfType<IAddBuffWhenDanger>()
                     .SelectMany(x => x.GetBattleBuffs(nowHpMulti));
                 var dangerBuffShow = AddBuff(dangerBuff.ToArray(), this);
-
-                if (CharacterBattleAttribute.NowHp <= 0)
-                {
-                    if (!PassiveSkills.OfType<INoDead>().Aggregate(false, (b1, dead) => b1 || dead.AvoidDeadOnce()))
-                    {
-                        DoKill();
-                        var deadShow = new DeadShow(this);
-                        return new IShow[] {takeHarm, deadShow};
-                    }
-
-                    CharacterBattleAttribute.NowHp = 1L;
-                }
-
                 // hit heal
                 var sum = PassiveSkills.OfType<IHealWhenBeHit>().Select(x => x.GetHeal(this)).Sum();
                 var beHeal = BeHeal(sum);
@@ -307,33 +309,31 @@ namespace AutoBattle
                     .Sum();
                 var heal = harmBullet.FromWho.BeHeal(i);
 
-                //hit buff to attacker
+                //hit buff from attacker
                 var passiveAddBuffsHits = harmBullet.FromWho.PassiveSkills.OfType<IPassiveAddBuffsHit>().ToArray();
 
 
                 var buffs = passiveAddBuffsHits.SelectMany(x => x.GetBuffsToAttacker());
                 var battleBuff = passiveAddBuffsHits.SelectMany(x => x.GetBuffsToDefence());
 
-                //hit buff to defence r
+                //hit buff from defence r
                 var passiveSkills1 =
                     PassiveSkills.OfType<IPassiveAddBuffBeHit>().ToArray();
                 var battleBuffsToAtk1 = passiveSkills1.SelectMany(x => x.GetBuffsToAttacker()).ToArray();
                 var battleBuffsToDef1 = passiveSkills1.SelectMany(x => x.GetBuffsToDefence()).ToArray();
-                var addBuff1 = AddBuff(battleBuffsToDef1, this);
 
+                var addBuff1 = AddBuff(battleBuffsToDef1, this);
                 var addBuff4 = AddBuff(buffs.ToArray(), harmBullet.FromWho);
                 var addBuff2 = AddBuff(battleBuff.ToArray(), this);
                 var shows1 = AddBuff(battleBuffsToAtk1, harmBullet.FromWho);
 
 
-                return addBuff1.Concat(shows1).Concat(addBuff4).Concat(dangerBuffShow).Concat(addBuff2).Append(takeHarm)
+                return addBuff1.Concat(shows1).Concat(addBuff4).Concat(dangerBuffShow).Concat(addBuff2)
+                    .Concat(takeUnNameHarm)
                     .Append(beHeal)
                     .Append(heal);
             }
-
             isHit = false;
-
-
             //attack passive buff
             var passiveAddBuffWhenMisses = harmBullet.FromWho.PassiveSkills.OfType<IPassiveAddBuffWhenMiss>().ToArray();
             var battleBuffs = passiveAddBuffWhenMisses.SelectMany(x => x.GetBuffsToAttacker());
