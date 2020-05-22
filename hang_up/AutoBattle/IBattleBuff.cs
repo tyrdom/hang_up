@@ -10,6 +10,7 @@ namespace AutoBattle
         IEnumerable<IShow> Active(BattleCharacter battleCharacter);
     }
 
+
     public interface IBattleBuff : ITimeAble
     {
         public int MaxStack { get; }
@@ -24,10 +25,16 @@ namespace AutoBattle
         }
     }
 
+    public interface IShield : IBattleBuff
+    {
+        long Absolve { get; set; }
+    }
+
     public interface IRefreshBuff : IEventBuff
     {
         int OriginTimeMs { get; }
         int RefreshStack { set; get; }
+        new IEnumerable<IShow> Active(BattleCharacter battleCharacter);
     }
 
     public interface IHasteBuff : IBattleBuff
@@ -67,7 +74,7 @@ namespace AutoBattle
 
     public interface IDelayDamage : IBattleBuff
     {
-        int GetDamage();
+        long GetDamage();
     }
 
     public interface IBindToCast : IBattleBuff
@@ -91,20 +98,25 @@ namespace AutoBattle
 
     public class DamageOverTime : IDelayDamage, IRefreshBuff
     {
-        public DamageOverTime(int originTimeMs, int maxStack)
+        public DamageOverTime(int maxStack, int stack, int restTimeMs, long damage, int originTimeMs, int refreshStack)
         {
-            OriginTimeMs = originTimeMs;
             MaxStack = maxStack;
+            Stack = stack;
+            RestTimeMs = restTimeMs;
+            Damage = damage;
+            OriginTimeMs = originTimeMs;
+            RefreshStack = refreshStack;
         }
 
         public int MaxStack { get; }
         public int Stack { get; set; }
         public int RestTimeMs { get; set; }
 
+        private long Damage { get; }
 
-        public int GetDamage()
+        public long GetDamage()
         {
-            throw new NotImplementedException();
+            return Damage;
         }
 
         public int OriginTimeMs { get; }
@@ -117,8 +129,13 @@ namespace AutoBattle
 
         public IEnumerable<IShow> Active(BattleCharacter battleCharacter)
         {
-           
-            throw new NotImplementedException();
+            RefreshStack -= 1;
+            if (RefreshStack >= 0)
+            {
+                RestTimeMs = OriginTimeMs;
+            }
+
+            return battleCharacter.TakeUnnamedHarm(GetDamage());
         }
     }
 
@@ -216,7 +233,6 @@ namespace AutoBattle
     public class AddDamageAndHaste : IHasteBuff, IBuffAddDamageSelf, IBattleBuff
     {
         public int RestTimeMs { get; set; }
-        public int RefreshStack { get; set; }
         public int MaxStack { get; }
         public int Stack { get; set; }
         public int Damage { get; }
