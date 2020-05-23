@@ -487,7 +487,7 @@ namespace AutoBattle
 
     public class AddDefenceByLossHp : IPassiveSkill, IPassiveAddDefenceAboutSelf
     {
-        public float DefenceMulti;
+        public readonly float DefenceMulti;
 
         public AddDefenceByLossHp(float defenceMulti)
         {

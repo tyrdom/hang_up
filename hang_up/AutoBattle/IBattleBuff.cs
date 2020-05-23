@@ -18,16 +18,22 @@ namespace AutoBattle
         new int RestTimeMs { get; set; }
 
 
-        public void AddStack(int i, int j)
+        public void AddStack(IBattleBuff battleBuff)
         {
-            Stack = Math.Min(MaxStack, Stack + i);
-            RestTimeMs = j;
+            Stack = Math.Min(MaxStack, Stack + 1);
+            RestTimeMs = battleBuff.RestTimeMs;
         }
     }
+
 
     public interface IShield : IBattleBuff
     {
         long Absolve { get; set; }
+
+        public void AddAbsolve(IShield battleBuff)
+        {
+            Absolve += battleBuff.Absolve;
+        }
     }
 
     public interface IRefreshBuff : IEventBuff
@@ -96,6 +102,22 @@ namespace AutoBattle
     }
 
 
+    public class StandardShield : IShield
+    {
+        public StandardShield(int maxStack, int stack, int restTimeMs, long absolve)
+        {
+            MaxStack = maxStack;
+            Stack = stack;
+            RestTimeMs = restTimeMs;
+            Absolve = absolve;
+        }
+
+        public int MaxStack { get; }
+        public int Stack { get; set; }
+        public int RestTimeMs { get; set; }
+        public long Absolve { get; set; }
+    }
+
     public class DamageOverTime : IDelayDamage, IRefreshBuff
     {
         public DamageOverTime(int maxStack, int stack, int restTimeMs, long damage, int originTimeMs, int refreshStack)
@@ -139,7 +161,7 @@ namespace AutoBattle
         }
     }
 
-    public class AddMissToOpponent : IBuffAddOpponentMiss
+    internal class AddMissToOpponent : IBuffAddOpponentMiss
     {
         public int MaxStack { get; }
         public int Stack { get; set; }
@@ -220,7 +242,6 @@ namespace AutoBattle
         public int MaxStack { get; }
         public int Stack { get; set; }
         public int RestTimeMs { get; set; }
-        public int RefreshStack { get; set; }
         public int Damage { get; }
         public float DamageMulti { get; }
 
@@ -267,7 +288,6 @@ namespace AutoBattle
         public int MaxStack { get; }
         public int Stack { get; set; }
         public int RestTimeMs { get; set; }
-        public int RefreshStack { get; set; }
         public BattleCharacter? ToWho { get; set; }
 
 
@@ -307,7 +327,6 @@ namespace AutoBattle
         }
 
         public int RestTimeMs { get; set; }
-        public int RefreshStack { get; set; }
         public int MaxStack { get; }
         public int Stack { get; set; }
     }

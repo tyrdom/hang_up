@@ -6,11 +6,12 @@ namespace AutoBattle
 {
     public static class AutoBattleTools
     {
-        public static (BattleCharacter?, BattleCharacter[]) GetFirstAndOtherTargetByOpponentType(List<BattleCharacter> team,
+        public static (BattleCharacter?, BattleCharacter[]) GetFirstAndOtherTargetByOpponentType(
+            List<BattleCharacter> team,
             OpponentTargetType opponentTargetType)
         {
             var characters = team.Where(x => x.KeyStatus == KeyStatus.Alive).ToList();
-          
+
             if (!characters.Any()) return (null, new BattleCharacter[] { });
             BattleCharacter battleCharacter = opponentTargetType switch
             {
@@ -25,7 +26,8 @@ namespace AutoBattle
 
         public static BattleCharacter[] GetTargetsBySelfTargetType(List<BattleCharacter> team,
             SelfTargetType selfTargetType, BattleCharacter fromWho)
-        {var characters = team.Where(x => x.KeyStatus == KeyStatus.Alive).ToList();
+        {
+            var characters = team.Where(x => x.KeyStatus == KeyStatus.Alive).ToList();
 
             if (!characters.Any()) return new BattleCharacter[] { };
 
@@ -51,7 +53,12 @@ namespace AutoBattle
                 {
                     if (buff.GetType() == type)
                     {
-                        buff.AddStack(1, battleBuff.RestTimeMs);
+                        buff.AddStack(battleBuff);
+
+                        if (buff is IShield shield && battleBuff is IShield shield2)
+                        {
+                            shield.AddAbsolve(shield2);
+                        }
                     }
                     else
                     {

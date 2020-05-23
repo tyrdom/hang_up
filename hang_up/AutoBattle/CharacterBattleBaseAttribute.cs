@@ -27,6 +27,10 @@ namespace AutoBattle
             Critical = critical;
         }
 
+       public CharacterBattleBaseAttribute Clone()
+        {
+            return (CharacterBattleBaseAttribute) MemberwiseClone();
+        }
         public float GetNowHpMulti()
         {
             return (float) NowHp / MaxHp;

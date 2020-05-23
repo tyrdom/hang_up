@@ -44,7 +44,7 @@ namespace AutoBattle
         int SplashHarm { get; }
     }
 
-    interface IBulletWithBuffToSelf
+    public interface IBulletWithBuffToSelf
     {
         SelfTargetType SelfTargetType { get; }
         public IBattleBuff[] BattleBuffs { get; }
@@ -66,6 +66,10 @@ namespace AutoBattle
         SelfTargetType TargetType { get; }
     }
 
+    public interface IPushBullet
+    {
+        int PushBlock { get; }
+    }
 
     public enum SelfTargetType
     {
@@ -90,11 +94,45 @@ namespace AutoBattle
 
     interface INoMissBullet
     {
-        
     }
+
     internal interface IExecuteBullet
     {
         public float DamageAddMultiBlackHpPercent { get; }
+    }
+
+    public class PushBullet : IOpponentBullet, IPushBullet, IHarmBullet
+    {
+        public PushBullet(OpponentTargetType type, int pushBlock, BattleCharacter fromWho, long harm)
+        {
+            Type = type;
+            PushBlock = pushBlock;
+            FromWho = fromWho;
+            Harm = harm;
+        }
+
+        public IEnumerable<IShow> HitTeam(List<BattleCharacter> targetTeam, List<BattleCharacter> anotherTeam)
+        {
+            var (battleCharacter, _) =
+                AutoBattleTools.GetFirstAndOtherTargetByOpponentType(targetTeam, Type);
+            if (battleCharacter == null)
+            {
+                return new IShow[] { };
+            }
+
+            var takeHarm = battleCharacter.TakeHarm(this, out var isHit);
+            if (!isHit) return takeHarm;
+            var indexOf = targetTeam.IndexOf(battleCharacter);
+            var pushBlock = Math.Min(targetTeam.Count - 1, indexOf + PushBlock);
+            targetTeam.Remove(battleCharacter);
+            targetTeam.Insert(pushBlock, battleCharacter);
+            return takeHarm;
+        }
+
+        public OpponentTargetType Type { get; }
+        public int PushBlock { get; }
+        public BattleCharacter FromWho { get; }
+        public long Harm { get; }
     }
 
     public class SummonUnitBullet : ISummonUnitBullet, IHarmBullet, IOpponentBullet
@@ -119,7 +157,6 @@ namespace AutoBattle
         public IEnumerable<IShow> HitTeam(List<BattleCharacter> targetTeam,
             List<BattleCharacter> anotherTeam)
         {
-            var battleCharacters = targetTeam.ToArray();
             var (battleCharacter, _) =
                 AutoBattleTools.GetFirstAndOtherTargetByOpponentType(targetTeam, Type);
             if (battleCharacter == null)
@@ -128,8 +165,7 @@ namespace AutoBattle
             }
 
             var takeHarm = battleCharacter.TakeHarm(this, out _);
-            var characters = anotherTeam.ToHashSet();
-            var count = characters.Select(x => x.WhoSummon == SummonCharacter.WhoSummon).Count();
+            var count = anotherTeam.Select(x => x.WhoSummon == SummonCharacter.WhoSummon).Count();
             if (count >= MaxNum) return takeHarm;
             if (IsOnHead)
             {
@@ -147,8 +183,7 @@ namespace AutoBattle
     }
 
 
-
-public class SplashAllBullet : IOpponentBullet, IHarmBullet, ISplashAllBullet
+    public class SplashAllBullet : IOpponentBullet, IHarmBullet, ISplashAllBullet
     {
         public IEnumerable<IShow> HitTeam(List<BattleCharacter> targetTeam,
             List<BattleCharacter> anotherTeam)
@@ -244,6 +279,7 @@ public class SplashAllBullet : IOpponentBullet, IHarmBullet, ISplashAllBullet
         public long Harm { get; }
         public int Heal { get; }
     }
+
 
     public class AttackBulletWithBuffToOpponentWhenHitOrMiss : IOpponentBullet, IWithBuffEffectToOpponent, IHarmBullet,
         IBulletTrickBuffHitOrMiss
@@ -375,6 +411,30 @@ public class SplashAllBullet : IOpponentBullet, IHarmBullet, ISplashAllBullet
         public float DamageAddMultiBlackHpPercent { get; }
     }
 
+    public class AddBuffSelfBullet : IBulletWithBuffToSelf, ISelfBullet
+    {
+        public AddBuffSelfBullet(IBattleBuff[] battleBuffs,
+            BattleCharacter fromWho, SelfTargetType selfTargetType)
+        {
+            BattleBuffs = battleBuffs;
+            FromWho = fromWho;
+            SelfTargetType = selfTargetType;
+            TargetType = selfTargetType;
+        }
+
+        public IEnumerable<IShow> HelpTeam(List<BattleCharacter> targetTeam, List<BattleCharacter> _)
+        {
+            var targetsBySelfTargetType =
+                AutoBattleTools.GetTargetsBySelfTargetType(targetTeam, SelfTargetType, FromWho);
+            return targetsBySelfTargetType.SelectMany(x => x.TakeBuff(this)).ToArray();
+        }
+
+        public SelfTargetType TargetType { get; }
+
+        public SelfTargetType SelfTargetType { get; }
+        public IBattleBuff[] BattleBuffs { get; }
+        public BattleCharacter FromWho { get; }
+    }
 
     public class HealSelfBullet : ISelfBullet, IHealBullet
     {
