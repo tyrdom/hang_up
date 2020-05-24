@@ -125,7 +125,20 @@ namespace AutoBattle
             BattleGlobals.TeamBDeadTime += count;
 
             var effects = teamAiShow.Union(teamBiShow);
-
+            _teamA.ForEach(x =>
+            {
+                if (x.KeyStatus == KeyStatus.Dead)
+                {
+                    _teamA.Remove(x);
+                }
+            });
+            _teamB.ForEach(x =>
+            {
+                if (x.KeyStatus == KeyStatus.Dead)
+                {
+                    _teamB.Remove(x);
+                }
+            });
 
             return effects.ToArray();
         }

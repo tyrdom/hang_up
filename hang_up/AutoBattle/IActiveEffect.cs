@@ -11,6 +11,11 @@ namespace AutoBattle
         public IBattleBuff[] BattleBuffs { get; }
     }
 
+    internal interface IAddDamageByOpponentTeam
+    {
+        public float MultiByNum { get; }
+    }
+
     internal interface IExtraCriticalByOpponentHpEffect
     {
         public float BlackHpPercentMulti { get; }
@@ -108,6 +113,29 @@ namespace AutoBattle
     {
         int MaxCopy { get; }
         BattleCharacter OriginWho { get; }
+    }
+
+    public class AttackAddDamageByOpponentNum : IToOpponentEffect, IAddDamageByOpponentTeam, IHarmEffect
+    {
+        public IEnumerable<IBullet> GenBullet(BattleCharacter battleCharacter)
+        {
+            var ceiling = (int) Math.Ceiling(battleCharacter.GetDamage() * HarmMulti);
+            var addDamageByOpTeamBullet =
+                new AddDamageByOpTeamBullet(MultiByNum, OpponentTargetType, battleCharacter, ceiling);
+            return new[] {addDamageByOpTeamBullet};
+        }
+
+        public OpponentTargetType OpponentTargetType { get; }
+        public float MultiByNum { get; }
+
+        public AttackAddDamageByOpponentNum(OpponentTargetType opponentTargetType, float multiByNum, float harmMulti)
+        {
+            OpponentTargetType = opponentTargetType;
+            MultiByNum = multiByNum;
+            HarmMulti = harmMulti;
+        }
+
+        public float HarmMulti { get; }
     }
 
     public class AttackAndPush : IToOpponentEffect, IHarmEffect, IPushEffect

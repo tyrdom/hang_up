@@ -101,6 +101,31 @@ namespace AutoBattle
         public float DamageAddMultiBlackHpPercent { get; }
     }
 
+    public class AddDamageByOpTeamBullet : IOpponentBullet, IHarmBullet
+    {
+        public IEnumerable<IShow> HitTeam(List<BattleCharacter> targetTeam, List<BattleCharacter> anotherTeam)
+        {
+            var (battleCharacter, _) = AutoBattleTools.GetFirstAndOtherTargetByOpponentType(targetTeam, Type);
+
+            var multiByNum = 1 + targetTeam.Select(x => x.KeyStatus == KeyStatus.Alive).Count() * MultiByNum;
+            Harm = (long) (Harm * multiByNum);
+            return battleCharacter == null ? new IShow[] { } : battleCharacter.TakeHarm(this, out _);
+        }
+
+        public AddDamageByOpTeamBullet(float multiByNum, OpponentTargetType type, BattleCharacter fromWho, long harm)
+        {
+            MultiByNum = multiByNum;
+            Type = type;
+            FromWho = fromWho;
+            Harm = harm;
+        }
+
+        public float MultiByNum { get; }
+        public OpponentTargetType Type { get; }
+        public BattleCharacter FromWho { get; }
+        public long Harm { get; set; }
+    }
+
     public class PushBullet : IOpponentBullet, IPushBullet, IHarmBullet
     {
         public PushBullet(OpponentTargetType type, int pushBlock, BattleCharacter fromWho, long harm)
