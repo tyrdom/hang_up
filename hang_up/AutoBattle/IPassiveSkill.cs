@@ -13,6 +13,7 @@ namespace AutoBattle
         public IBattleBuff[] GetBuffsToDefence();
     }
 
+
     public interface IGetReadyActive
     {
         void GetReadyDo(BattleCharacter battleCharacter);
@@ -122,6 +123,30 @@ namespace AutoBattle
     public interface IPassiveAddDefenceAboutOpponent : IPassiveSkill
     {
         int GetDefencePreMil(BattleCharacter battleCharacter);
+    }
+
+    public class AddDamageByOpponentNum : IAddDamageByOpponentTeam, IPassiveAddDamageAboutSelf
+    {
+        public AddDamageByOpponentNum(float multiByNum)
+        {
+            MultiByNum = multiByNum;
+        }
+
+        public float MultiByNum { get; }
+
+        public (int, float) GetDamageAndMulti(BattleCharacter battleCharacter)
+        {
+            return battleCharacter.BelongTeam switch
+            {
+                BelongTeam.A => battleCharacter.InWhichBattleGround == null
+                    ? (0, 0)
+                    : (0, battleCharacter.InWhichBattleGround.BattleGlobals.TeamBLives * MultiByNum),
+                BelongTeam.B => battleCharacter.InWhichBattleGround == null
+                    ? (0, 0)
+                    : (0, battleCharacter.InWhichBattleGround.BattleGlobals.TeamALives * MultiByNum),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
     }
 
     public class NoDeadAndAddBuffWhenDanger : INoDead, IAddBuffWhenDanger, IPassiveSkill
@@ -259,7 +284,7 @@ namespace AutoBattle
         BattleCharacter[] GenCopies(BattleCharacter battleCharacter);
     }
 
-    public class HasteByLossHp : IHastePassiveEffect,IPassiveSkill
+    public class HasteByLossHp : IHastePassiveEffect, IPassiveSkill
     {
         private readonly float _lossMulti;
 

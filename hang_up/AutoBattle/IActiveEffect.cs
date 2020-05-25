@@ -16,6 +16,10 @@ namespace AutoBattle
         public float MultiByNum { get; }
     }
 
+    internal interface IFixBuffByDamage
+    {
+    }
+
     internal interface IExtraCriticalByOpponentHpEffect
     {
         public float BlackHpPercentMulti { get; }
@@ -112,8 +116,9 @@ namespace AutoBattle
     public interface ICopySelf
     {
         int MaxCopy { get; }
-        BattleCharacter OriginWho { get; }
+        BattleCharacter? OriginWho { get; set; }
     }
+
 
     public class AttackAddDamageByOpponentNum : IToOpponentEffect, IAddDamageByOpponentTeam, IHarmEffect
     {
@@ -157,6 +162,40 @@ namespace AutoBattle
         public OpponentTargetType OpponentTargetType { get; }
         public float HarmMulti { get; }
         public int PushBlock { get; }
+    }
+
+    public class AttackAndAddDotToOpponent : IWithBuffEffectToOpponent, IToOpponentEffect, IHarmEffect
+    {
+        public AttackAndAddDotToOpponent(float dotMultiByDamage, OpponentTargetType buffTargetType,
+            IBattleBuff[] battleBuffs, OpponentTargetType opponentTargetType, float harmMulti)
+        {
+            DotMultiByDamage = dotMultiByDamage;
+            BuffTargetType = buffTargetType;
+            BattleBuffs = battleBuffs;
+            OpponentTargetType = opponentTargetType;
+            HarmMulti = harmMulti;
+        }
+
+        private float DotMultiByDamage { get; }
+        public OpponentTargetType BuffTargetType { get; }
+        public IBattleBuff[] BattleBuffs { get; }
+
+        public IEnumerable<IBullet> GenBullet(BattleCharacter battleCharacter)
+        {
+            foreach (var delayDamage in BattleBuffs.OfType<IDelayDamage>())
+            {
+                delayDamage.Damage = (long) (battleCharacter.GetDamage() * DotMultiByDamage);
+            }
+
+            var ceiling = (int) Math.Ceiling(battleCharacter.GetDamage() * HarmMulti);
+            var attackBulletWithBuffToOpponentWhenHitOrMiss = new AttackBulletWithBuffToOpponentWhenHitOrMiss(
+                OpponentTargetType, OpponentTargetType,
+                BattleBuffs, battleCharacter, ceiling, true);
+            return new IBullet[] {attackBulletWithBuffToOpponentWhenHitOrMiss};
+        }
+
+        public OpponentTargetType OpponentTargetType { get; }
+        public float HarmMulti { get; }
     }
 
     public class AttackAndAddShieldByDamage : IWithBuffEffectToSelf, IToOpponentEffect, IHarmEffect, ISelfEffect
@@ -204,25 +243,27 @@ namespace AutoBattle
         public IEnumerable<IBullet> GenBullet(BattleCharacter battleCharacter)
         {
             var ceiling = (int) Math.Ceiling(battleCharacter.GetDamage() * HarmMulti);
-            battleCharacter.WhoSummon ??= OriginWho;
+            OriginWho ??= battleCharacter;
+
+            battleCharacter.WhoSummon = OriginWho;
+
             var summonUnit = battleCharacter.Clone();
             var summonUnitBullet = new SummonUnitBullet(summonUnit, MaxCopy, false, battleCharacter, ceiling,
                 OpponentTargetType);
             return new[] {summonUnitBullet};
         }
 
-        public AttackAndCopySelf(float harmMulti, OpponentTargetType opponentTargetType, int maxCopy,
-            BattleCharacter originWho)
+        public AttackAndCopySelf(float harmMulti, OpponentTargetType opponentTargetType, int maxCopy)
         {
             HarmMulti = harmMulti;
             OpponentTargetType = opponentTargetType;
             MaxCopy = maxCopy;
-            OriginWho = originWho;
+            OriginWho = null;
         }
 
         public OpponentTargetType OpponentTargetType { get; }
         public int MaxCopy { get; }
-        public BattleCharacter OriginWho { get; }
+        public BattleCharacter? OriginWho { get; set; }
     }
 
     public class AttackAndSummonUnit : IHarmEffect, IToOpponentEffect, ISummonUnitEffect
@@ -236,13 +277,13 @@ namespace AutoBattle
             var damageMulti = (int) (battleCharacter.CharacterBattleAttribute.Damage * this.DamageMulti);
             var summonUnit = new BattleCharacter(KeyStatus.Alive,
                 new CharacterBattleBaseAttribute(hpMulti, damageMulti, 0, 0, 0, 0, 0),
-                ActiveSkills, new IPassiveSkill[] { }, battleCharacter);
+                ActiveSkills, new IPassiveSkill[] { }, battleCharacter.BelongTeam, battleCharacter);
             var summonUnitBullet = new SummonUnitBullet(summonUnit, MaxNum, IsOnHead, battleCharacter, ceiling,
                 OpponentTargetType);
             return new[] {summonUnitBullet};
         }
 
-        public AttackAndSummonUnit(float harmMulti, OpponentTargetType opponentTargetType, int hpMulti, int damageMulti,
+        public AttackAndSummonUnit(float harmMulti, OpponentTargetType opponentTargetType, float hpMulti, float damageMulti,
             IActiveSkill[] activeSkills, IPassiveSkill[] passiveSkills, int maxNum, bool isOnHead)
         {
             HarmMulti = harmMulti;

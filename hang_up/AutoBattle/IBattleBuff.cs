@@ -26,7 +26,8 @@ namespace AutoBattle
     }
 
 
-    public interface IShield : IBattleBuff
+   
+    public interface IShield : IBattleBuff 
     {
         long Absolve { get; set; }
 
@@ -80,7 +81,7 @@ namespace AutoBattle
 
     public interface IDelayDamage : IBattleBuff
     {
-        long GetDamage();
+        long Damage { get; set; }
     }
 
     public interface IBindToCast : IBattleBuff
@@ -102,7 +103,7 @@ namespace AutoBattle
     }
 
 
-    public class StandardShield : IShield
+    public class StandardShield : IShield 
     {
         public StandardShield(int maxStack, int stack, int restTimeMs, long absolve)
         {
@@ -111,21 +112,22 @@ namespace AutoBattle
             RestTimeMs = restTimeMs;
             Absolve = absolve;
         }
-
+        
         public int MaxStack { get; }
         public int Stack { get; set; }
         public int RestTimeMs { get; set; }
         public long Absolve { get; set; }
+      
     }
 
     public class DamageOverTime : IDelayDamage, IRefreshBuff
     {
-        public DamageOverTime(int maxStack, int stack, int restTimeMs, long damage, int originTimeMs, int refreshStack)
+        public DamageOverTime(int maxStack, int stack, int originTimeMs, int refreshStack)
         {
             MaxStack = maxStack;
             Stack = stack;
-            RestTimeMs = restTimeMs;
-            Damage = damage;
+            RestTimeMs = originTimeMs;
+            Damage = 0;
             OriginTimeMs = originTimeMs;
             RefreshStack = refreshStack;
         }
@@ -134,12 +136,9 @@ namespace AutoBattle
         public int Stack { get; set; }
         public int RestTimeMs { get; set; }
 
-        private long Damage { get; }
+        public long Damage { get; set; }
 
-        public long GetDamage()
-        {
-            return Damage;
-        }
+      
 
         public int OriginTimeMs { get; }
         public int RefreshStack { get; set; }
@@ -157,8 +156,9 @@ namespace AutoBattle
                 RestTimeMs = OriginTimeMs;
             }
 
-            return battleCharacter.TakeUnnamedHarm(GetDamage());
+            return battleCharacter.TakeUnnamedHarm(Damage);
         }
+
     }
 
     internal class AddMissToOpponent : IBuffAddOpponentMiss

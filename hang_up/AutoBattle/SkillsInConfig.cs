@@ -10,11 +10,11 @@ namespace AutoBattle
         public static readonly ImmutableDictionary<int, Func<int, float, IActiveSkill>> ActiveSkills =
             new Dictionary<int, Func<int, float, IActiveSkill>>()
             {
-                {0, ActiveSkill0}, {1, ActiveSkill1}, {2, ActiveSkill2}, {3, ActiveSkill3}, {4, ActiveSkill4},
-                 {6, ActiveSkill6}, {7, ActiveSkill7}, {8, ActiveSkill8}, {9, ActiveSkill9},
+                {1, ActiveSkill1}, {2, ActiveSkill2}, {3, ActiveSkill3}, {4, ActiveSkill4},
+                {6, ActiveSkill6}, {7, ActiveSkill7}, {8, ActiveSkill8}, {9, ActiveSkill9},
                 {10, ActiveSkill10}, {11, ActiveSkill11}, {12, ActiveSkill12}, {13, ActiveSkill13}, {14, ActiveSkill14},
                 {15, ActiveSkill15}, {16, ActiveSkill16}, {20, ActiveSkill20}, {21, ActiveSkill21}, {22, ActiveSkill22},
-                {23, ActiveSkill23}, {101, ActiveSkill101}
+              
             }.ToImmutableDictionary();
 
         public static readonly ImmutableDictionary<int, IPassiveSkill> PassiveSkills =
@@ -29,7 +29,7 @@ namespace AutoBattle
                 {112, PassiveSkill112()}, {115, PassiveSkill115()}
             }.ToImmutableDictionary();
 
-        public static IActiveSkill ActiveSkill0(int cdMs, float harmMulti)
+        public static IActiveSkill ActiveSkill1(int cdMs, float harmMulti)
         {
             var normalAttack = new NormalAttack(harmMulti, OpponentTargetType.FirstOpponent);
             IActiveEffect[] normalAttacks = {normalAttack};
@@ -37,49 +37,32 @@ namespace AutoBattle
             return standardActiveSkill;
         }
 
-        public static IActiveSkill ActiveSkill1(int cdMs, float harmMulti)
+        public static IActiveSkill ActiveSkill2(int cdMs, float harmMulti)
         {
             var doubleAttack = new DoubleAttack(harmMulti, OpponentTargetType.FirstOpponent);
             var standardActiveSkill = new StandardActiveSkill(new IActiveEffect[] {doubleAttack}, cdMs);
             return standardActiveSkill;
         }
 
-        public static IActiveSkill ActiveSkill2(int cdMs, float harmMulti)
+        public static IActiveSkill ActiveSkill3(int cdMs, float harmMulti)
         {
-            var addHaste = new AddHaste(3, 1, 3000, 30);
-            var attackHitOrMissAndAddBuffToSelf = new AttackHitOrMissAndAddBuffToSelf(harmMulti,
-                new IBattleBuff[] {addHaste}, SelfTargetType.Self, true);
+            var executeAttack = new ExecuteAttack(harmMulti, 0.6f);
+
             var standardActiveSkill =
-                new StandardActiveSkill(new IActiveEffect[] {attackHitOrMissAndAddBuffToSelf}, cdMs);
+                new StandardActiveSkill(new IActiveEffect[] {executeAttack}, cdMs);
             return standardActiveSkill;
         }
 
-        public static IActiveSkill ActiveSkill3(int cdMs, float harmMulti)
-        {
-            var executeAttack = new ExecuteAttack(harmMulti, 2f);
-            var standardActiveSkill = new StandardActiveSkill(new IActiveEffect[] {executeAttack}, cdMs);
-            return standardActiveSkill;
-        }
 
         public static IActiveSkill ActiveSkill4(int cdMs, float harmMulti)
         {
-            var splashAll = new SplashAll(OpponentTargetType.FirstOpponent, harmMulti, 1.5f);
-            var standardActiveSkill = new StandardActiveSkill(new IActiveEffect[] {splashAll}, cdMs);
+            var splashRandomOne = new SplashRandomOne(harmMulti, harmMulti * 2);
+            var standardActiveSkill = new StandardActiveSkill(new IActiveEffect[] {splashRandomOne}, cdMs);
             return standardActiveSkill;
         }
+
 
         public static IActiveSkill ActiveSkill6(int cdMs, float harmM)
-        {
-            var addDamageAndHaste = new AddDamageAndHaste(1500, 1, 1, -50, 0, 2f);
-            var attackHitOrMissAndAddBuffToSelf =
-                new AttackHitOrMissAndAddBuffToSelf(harmM, new IBattleBuff[] {addDamageAndHaste}, SelfTargetType.Self,
-                    true);
-            var standardActiveSkill =
-                new StandardActiveSkill(new IActiveEffect[] {attackHitOrMissAndAddBuffToSelf}, cdMs);
-            return standardActiveSkill;
-        }
-
-        public static IActiveSkill ActiveSkill7(int cdMs, float harmM)
         {
             var healDecrease = new HealDecrease(4000, 1, 1, 1000);
             var attackHitOrMissWithBuffToOpponent = new AttackHitOrMissWithBuffToOpponent(
@@ -90,41 +73,63 @@ namespace AutoBattle
             return standardActiveSkill;
         }
 
-        public static IActiveSkill ActiveSkill8(int cdMs, float h)
+        public static IActiveSkill ActiveSkill7(int cdMs, float h)
         {
-            var missAndDamageMoreEffect = new MissAndDamageMoreEffect(h, 4, false, OpponentTargetType.FirstOpponent);
+            var missAndDamageMoreEffect =
+                new MissAndDamageMoreEffect(h, h * 2, false, OpponentTargetType.FirstOpponent);
             var standardActiveSkill = new StandardActiveSkill(new IActiveEffect[] {missAndDamageMoreEffect}, cdMs);
             return standardActiveSkill;
         }
 
-        public static IActiveSkill ActiveSkill9(int cdMs, float h)
+        public static IActiveSkill ActiveSkill8(int cdMs, float h)
         {
             var attackAndAddHarmByOpponentNowHp =
-                new AttackAndAddHarmByOpponentNowHp(h, 0.05f, OpponentTargetType.FirstOpponent);
+                new AttackAndAddHarmByOpponentNowHp(h, 0.02f, OpponentTargetType.FirstOpponent);
             var standardActiveSkill =
                 new StandardActiveSkill(new IActiveEffect[] {attackAndAddHarmByOpponentNowHp}, cdMs);
             return standardActiveSkill;
         }
 
-        public static IActiveSkill ActiveSkill10(int cdMs, float h)
+        public static IActiveSkill ActiveSkill9(int cdMs, float h)
         {
             var attackLossHp = new AttackLossHp(h, OpponentTargetType.FirstOpponent, SelfTargetType.Self, 0.08f);
             return new StandardActiveSkill(new IActiveEffect[] {attackLossHp}, cdMs);
         }
 
+        public static IActiveSkill ActiveSkill10(int cdMs, float h)
+        {
+            var damageOverTime = new DamageOverTime(1, 1, 1000, 3);
+            var attackAndAddDotToOpponent = new AttackAndAddDotToOpponent(1, OpponentTargetType.FirstOpponent,
+                new IBattleBuff[] {damageOverTime}, OpponentTargetType.FirstOpponent, h);
+            return new StandardActiveSkill(new IActiveEffect[] {attackAndAddDotToOpponent}, cdMs);
+        }
+
         public static IActiveSkill ActiveSkill11(int cdMs, float h)
         {
-            var attackAndHealSelf = new AttackAndHealSelf(h, 2f, SelfTargetType.Self);
-            return new StandardActiveSkill(new IActiveEffect[] {attackAndHealSelf}, cdMs);
+            var attackAndCopySelf = new AttackAndCopySelf(h, OpponentTargetType.FirstOpponent, 2);
+            return new StandardActiveSkill(new IActiveEffect[] {attackAndCopySelf}, cdMs);
         }
 
         public static IActiveSkill ActiveSkill12(int cdMs, float h)
         {
-            var attackAndHealSelf = new AttackAndHealSelf(h, 3f, SelfTargetType.SelfWeak);
-            return new StandardActiveSkill(new IActiveEffect[] {attackAndHealSelf}, cdMs);
+            var splashAll = new SplashAll(OpponentTargetType.FirstOpponent, h, h);
+            return new StandardActiveSkill(new IActiveEffect[] {splashAll}, cdMs);
         }
 
         public static IActiveSkill ActiveSkill13(int cdMs, float h)
+        {
+            var normalAttack = new NormalAttack(h, OpponentTargetType.WeakestOpponent);
+            return new StandardActiveSkill(new IActiveEffect[] {normalAttack}, cdMs);
+        }
+
+        public static IActiveSkill ActiveSkill14(int cdMs, float h)
+        {
+            var attackAndSummonUnit = new AttackAndSummonUnit(h, OpponentTargetType.FirstOpponent, 0.1f, 0.5f,
+                new[] {ActiveSkill1(1600, 1.6f)}, new IPassiveSkill[] { }, 2, false);
+            return new StandardActiveSkill(new IActiveEffect[] {attackAndSummonUnit}, cdMs);
+        }
+
+        public static IActiveSkill ActiveSkill0(int cdMs, float h)
         {
             var damageToMe = new DamageToMe(1, 1, 5000);
             var attackHitOrMissAndAddBuffToSelf = new AttackHitOrMissAndAddBuffToSelf(h, new IBattleBuff[] {damageToMe},
@@ -132,16 +137,8 @@ namespace AutoBattle
             return new StandardActiveSkill(new IActiveEffect[] {attackHitOrMissAndAddBuffToSelf}, cdMs);
         }
 
-        public static IActiveSkill ActiveSkill14(int cdMs, float h)
-        {
-            var addDamagePerMil = new AddDamageMulti(2, 1, 10000, -0.25f);
-            var attackHitOrMissWithBuffToOpponent = new AttackHitOrMissWithBuffToOpponent(
-                OpponentTargetType.FirstOpponent, true, OpponentTargetType.FirstOpponent,
-                new IBattleBuff[] {addDamagePerMil}, h);
-            return new StandardActiveSkill(new IActiveEffect[] {attackHitOrMissWithBuffToOpponent}, cdMs);
-        }
 
-        public static IActiveSkill ActiveSkill15(int cdMs, float h)
+        public static IActiveSkill ActiveSkill111(int cdMs, float h)
         {
             var addMissToOpponent = new AddMissToOpponent(1, 1, 10000, 0.15f);
             var attackHitOrMissWithBuffToOpponent = new AttackHitOrMissWithBuffToOpponent(
@@ -150,14 +147,16 @@ namespace AutoBattle
             return new StandardActiveSkill(new IActiveEffect[] {attackHitOrMissWithBuffToOpponent}, cdMs);
         }
 
+        public static IActiveSkill ActiveSkill15(int cdMs, float h)
+        {
+            var justKillEffect = new JustKillEffect(OpponentTargetType.FirstOpponent, h, 500);
+            return new StandardActiveSkill(new IActiveEffect[] {justKillEffect}, cdMs);
+        }
 
         public static IActiveSkill ActiveSkill16(int cdMs, float h)
         {
-            var addHaste = new AddHaste(1, 1, 5000, -45);
-            var attackHitOrMissWithBuffToOpponent = new AttackHitOrMissWithBuffToOpponent(
-                OpponentTargetType.FirstOpponent, true, OpponentTargetType.FirstOpponent,
-                new IBattleBuff[] {addHaste}, h);
-            return new StandardActiveSkill(new IActiveEffect[] {attackHitOrMissWithBuffToOpponent}, cdMs);
+            var attackAndPush = new AttackAndPush(OpponentTargetType.FirstOpponent, h, 5);
+            return new StandardActiveSkill(new IActiveEffect[] {attackAndPush}, cdMs);
         }
 
         public static IActiveSkill ActiveSkill20(int cdMs, float h)
@@ -181,11 +180,6 @@ namespace AutoBattle
             return new StandardActiveSkill(new IActiveEffect[] {attackHitOrMissWithBuffToOpponent}, cdMs);
         }
 
-        public static IActiveSkill ActiveSkill23(int cdMs, float h)
-        {
-            var justKillEffect = new JustKillEffect(OpponentTargetType.FirstOpponent, h, 100);
-            return new StandardActiveSkill(new IActiveEffect[] {justKillEffect}, cdMs);
-        }
 
         public static IActiveSkill ActiveSkill101(int cdMs, float h)
         {

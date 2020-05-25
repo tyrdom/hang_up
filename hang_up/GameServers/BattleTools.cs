@@ -10,12 +10,12 @@ namespace GameServers
 {
     public static class BattleTools
     {
-        public static BattleCharacter GenMainLevelCharacter(int level)
+        public static BattleCharacter GenMainLevelCharacter(int level, BelongTeam belongTeam)
         {
             var boss = Content.Bosss[level];
             return GenACharacter(GenAttribute(boss.PassiveSkills, boss.Health, boss.Damage, new int[] { }, 0),
                 boss.PassiveSkills, boss.AttackSpeed, boss.SkillId,
-                boss.SkillCd);
+                boss.SkillCd, belongTeam);
         }
 
 
@@ -69,7 +69,7 @@ namespace GameServers
 
         private static BattleCharacter GenACharacter(CharacterBattleBaseAttribute characterBattleBaseAttribute,
             int[] passiveSkillIds, float attackSpeed,
-            int activeSkillId, float skillCd)
+            int activeSkillId, float skillCd, BelongTeam belongTeam)
         {
             var activePass = passiveSkillIds
                 .SelectMany(x =>
@@ -90,14 +90,14 @@ namespace GameServers
                 : SkillsInConfig.ActiveSkills[0](cd, activeSkill2.DamageMulti);
             var passiveSkills = activePass.Select(x => SkillsInConfig.PassiveSkills[x.Effect]).ToArray();
             var battleCharacter = new BattleCharacter(KeyStatus.Alive, characterBattleBaseAttribute, new[]
-                {
-                    activeSkill, skill
-                }, passiveSkills);
+            {
+                activeSkill, skill
+            }, passiveSkills, belongTeam);
             return battleCharacter;
         }
 
         public static BattleCharacter? GenPlayerCharacter(int id,
-            CharacterStatus characterStatus)
+            CharacterStatus characterStatus, BelongTeam belongTeam)
         {
             ImmutableDictionary<int, Hero> immutableDictionary = Content.Heros;
             if (!immutableDictionary.TryGetValue(id, out var hero)) return null;
@@ -114,7 +114,7 @@ namespace GameServers
             var characterBattleBaseAttribute = GenAttribute(activePass, hp, damage, characterStatus.RuneTypes,
                 characterStatus.RuneLevel);
             return GenACharacter(characterBattleBaseAttribute, activePass, hero.AttackSpeed, hero.ActiveSkill,
-                hero.SkillCd);
+                hero.SkillCd, belongTeam);
         }
     }
 }

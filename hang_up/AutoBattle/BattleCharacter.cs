@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace AutoBattle
 {
     [Serializable]
     public class BattleCharacter
     {
-        public BattleGround? InWhichBattleGround;
-        public KeyStatus KeyStatus;
+        public BattleGround? InWhichBattleGround { set; get; }
+        public KeyStatus KeyStatus { set; get; }
 
-        public BelongTeam BelongTeam { set; get; }
+        public BelongTeam BelongTeam { get; }
         public CharacterBattleBaseAttribute CharacterBattleAttribute;
 
         public IActiveSkill[] ActiveSkills;
@@ -27,8 +25,10 @@ namespace AutoBattle
         public BattleCharacter? WhoSummon;
 
         public BattleCharacter(KeyStatus keyStatus, CharacterBattleBaseAttribute characterBattleAttribute,
-            IActiveSkill[] activeSkills, IPassiveSkill[] passiveSkills, BattleCharacter? whoSummon = null)
+            IActiveSkill[] activeSkills, IPassiveSkill[] passiveSkills, BelongTeam belongTeam,
+            BattleCharacter? whoSummon = null)
         {
+            BelongTeam = belongTeam;
             KeyStatus = keyStatus;
             CharacterBattleAttribute = characterBattleAttribute;
             ActiveSkills = activeSkills;

@@ -32,7 +32,7 @@ namespace AutoBattle
 
             _teamB = teamB.ToList();
 
-            BattleGlobals = new BattleGlobals();
+            BattleGlobals = new BattleGlobals(_teamA.Count, _teamB.Count);
         }
 
         public WhoWin GoBattle()
@@ -139,7 +139,8 @@ namespace AutoBattle
                     _teamB.Remove(x);
                 }
             });
-
+            BattleGlobals.TeamALives = _teamA.Count;
+            BattleGlobals.TeamBLives = _teamB.Count;
             return effects.ToArray();
         }
 
@@ -166,13 +167,19 @@ namespace AutoBattle
         }
     }
 
+
     public class BattleGlobals
     {
         public int TeamADeadTime;
         public int TeamBDeadTime;
 
-        public BattleGlobals()
+        public int TeamALives;
+        public int TeamBLives;
+
+        public BattleGlobals(int teamALives, int teamBLives)
         {
+            TeamALives = teamALives;
+            TeamBLives = teamBLives;
             TeamADeadTime = 0;
             TeamBDeadTime = 0;
         }
