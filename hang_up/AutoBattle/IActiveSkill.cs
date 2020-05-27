@@ -6,14 +6,14 @@ namespace AutoBattle
 {
     public interface IActiveSkill : ITimeAble
     {
-        public IActiveEffect[] ActiveEffect { get; set; }
+        public Actives.IActiveEffect[] ActiveEffect { get; set; }
 
         public int CdMsTime { get; }
 
 
         public void Reset() => RestTimeMs = CdMsTime;
 
-        IEnumerable<IBullet> GenIBullets(BattleCharacter battleCharacter)
+        IEnumerable<Bullets.IBullet> GenIBullets(BattleCharacter battleCharacter)
         {
             return ActiveEffect.SelectMany(x => x.GenBullet(battleCharacter)).ToArray();
         }
@@ -21,7 +21,7 @@ namespace AutoBattle
 
     public class StandardActiveSkill : IActiveSkill
     {
-        public StandardActiveSkill( IActiveEffect[] activeEffect, int cdMsTime)
+        public StandardActiveSkill( Actives.IActiveEffect[] activeEffect, int cdMsTime)
         {
             RestTimeMs = cdMsTime;
             ActiveEffect = activeEffect;
@@ -29,7 +29,7 @@ namespace AutoBattle
         }
 
         public int RestTimeMs { get; set; }
-        public IActiveEffect[] ActiveEffect { get; set; }
+        public Actives.IActiveEffect[] ActiveEffect { get; set; }
         public int CdMsTime { get; }
     }
     

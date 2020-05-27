@@ -11,7 +11,7 @@ namespace AutoBattle
         private List<BattleCharacter> _teamA;
         private List<BattleCharacter> _teamB;
 
-        public static readonly Random Random = new Random(Seed: 123);
+        public static readonly Random Random = new Random();
 
 
         public readonly BattleGlobals BattleGlobals;
@@ -53,7 +53,7 @@ namespace AutoBattle
         {
             foreach (var battleCharacter in _teamA)
             {
-                foreach (var getReadyActive in battleCharacter.PassiveSkills.OfType<IGetReadyActive>())
+                foreach (var getReadyActive in battleCharacter.PassiveSkills.OfType<Passives.IGetReadyActive>())
                 {
                     getReadyActive.GetReadyDo(battleCharacter);
                 }
@@ -61,24 +61,25 @@ namespace AutoBattle
 
             foreach (var battleCharacter in _teamB)
             {
-                foreach (var getReadyActive in battleCharacter.PassiveSkills.OfType<IGetReadyActive>())
+                foreach (var getReadyActive in battleCharacter.PassiveSkills.OfType<Passives.IGetReadyActive>())
                 {
                     getReadyActive.GetReadyDo(battleCharacter);
                 }
             }
 
             var battleCharacters =
-                _teamA.SelectMany(x => x.PassiveSkills.OfType<ICopyCharacter>().SelectMany(c => c.GenCopies(x)));
+                _teamA.SelectMany(
+                    x => x.PassiveSkills.OfType<Passives.ICopyCharacter>().SelectMany(c => c.GenCopies(x)));
             _teamA = _teamA.Concat(battleCharacters).ToList();
             var battleCharacters1 =
-                _teamB.SelectMany(x => x.PassiveSkills.OfType<ICopyCharacter>().SelectMany(c => c.GenCopies(x)));
+                _teamB.SelectMany(
+                    x => x.PassiveSkills.OfType<Passives.ICopyCharacter>().SelectMany(c => c.GenCopies(x)));
             _teamB = _teamB.Concat(battleCharacters1).ToList();
         }
 
         public IShow[] GoNextTimeEvent()
         {
             var aliveTeamA = _teamA.Where(x => x.KeyStatus == KeyStatus.Alive).ToList();
-
             var aliveTeamB = _teamB.Where(x => x.KeyStatus == KeyStatus.Alive).ToList();
             var min = aliveTeamA.Select(character => character.GetEventTime()).Min();
             var minB = aliveTeamB.Select(character => character.GetEventTime()).Min();
@@ -103,8 +104,8 @@ namespace AutoBattle
             {
                 return x switch
                 {
-                    IOpponentBullet opponentBullet => opponentBullet.HitTeam(_teamB, _teamA),
-                    ISelfBullet selfBullet => selfBullet.HelpTeam(_teamA, _teamB),
+                    Bullets.IOpponentBullet opponentBullet => opponentBullet.HitTeam(_teamB, _teamA),
+                    Bullets.ISelfBullet selfBullet => selfBullet.HelpTeam(_teamA, _teamB),
                     _ => throw new ArgumentOutOfRangeException(nameof(x))
                 };
             }).Concat(teamAExShow).ToArray();
@@ -112,8 +113,8 @@ namespace AutoBattle
             {
                 return x switch
                 {
-                    IOpponentBullet opponentBullet => opponentBullet.HitTeam(_teamA, _teamB),
-                    ISelfBullet selfBullet => selfBullet.HelpTeam(_teamB, _teamA),
+                    Bullets.IOpponentBullet opponentBullet => opponentBullet.HitTeam(_teamA, _teamB),
+                    Bullets.ISelfBullet selfBullet => selfBullet.HelpTeam(_teamB, _teamA),
                     _ => throw new ArgumentOutOfRangeException(nameof(x))
                 };
             }).Concat(teamBExShow).ToArray();

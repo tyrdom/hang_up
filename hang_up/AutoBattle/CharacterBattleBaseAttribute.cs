@@ -36,7 +36,7 @@ namespace AutoBattle
             return (float) NowHp / MaxHp;
         }
 
-        public int GetHeal(int heal, int healDecreasePreMil)
+        public int GetHeal(long heal, int healDecreasePreMil)
         {
             var decreasePreMil = (1000 - healDecreasePreMil) / 1000f;
             var preMil = (int) (heal * decreasePreMil);

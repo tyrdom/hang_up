@@ -43,19 +43,28 @@ namespace AutoBattle
             };
         }
 
-        public static List<IBattleBuff> AddBuffs(List<IBattleBuff> raw, IEnumerable<IBattleBuff> add)
+        public static List<BattleBuffs.IBattleBuff> AddBuffs(List<BattleBuffs.IBattleBuff> raw, IEnumerable<BattleBuffs.IBattleBuff> add,
+            out List<BattleBuffs.IBattleBuff> clearBuffs)
         {
-            var noStack = new List<IBattleBuff>();
+            var noStack = new List<BattleBuffs.IBattleBuff>();
+            var cList = new List<BattleBuffs.IBattleBuff>();
             foreach (var battleBuff in add)
             {
                 Type type = battleBuff.GetType();
                 foreach (var buff in raw)
                 {
-                    if (buff.GetType() == type)
+                    if (buff is BattleBuffs.IFocusBuff focusBuff && battleBuff is BattleBuffs.IFocusBuff focusBuff2 &&
+                        focusBuff.BattleCharacter != focusBuff2.BattleCharacter)
+                    {
+                        cList.Add(buff);
+                        raw.Remove(buff);
+                        noStack.Add(battleBuff);
+                    }
+                    else if (buff.GetType() == type)
                     {
                         buff.AddStack(battleBuff);
 
-                        if (buff is IShield shield && battleBuff is IShield shield2)
+                        if (buff is BattleBuffs.IShield shield && battleBuff is BattleBuffs.IShield shield2)
                         {
                             shield.AddAbsolve(shield2);
                         }
@@ -66,8 +75,8 @@ namespace AutoBattle
                     }
                 }
             }
-
             raw.AddRange(noStack);
+            clearBuffs = cList;
             return raw;
         }
     }
