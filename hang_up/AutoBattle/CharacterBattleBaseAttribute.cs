@@ -12,9 +12,9 @@ namespace AutoBattle
         public readonly float Critical;
         public readonly float Defence;
         public readonly int Haste;
-        public readonly float OpMiss;
+        public readonly float Dodge;
 
-        public CharacterBattleBaseAttribute(long maxHp, int damage, float defence, int haste, float opMiss,
+        public CharacterBattleBaseAttribute(long maxHp, int damage, float defence, int haste, float dodge,
             float damageMulti, float critical)
         {
             MaxHp = maxHp;
@@ -22,7 +22,7 @@ namespace AutoBattle
             Damage = damage;
             Defence = defence;
             Haste = haste;
-            OpMiss = opMiss;
+            Dodge = dodge;
             DamageMulti = damageMulti;
             Critical = critical;
         }

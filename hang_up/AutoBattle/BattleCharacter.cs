@@ -234,7 +234,7 @@ namespace AutoBattle
 
         private float GetMiss(BattleCharacter opponent)
         {
-            var missPreMil = CharacterBattleAttribute.OpMiss;
+            var missPreMil = CharacterBattleAttribute.Dodge;
             var sum = PassiveSkills.OfType<Passives.IPassiveAddMissAboutSelf>()
                 .Select(x => x.GetMiss(this)).Sum();
             var i = BattleBuffs.OfType<BattleBuffs.IBuffAddMissSelf>().Select(x => x.GetMiss(this)).Sum();
