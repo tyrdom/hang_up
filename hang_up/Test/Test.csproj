@@ -25,4 +25,8 @@
       <None Remove="Resource\skill_s.json" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Resource" />
+    </ItemGroup>
+
 </Project>

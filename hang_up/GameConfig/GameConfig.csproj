@@ -5,7 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <EmbeddedResource Include="Resource\surprise_s.json" />
       <None Remove="Resource\active_skill_s.json" />
       <None Remove="Resource\boss_s.json" />
       <None Remove="Resource\class_up_s.json" />
@@ -27,20 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="Resource\active_skill_s.json" />
-      <Content Include="Resource\boss_s.json" />
-      <Content Include="Resource\class_up_s.json" />
-      <Content Include="Resource\compose_s.json" />
-      <Content Include="Resource\frame_s.json" />
-      <Content Include="Resource\hero_s.json" />
-      <Content Include="Resource\hero_tower_s.json" />
       <Content Include="Resource\item_s.json" />
-      <Content Include="Resource\level_up_s.json" />
-      <Content Include="Resource\market_s.json" />
-      <Content Include="Resource\mission_s.json" />
-      <Content Include="Resource\passive_skill_s.json" />
-      <Content Include="Resource\rune_s.json" />
-      <Content Include="Resource\skill_s.json" />
     </ItemGroup>
 
 </Project>

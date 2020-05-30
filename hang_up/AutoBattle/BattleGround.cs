@@ -16,25 +16,29 @@ namespace AutoBattle
 
         public readonly BattleGlobals BattleGlobals;
 
-        public BattleGround(BattleCharacter[] teamA, BattleCharacter[] teamB)
+        public BattleGround(IEnumerable<BattleCharacter> battleCharacters)
         {
-            foreach (var battleCharacter in teamA)
+            _teamA = new List<BattleCharacter>();
+            _teamB = new List<BattleCharacter>();
+            foreach (var battleCharacter in battleCharacters)
             {
                 battleCharacter.JoinBattleGround(this);
+                switch (battleCharacter.BelongTeam)
+                {
+                    case BelongTeam.A:
+                        _teamA.Add(battleCharacter);
+                        break;
+                    case BelongTeam.B:
+                        _teamB.Add(battleCharacter);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
-
-            foreach (var battleCharacter in teamB)
-            {
-                battleCharacter.JoinBattleGround(this);
-            }
-
-            _teamA = teamA.ToList();
-
-            _teamB = teamB.ToList();
 
             BattleGlobals = new BattleGlobals(_teamA.Count, _teamB.Count);
         }
-
+        
         public WhoWin GoBattle()
         {
             GetReady();
