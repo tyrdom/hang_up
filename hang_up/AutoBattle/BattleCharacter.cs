@@ -7,6 +7,7 @@ namespace AutoBattle
     [Serializable]
     public class BattleCharacter
     {
+        public string Name { get; }
         public BattleGround? InWhichBattleGround { set; get; }
         public KeyStatus KeyStatus { set; get; }
 
@@ -25,10 +26,11 @@ namespace AutoBattle
         public BattleCharacter? WhoSummon;
 
         public BattleCharacter(KeyStatus keyStatus, CharacterBattleBaseAttribute characterBattleAttribute,
-            IActiveSkill[] activeSkills, Passives.IPassiveSkill[] passiveSkills, BelongTeam belongTeam,
+            IActiveSkill[] activeSkills, Passives.IPassiveSkill[] passiveSkills, BelongTeam belongTeam, string name,
             BattleCharacter? whoSummon = null)
         {
             BelongTeam = belongTeam;
+            Name = name;
             KeyStatus = keyStatus;
             CharacterBattleAttribute = characterBattleAttribute;
             ActiveSkills = activeSkills;
@@ -53,10 +55,14 @@ namespace AutoBattle
             InWhichBattleGround = battleGround;
         }
 
-        public int GetEventTime()
+        public int[] GetEventTime()
         {
-            var baseHaste = CharacterBattleAttribute.Haste;
+            if (!ActiveSkills.Any())
+            {
+                return new int[] { };
+            }
 
+            var baseHaste = CharacterBattleAttribute.Haste;
             var passiveSkills = PassiveSkills.OfType<Passives.IHastePassiveEffect>()
                 .Sum(x => x.GetHasteValueAndLastMs(this));
             var haste = baseHaste + passiveSkills;
@@ -84,7 +90,7 @@ namespace AutoBattle
                 {
                     if (i <= item2)
                     {
-                        return buffLast + i;
+                        return new[] {buffLast + i};
                     }
 
                     buffLast += item2;
@@ -95,10 +101,10 @@ namespace AutoBattle
             var eventTime = buffLast + (int) MathF.Ceiling(rest.Min() * 100f / (100 + haste));
             var ints = PassiveSkills.OfType<Passives.IEventPassive>().Select(x => x.RestTimeMs);
             var min = BattleBuffs.OfType<BattleBuffs.IEventBuff>().Select(x => x.RestTimeMs)
-                .Concat(ints)
-                .Append(eventTime)
-                .Min();
-            return min;
+                    .Concat(ints)
+                    .Append(eventTime)
+                ;
+            return min.ToArray();
         }
 
         public (IEnumerable<Bullets.IBullet>, IEnumerable<IShow>) TakeTime(int ms)
@@ -416,7 +422,7 @@ namespace AutoBattle
             var shows = AddBuff(battleBuffsToAtk, harmBullet.FromWho);
 
 
-            var enumerable = addBuff.Concat(shows).Concat(buff).Concat(enumerable1).Append(new MissShow(this));
+            var enumerable = addBuff.Concat(shows).Concat(buff).Concat(enumerable1).Append(new DodgeShow(this));
             return enumerable;
         }
 
@@ -464,8 +470,10 @@ namespace AutoBattle
         {
             toWho.BattleBuffs = AutoBattleTools.AddBuffs(toWho.BattleBuffs, battleBuffs, out var clearBuffs);
             var addBuff = new AddBuffShow(toWho, battleBuffs);
+            if (!clearBuffs.Any()) return new IShow[] {addBuff};
             var clearBuff = new ClearBuff(toWho, clearBuffs.ToArray());
             return new IShow[] {addBuff, clearBuff};
+
         }
     }
 

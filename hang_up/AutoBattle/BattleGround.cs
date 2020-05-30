@@ -38,15 +38,19 @@ namespace AutoBattle
 
             BattleGlobals = new BattleGlobals(_teamA.Count, _teamB.Count);
         }
-        
+
         public WhoWin GoBattle()
         {
             GetReady();
 
             while (CheckEnd() == WhoWin.NotEnd)
             {
-                GoNextTimeEvent();
-                // Console.Out.WriteLine("_______________________");
+                var goNextTimeEvent = GoNextTimeEvent();
+                foreach (var show in goNextTimeEvent)
+                {
+                    Console.Out.WriteLine(show.BattleLog());
+                }
+
                 // Console.ReadKey();
             }
 
@@ -85,8 +89,8 @@ namespace AutoBattle
         {
             var aliveTeamA = _teamA.Where(x => x.KeyStatus == KeyStatus.Alive).ToList();
             var aliveTeamB = _teamB.Where(x => x.KeyStatus == KeyStatus.Alive).ToList();
-            var min = aliveTeamA.Select(character => character.GetEventTime()).Min();
-            var minB = aliveTeamB.Select(character => character.GetEventTime()).Min();
+            var min = aliveTeamA.SelectMany(character => character.GetEventTime()).Min();
+            var minB = aliveTeamB.SelectMany(character => character.GetEventTime()).Min();
             var i = Math.Min(min, minB);
 
             var teamABullets = aliveTeamA.SelectMany(x => x.TakeTime(i).Item1);
@@ -130,20 +134,11 @@ namespace AutoBattle
             BattleGlobals.TeamBDeadTime += count;
 
             var effects = teamAiShow.Union(teamBiShow);
-            _teamA.ForEach(x =>
-            {
-                if (x.KeyStatus == KeyStatus.Dead)
-                {
-                    _teamA.Remove(x);
-                }
-            });
-            _teamB.ForEach(x =>
-            {
-                if (x.KeyStatus == KeyStatus.Dead)
-                {
-                    _teamB.Remove(x);
-                }
-            });
+            _teamA = _teamA.Where(x => x.KeyStatus == KeyStatus.Alive).ToList();
+
+
+            _teamB = _teamB.Where(x => x.KeyStatus == KeyStatus.Alive).ToList();
+
             BattleGlobals.TeamALives = _teamA.Count;
             BattleGlobals.TeamBLives = _teamB.Count;
             return effects.ToArray();

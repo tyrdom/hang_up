@@ -326,7 +326,7 @@ namespace AutoBattle
                 var damageMulti = (int) (battleCharacter.CharacterBattleAttribute.Damage * this.DamageMulti);
                 var summonUnit = new BattleCharacter(KeyStatus.Alive,
                     new CharacterBattleBaseAttribute(hpMulti, damageMulti, 0, 0, 0, 0, 0),
-                    ActiveSkills, new Passives.IPassiveSkill[] { }, battleCharacter.BelongTeam, battleCharacter);
+                    ActiveSkills, new Passives.IPassiveSkill[] { }, battleCharacter.BelongTeam,battleCharacter.Name+"'s summons", battleCharacter);
                 var summonUnitBullet = new Bullets.SummonUnitBullet(summonUnit, MaxNum, IsOnHead, battleCharacter, ceiling,
                     OpponentTargetType);
                 return new[] {summonUnitBullet};

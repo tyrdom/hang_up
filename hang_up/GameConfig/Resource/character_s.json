@@ -1,1 +1,772 @@
-{"content_name": {"Name": "名字", "Avatar": "头像路径", "items": "", "Vocation": "职业", "ActiveSkills": "", "PassiveSkills": "", "BaseAttribute": "public readonly float DamageMulti;         public readonly float Critical;         public readonly float Defence;         public readonly int Haste;         public readonly float OpMiss;"}, "content_info": {"Name": "", "Avatar": "", "items": "", "Vocation": "", "ActiveSkills": "", "PassiveSkills": "", "BaseAttribute": ""}, "content_schema": {"Name": "string", "Avatar": "string", "items": "item[]", "Vocation": "string", "ActiveSkills": "int[]", "PassiveSkills": "int[]", "BaseAttribute": "{MaxHp|long=Damage|int=DamageMulti|float=Defence|float=Haste|int=Dodge|float=Critical|float}"}, "content": {"1": {"id": 1, "Name": "盖亚", "Avatar": "Unit/Hero/m0138.png", "items": [8, 9, 10, 11], "Vocation": "Swordman", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "2": {"id": 2, "Name": "伊莉雅", "Avatar": "Unit/Hero/m0141.png", "items": [9, 11, 12, 13], "Vocation": "Mage", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "3": {"id": 3, "Name": "莱琳", "Avatar": "Unit/Hero/m0144.png", "items": [10, 13, 14, 15], "Vocation": "Swordman", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "4": {"id": 4, "Name": "虎克", "Avatar": "Unit/Hero/m0147.png", "items": [11, 15, 16, 17], "Vocation": "Swordman", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "5": {"id": 5, "Name": "埃尔克", "Avatar": "Unit/Hero/m0150.png", "items": [12, 17, 18, 19], "Vocation": "Pastor", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "6": {"id": 6, "Name": "罗莎", "Avatar": "Unit/Hero/m0153.png", "items": [13, 19, 20, 21], "Vocation": "Swordman", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "7": {"id": 7, "Name": "温妮", "Avatar": "Unit/Hero/m0156.png", "items": [14, 21, 22, 23], "Vocation": "Mage", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "8": {"id": 8, "Name": "艾琳达", "Avatar": "Unit/Hero/m0159.png", "items": [15, 23, 24, 25], "Vocation": "Swordman", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "9": {"id": 9, "Name": "德拉", "Avatar": "Unit/Hero/m0162.png", "items": [16, 25, 26, 27], "Vocation": "Mage", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "10": {"id": 10, "Name": "莉娜", "Avatar": "Unit/Hero/m0165.png", "items": [17, 27, 28, 29], "Vocation": "Pastor", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "11": {"id": 11, "Name": "莱卡", "Avatar": "Unit/Hero/m0168.png", "items": [18, 29, 30, 31], "Vocation": "Mage", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "12": {"id": 12, "Name": "米娜", "Avatar": "Unit/Hero/m0171.png", "items": [19, 31, 32, 33], "Vocation": "Mage", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "13": {"id": 13, "Name": "艾瑞斯", "Avatar": "Unit/Hero/m0174.png", "items": [20, 33, 34, 35], "Vocation": "Assassin", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "14": {"id": 14, "Name": "希尔", "Avatar": "Unit/Hero/m0177.png", "items": [21, 35, 36, 8], "Vocation": "Pastor", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "15": {"id": 15, "Name": "波塞冬", "Avatar": "Unit/Hero/m0180.png", "items": [22, 8, 9, 10], "Vocation": "Mage", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "16": {"id": 16, "Name": "托斯", "Avatar": "Unit/Hero/m0183.png", "items": [23, 10, 11, 12], "Vocation": "Swordman", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "17": {"id": 17, "Name": "艾兹", "Avatar": "Unit/Hero/m0186.png", "items": [24, 12, 13, 14], "Vocation": "Pastor", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "18": {"id": 18, "Name": "阿斯曼", "Avatar": "Unit/Hero/m0189.png", "items": [25, 14, 15, 16], "Vocation": "Swordman", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "19": {"id": 19, "Name": "沃克", "Avatar": "Unit/Hero/m0192.png", "items": [26, 16, 17, 18], "Vocation": "Assassin", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "20": {"id": 20, "Name": "爱丽丝", "Avatar": "Unit/Hero/m0195.png", "items": [27, 18, 19, 20], "Vocation": "Pastor", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "21": {"id": 21, "Name": "塔西", "Avatar": "Unit/Hero/m0198.png", "items": [28, 20, 21, 22], "Vocation": "Swordman", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "22": {"id": 22, "Name": "卡兹", "Avatar": "Unit/Hero/m0201.png", "items": [29, 22, 23, 24], "Vocation": "Pastor", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "23": {"id": 23, "Name": "罗温", "Avatar": "Unit/Hero/m0204.png", "items": [30, 24, 25, 26], "Vocation": "Mage", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "24": {"id": 24, "Name": "雷恩", "Avatar": "Unit/Hero/m0207.png", "items": [31, 26, 27, 28], "Vocation": "Assassin", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "25": {"id": 25, "Name": "伊莎贝尔", "Avatar": "Unit/Hero/m0259.png", "items": [32, 28, 29, 30], "Vocation": "Assassin", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "26": {"id": 26, "Name": "奈拉", "Avatar": "Unit/Hero/m0262.png", "items": [33, 30, 31, 32], "Vocation": "Assassin", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "27": {"id": 27, "Name": "安吉丽", "Avatar": "Unit/Hero/m0265.png", "items": [34, 32, 33, 34], "Vocation": "Pastor", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "28": {"id": 28, "Name": "凯丽", "Avatar": "Unit/Hero/m0268.png", "items": [35, 34, 35, 36], "Vocation": "Swordman", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}, "29": {"id": 29, "Name": "伊拉", "Avatar": "Unit/Hero/m0271.png", "items": [36, 36, 8, 9], "Vocation": "Assassin", "ActiveSkills": [], "PassiveSkills": [], "BaseAttribute": {"MaxHp": 1000, "Damage": 100, "DamageMulti": 0.0, "Defence": 0.0, "Haste": 0, "Dodge": 0.0, "Critical": 0.0}}}}
+{
+  "content_name": {
+    "Name": "名字",
+    "Avatar": "头像路径",
+    "items": "",
+    "Vocation": "职业",
+    "ActiveSkills": "",
+    "PassiveSkills": "",
+    "BaseAttribute": "public readonly float DamageMulti;         public readonly float Critical;         public readonly float Defence;         public readonly int Haste;         public readonly float OpMiss;"
+  },
+  "content_info": {
+    "Name": "",
+    "Avatar": "",
+    "items": "",
+    "Vocation": "",
+    "ActiveSkills": "",
+    "PassiveSkills": "",
+    "BaseAttribute": ""
+  },
+  "content_schema": {
+    "Name": "string",
+    "Avatar": "string",
+    "items": "item[]",
+    "Vocation": "string",
+    "ActiveSkills": "int[]",
+    "PassiveSkills": "int[]",
+    "BaseAttribute": "{MaxHp|long=Damage|int=DamageMulti|float=Defence|float=Haste|int=Dodge|float=Critical|float}"
+  },
+  "content": {
+    "1": {
+      "id": 1,
+      "Name": "盖亚",
+      "Avatar": "Unit/Hero/m0138.png",
+      "items": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "Vocation": "Swordman",
+      "ActiveSkills": [
+        1
+      ],
+      "PassiveSkills": [],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "2": {
+      "id": 2,
+      "Name": "伊莉雅",
+      "Avatar": "Unit/Hero/m0141.png",
+      "items": [
+        9,
+        11,
+        12,
+        13
+      ],
+      "Vocation": "Mage",
+      "ActiveSkills": [
+        2
+      ],
+      "PassiveSkills": [],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "3": {
+      "id": 3,
+      "Name": "莱琳",
+      "Avatar": "Unit/Hero/m0144.png",
+      "items": [
+        10,
+        13,
+        14,
+        15
+      ],
+      "Vocation": "Swordman",
+      "ActiveSkills": [
+        3
+      ],
+      "PassiveSkills": [],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "4": {
+      "id": 4,
+      "Name": "虎克",
+      "Avatar": "Unit/Hero/m0147.png",
+      "items": [
+        11,
+        15,
+        16,
+        17
+      ],
+      "Vocation": "Swordman",
+      "ActiveSkills": [
+        4
+      ],
+      "PassiveSkills": [],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "5": {
+      "id": 5,
+      "Name": "埃尔克",
+      "Avatar": "Unit/Hero/m0150.png",
+      "items": [
+        12,
+        17,
+        18,
+        19
+      ],
+      "Vocation": "Pastor",
+      "ActiveSkills": [
+        5
+      ],
+      "PassiveSkills": [],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "6": {
+      "id": 6,
+      "Name": "罗莎",
+      "Avatar": "Unit/Hero/m0153.png",
+      "items": [
+        13,
+        19,
+        20,
+        21
+      ],
+      "Vocation": "Swordman",
+      "ActiveSkills": [
+        6
+      ],
+      "PassiveSkills": [],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "7": {
+      "id": 7,
+      "Name": "温妮",
+      "Avatar": "Unit/Hero/m0156.png",
+      "items": [
+        14,
+        21,
+        22,
+        23
+      ],
+      "Vocation": "Mage",
+      "ActiveSkills": [
+        7
+      ],
+      "PassiveSkills": [],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "8": {
+      "id": 8,
+      "Name": "艾琳达",
+      "Avatar": "Unit/Hero/m0159.png",
+      "items": [
+        15,
+        23,
+        24,
+        25
+      ],
+      "Vocation": "Swordman",
+      "ActiveSkills": [
+        8
+      ],
+      "PassiveSkills": [],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "9": {
+      "id": 9,
+      "Name": "德拉",
+      "Avatar": "Unit/Hero/m0162.png",
+      "items": [
+        16,
+        25,
+        26,
+        27
+      ],
+      "Vocation": "Mage",
+      "ActiveSkills": [
+        9
+      ],
+      "PassiveSkills": [],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "10": {
+      "id": 10,
+      "Name": "莉娜",
+      "Avatar": "Unit/Hero/m0165.png",
+      "items": [
+        17,
+        27,
+        28,
+        29
+      ],
+      "Vocation": "Pastor",
+      "ActiveSkills": [
+        10
+      ],
+      "PassiveSkills": [],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "11": {
+      "id": 11,
+      "Name": "莱卡",
+      "Avatar": "Unit/Hero/m0168.png",
+      "items": [
+        18,
+        29,
+        30,
+        31
+      ],
+      "Vocation": "Mage",
+      "ActiveSkills": [
+        11
+      ],
+      "PassiveSkills": [],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "12": {
+      "id": 12,
+      "Name": "米娜",
+      "Avatar": "Unit/Hero/m0171.png",
+      "items": [
+        19,
+        31,
+        32,
+        33
+      ],
+      "Vocation": "Mage",
+      "ActiveSkills": [
+        12
+      ],
+      "PassiveSkills": [],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "13": {
+      "id": 13,
+      "Name": "艾瑞斯",
+      "Avatar": "Unit/Hero/m0174.png",
+      "items": [
+        20,
+        33,
+        34,
+        35
+      ],
+      "Vocation": "Assassin",
+      "ActiveSkills": [
+        13
+      ],
+      "PassiveSkills": [],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "14": {
+      "id": 14,
+      "Name": "希尔",
+      "Avatar": "Unit/Hero/m0177.png",
+      "items": [
+        21,
+        35,
+        36,
+        8
+      ],
+      "Vocation": "Pastor",
+      "ActiveSkills": [
+        14
+      ],
+      "PassiveSkills": [],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "15": {
+      "id": 15,
+      "Name": "波塞冬",
+      "Avatar": "Unit/Hero/m0180.png",
+      "items": [
+        22,
+        8,
+        9,
+        10
+      ],
+      "Vocation": "Mage",
+      "ActiveSkills": [
+        15
+      ],
+      "PassiveSkills": [],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "16": {
+      "id": 16,
+      "Name": "托斯",
+      "Avatar": "Unit/Hero/m0183.png",
+      "items": [
+        23,
+        10,
+        11,
+        12
+      ],
+      "Vocation": "Swordman",
+      "ActiveSkills": [
+        16
+      ],
+      "PassiveSkills": [],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "17": {
+      "id": 17,
+      "Name": "艾兹",
+      "Avatar": "Unit/Hero/m0186.png",
+      "items": [
+        24,
+        12,
+        13,
+        14
+      ],
+      "Vocation": "Pastor",
+      "ActiveSkills": [
+        17
+      ],
+      "PassiveSkills": [],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "18": {
+      "id": 18,
+      "Name": "阿斯曼",
+      "Avatar": "Unit/Hero/m0189.png",
+      "items": [
+        25,
+        14,
+        15,
+        16
+      ],
+      "Vocation": "Swordman",
+      "ActiveSkills": [
+        18
+      ],
+      "PassiveSkills": [],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "19": {
+      "id": 19,
+      "Name": "沃克",
+      "Avatar": "Unit/Hero/m0192.png",
+      "items": [
+        26,
+        16,
+        17,
+        18
+      ],
+      "Vocation": "Assassin",
+      "ActiveSkills": [
+        19
+      ],
+      "PassiveSkills": [],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "20": {
+      "id": 20,
+      "Name": "爱丽丝",
+      "Avatar": "Unit/Hero/m0195.png",
+      "items": [
+        27,
+        18,
+        19,
+        20
+      ],
+      "Vocation": "Pastor",
+      "ActiveSkills": [
+        20
+      ],
+      "PassiveSkills": [],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "21": {
+      "id": 21,
+      "Name": "塔西",
+      "Avatar": "Unit/Hero/m0198.png",
+      "items": [
+        28,
+        20,
+        21,
+        22
+      ],
+      "Vocation": "Swordman",
+      "ActiveSkills": [
+        21
+      ],
+      "PassiveSkills": [],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "22": {
+      "id": 22,
+      "Name": "卡兹",
+      "Avatar": "Unit/Hero/m0201.png",
+      "items": [
+        29,
+        22,
+        23,
+        24
+      ],
+      "Vocation": "Pastor",
+      "ActiveSkills": [
+        1
+      ],
+      "PassiveSkills": [
+        1
+      ],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "23": {
+      "id": 23,
+      "Name": "罗温",
+      "Avatar": "Unit/Hero/m0204.png",
+      "items": [
+        30,
+        24,
+        25,
+        26
+      ],
+      "Vocation": "Mage",
+      "ActiveSkills": [
+        1
+      ],
+      "PassiveSkills": [
+        2
+      ],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "24": {
+      "id": 24,
+      "Name": "雷恩",
+      "Avatar": "Unit/Hero/m0207.png",
+      "items": [
+        31,
+        26,
+        27,
+        28
+      ],
+      "Vocation": "Assassin",
+      "ActiveSkills": [
+        1
+      ],
+      "PassiveSkills": [
+        3
+      ],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "25": {
+      "id": 25,
+      "Name": "伊莎贝尔",
+      "Avatar": "Unit/Hero/m0259.png",
+      "items": [
+        32,
+        28,
+        29,
+        30
+      ],
+      "Vocation": "Assassin",
+      "ActiveSkills": [
+        1
+      ],
+      "PassiveSkills": [
+        4
+      ],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "26": {
+      "id": 26,
+      "Name": "奈拉",
+      "Avatar": "Unit/Hero/m0262.png",
+      "items": [
+        33,
+        30,
+        31,
+        32
+      ],
+      "Vocation": "Assassin",
+      "ActiveSkills": [
+        1
+      ],
+      "PassiveSkills": [
+        5
+      ],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "27": {
+      "id": 27,
+      "Name": "安吉丽",
+      "Avatar": "Unit/Hero/m0265.png",
+      "items": [
+        34,
+        32,
+        33,
+        34
+      ],
+      "Vocation": "Pastor",
+      "ActiveSkills": [
+        1
+      ],
+      "PassiveSkills": [
+        6
+      ],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "28": {
+      "id": 28,
+      "Name": "凯丽",
+      "Avatar": "Unit/Hero/m0268.png",
+      "items": [
+        35,
+        34,
+        35,
+        36
+      ],
+      "Vocation": "Swordman",
+      "ActiveSkills": [
+        1
+      ],
+      "PassiveSkills": [
+        7
+      ],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    },
+    "29": {
+      "id": 29,
+      "Name": "伊拉",
+      "Avatar": "Unit/Hero/m0271.png",
+      "items": [
+        36,
+        36,
+        8,
+        9
+      ],
+      "Vocation": "Assassin",
+      "ActiveSkills": [
+        1
+      ],
+      "PassiveSkills": [
+        8
+      ],
+      "BaseAttribute": {
+        "MaxHp": 1000,
+        "Damage": 100,
+        "DamageMulti": 0.0,
+        "Defence": 0.0,
+        "Haste": 0,
+        "Dodge": 0.0,
+        "Critical": 0.0
+      }
+    }
+  }
+}

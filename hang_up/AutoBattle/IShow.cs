@@ -3,12 +3,20 @@ namespace AutoBattle
     public interface IShow
     {
         BattleCharacter Who { get; }
+
+       public string BattleLog();
     }
 
     public class TakeHarmShow : IShow
     {
         public BattleCharacter Who { get; }
-        public long Harm;
+
+        public string BattleLog()
+        {
+            return Who.Name + " take harm " + Harm;
+        }
+
+        public readonly long Harm;
 
         public TakeHarmShow(long harm, BattleCharacter who)
         {
@@ -20,7 +28,13 @@ namespace AutoBattle
     public class HealShow : IShow
     {
         public BattleCharacter Who { get; }
-        public int HealValue;
+
+        public string BattleLog()
+        {
+            return Who.Name + " take heal " + HealValue;
+        }
+
+        public readonly int HealValue;
 
         public HealShow(int heal, BattleCharacter who)
         {
@@ -32,6 +46,12 @@ namespace AutoBattle
     public class ClearBuff : IShow
     {
         public BattleCharacter Who { get; }
+
+        public string BattleLog()
+        {
+            return Who.Name + " loss buffs ";
+        }
+
         public BattleBuffs.IBattleBuff[] BattleBuffs { get; }
 
         public ClearBuff(BattleCharacter who, BattleBuffs.IBattleBuff[] battleBuffs)
@@ -44,6 +64,11 @@ namespace AutoBattle
     public class AddBuffShow : IShow
     {
         public BattleCharacter Who { get; }
+        public string BattleLog()
+        {
+            return Who.Name + " get buffs ";
+        }
+
         public BattleBuffs.IBattleBuff[] BattleBuffs { get; }
 
         public AddBuffShow(BattleCharacter who, BattleBuffs.IBattleBuff[] battleBuffs)
@@ -53,11 +78,15 @@ namespace AutoBattle
         }
     }
 
-    public class MissShow : IShow
+    public class DodgeShow : IShow
     {
         public BattleCharacter Who { get; }
+        public string BattleLog()
+        {
+            return Who.Name + " dodge a damage ";
+        }
 
-        public MissShow(BattleCharacter who)
+        public DodgeShow(BattleCharacter who)
         {
             Who = who;
         }
@@ -66,6 +95,10 @@ namespace AutoBattle
     public class DeadShow : IShow
     {
         public BattleCharacter Who { get; }
+        public string BattleLog()
+        {
+            return Who.Name + " is dead~~~~~ ";
+        }
 
         public DeadShow(BattleCharacter who)
         {

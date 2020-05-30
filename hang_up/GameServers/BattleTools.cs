@@ -48,7 +48,7 @@ namespace GameServers
                     : throw new ArgumentException("not such passive skill in config::" + x)
             );
             return new BattleCharacter(KeyStatus.Alive, characterBattleBaseAttribute, activeSkills.ToArray(),
-                passiveSkills.ToArray(), belongTeam);
+                passiveSkills.ToArray(), belongTeam, character.Name);
         }
     }
 }
