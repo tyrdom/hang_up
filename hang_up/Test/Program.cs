@@ -16,8 +16,8 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            var aInts = new int[] {1, 2, 3, 4, 5};
-            var bInts = new int[] {6, 7, 8, 9, 10};
+            var aInts = new[] {1, 2, 3, 4, 5};
+            var bInts = new[] {6, 7, 8, 9, 10};
 
             var genBaseTeamA = BattleTools.GenBaseTeam(aInts, BelongTeam.A);
             var genBaseTeamB = BattleTools.GenBaseTeam(bInts, BelongTeam.B);

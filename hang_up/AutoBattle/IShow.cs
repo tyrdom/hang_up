@@ -4,7 +4,7 @@ namespace AutoBattle
     {
         BattleCharacter Who { get; }
 
-       public string BattleLog();
+        public string BattleLog();
     }
 
     public class TakeHarmShow : IShow
@@ -13,7 +13,7 @@ namespace AutoBattle
 
         public string BattleLog()
         {
-            return Who.Name + " take harm " + Harm;
+            return Who.Name + " take harm: " + Harm + "   rest:" + Who.HpLog();
         }
 
         public readonly long Harm;
@@ -31,7 +31,7 @@ namespace AutoBattle
 
         public string BattleLog()
         {
-            return Who.Name + " take heal " + HealValue;
+            return Who.Name + " take heal: " + HealValue + " rest: " + Who.HpLog();
         }
 
         public readonly int HealValue;
@@ -64,6 +64,7 @@ namespace AutoBattle
     public class AddBuffShow : IShow
     {
         public BattleCharacter Who { get; }
+
         public string BattleLog()
         {
             return Who.Name + " get buffs ";
@@ -81,6 +82,7 @@ namespace AutoBattle
     public class DodgeShow : IShow
     {
         public BattleCharacter Who { get; }
+
         public string BattleLog()
         {
             return Who.Name + " dodge a damage ";
@@ -95,6 +97,7 @@ namespace AutoBattle
     public class DeadShow : IShow
     {
         public BattleCharacter Who { get; }
+
         public string BattleLog()
         {
             return Who.Name + " is dead~~~~~ ";

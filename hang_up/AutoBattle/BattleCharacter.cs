@@ -42,6 +42,11 @@ namespace AutoBattle
             WhoSummon = whoSummon;
         }
 
+        public string HpLog()
+        {
+            return CharacterBattleAttribute.NowHp.ToString();
+        }
+
         public BattleCharacter Clone()
         {
             var characterBattleBaseAttribute = CharacterBattleAttribute.Clone();
@@ -473,7 +478,6 @@ namespace AutoBattle
             if (!clearBuffs.Any()) return new IShow[] {addBuff};
             var clearBuff = new ClearBuff(toWho, clearBuffs.ToArray());
             return new IShow[] {addBuff, clearBuff};
-
         }
     }
 
